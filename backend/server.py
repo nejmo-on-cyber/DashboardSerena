@@ -165,36 +165,42 @@ def map_airtable_record(record):
     """Map Airtable record to our Record model"""
     fields = record.get('fields', {})
     
-    # Handle linked records and get real client name
+    # Handle linked records and get real names
     client_name = "Unknown Client"
     client_ids = fields.get('Client Name')
     if isinstance(client_ids, list) and len(client_ids) > 0:
-        # Fetch real client name from Clients table
         real_client_name = get_client_name(client_ids[0])
         if real_client_name:
             client_name = real_client_name
         else:
-            # Fallback to Appointment ID
             client_name = fields.get('Appointment ID', f"Client {record.get('id', '')[-4:]}")
     else:
-        # Fallback to Appointment ID
         client_name = fields.get('Appointment ID', f"Client {record.get('id', '')[-4:]}")
     
     # Handle services linked field
-    services = fields.get('Services')
-    if isinstance(services, list) and len(services) > 0:
-        services_name = "Service"  # Would need to fetch linked service data for real name
-    else:
-        services_name = 'Service'
+    service_name = "Service"
+    service_ids = fields.get('Services')
+    if isinstance(service_ids, list) and len(service_ids) > 0:
+        real_service_name = get_service_name(service_ids[0])
+        if real_service_name:
+            service_name = real_service_name
+    
+    # Handle employee/therapist linked field  
+    therapist_name = "Therapist"
+    employee_ids = fields.get('Stylist')
+    if isinstance(employee_ids, list) and len(employee_ids) > 0:
+        real_employee_name = get_employee_name(employee_ids[0])
+        if real_employee_name:
+            therapist_name = real_employee_name
     
     return Record(
         id=record.get('id'),
-        name=client_name,  # Now using real client name!
-        email='',  # Not available in appointments table
-        phone='',  # Not available in appointments table
+        name=client_name,
+        email=therapist_name,  # Using email field to store therapist name
+        phone=fields.get('Appointment Time', ''),  # Using phone field to store time
         lastVisit=fields.get('Appointment Date'),
         nextAppointment='',  # Not available
-        preferredService=services_name,
+        preferredService=service_name,
         totalVisits=1,  # Each record is one appointment
         totalSpent=fields.get('Total Price', 0),
         tags=[fields.get('Appointment Status', '')] if fields.get('Appointment Status') else [],
