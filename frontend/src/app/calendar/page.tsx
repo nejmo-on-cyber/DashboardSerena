@@ -61,7 +61,7 @@ export default function CalendarPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8001";
+  const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8001";
 
   // Fetch appointments from Airtable
   useEffect(() => {
