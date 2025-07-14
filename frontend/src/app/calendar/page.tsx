@@ -124,6 +124,12 @@ export default function CalendarPage() {
       // Refresh appointments to show new one
       await fetchAppointments();
       
+    } catch (err) {
+      console.error('❌ Error creating appointment:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create appointment');
+    }
+  };
+
   const handleEditAppointment = async (action: 'update' | 'cancel') => {
     if (!selectedAppointment) return;
     
