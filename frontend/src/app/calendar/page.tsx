@@ -47,47 +47,28 @@ export default function CalendarPage() {
     try {
       setLoading(true);
       
-      // Try multiple API endpoints
-      const apiUrls = [
-        `${API_BASE_URL}/api/records`,
-        "http://localhost:8001/api/records",
-        "/api/records" // This won't work but worth trying
-      ];
+      // Use Next.js proxy - requests to /api/* will be forwarded to backend
+      const apiUrl = "/api/records";
       
-      let response = null;
-      let usedUrl = "";
+      console.log('🔍 Fetching via Next.js proxy:', apiUrl);
       
-      for (const url of apiUrls) {
-        try {
-          console.log('🔍 Trying API URL:', url);
-          response = await fetch(url, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            mode: 'cors',
-          });
-          
-          if (response.ok) {
-            usedUrl = url;
-            console.log('✅ Successfully connected to:', url);
-            break;
-          } else {
-            console.log(`❌ Failed ${url}: ${response.status}`);
-          }
-        } catch (fetchError) {
-          console.log(`❌ Fetch error for ${url}:`, fetchError.message);
-        }
-      }
-      
-      if (!response || !response.ok) {
-        throw new Error('All API endpoints failed to connect');
-      }
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       
       console.log('🔍 Response status:', response.status);
       
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Response error:', errorText);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const records: AirtableRecord[] = await response.json();
-      console.log('🔍 Total records:', records.length);
+      console.log('🔍 Total records via proxy:', records.length);
       
       const recordsWithDates = records.filter(record => record.lastVisit);
       console.log('🔍 Records with dates:', recordsWithDates.length);
@@ -110,43 +91,11 @@ export default function CalendarPage() {
       
       setAppointments(transformedAppointments);
       setError(null);
+      console.log('✅ Successfully loaded appointments via proxy!');
+      
     } catch (err) {
-      console.error('❌ All connection attempts failed:', err);
-      
-      // Use mock data as fallback
-      console.log('📋 Using mock data as fallback...');
-      const mockAppointments: Appointment[] = [
-        {
-          id: "rec1",
-          title: "A007",
-          client: "A007",
-          service: "Test Service",
-          date: "2025-07-15",
-          status: "scheduled",
-          color: "bg-blue-500"
-        },
-        {
-          id: "rec2",
-          title: "Client Meeting",
-          client: "Bob Bridges",
-          service: "Consultation",
-          date: "2025-07-16",
-          status: "scheduled",
-          color: "bg-blue-500"
-        },
-        {
-          id: "rec3",
-          title: "Feras Appointment",
-          client: "Feras",
-          service: "Service",
-          date: "2025-07-24",
-          status: "completed",
-          color: "bg-green-500"
-        }
-      ];
-      
-      setAppointments(mockAppointments);
-      setError(`Backend connection failed. Showing sample data. Error: ${err instanceof Error ? err.message : "Unknown error"}`);
+      console.error('❌ Proxy connection failed:', err);
+      setError(`Connection failed via proxy: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setLoading(false);
     }
