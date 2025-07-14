@@ -27,6 +27,10 @@ interface Appointment {
   date: string;
   status: string;
   color: string;
+  therapist?: string;
+  time?: string;
+  price?: number;
+  notes?: string;
 }
 
 export default function CalendarPage() {
