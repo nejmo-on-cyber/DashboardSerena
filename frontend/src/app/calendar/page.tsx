@@ -133,16 +133,27 @@ export default function CalendarPage() {
   const handleEditAppointment = async (action: 'update' | 'cancel') => {
     if (!selectedAppointment) return;
     
+    // Show confirmation for cancellation since it will delete the appointment
+    if (action === 'cancel') {
+      const confirmed = window.confirm(
+        `Are you sure you want to cancel this appointment?\n\n` +
+        `Client: ${selectedAppointment.client}\n` +
+        `Service: ${selectedAppointment.service}\n` +
+        `Date: ${new Date(selectedAppointment.date).toLocaleDateString()}\n\n` +
+        `This will permanently remove the appointment from your calendar and Airtable.`
+      );
+      
+      if (!confirmed) {
+        return; // User cancelled the cancellation
+      }
+    }
+    
     try {
       const updateData = {
         ...editFormData,
         appointment_id: selectedAppointment.id,
         action: action
       };
-      
-      if (action === 'cancel') {
-        updateData.status = 'Cancelled';
-      }
       
       const response = await fetch(`/api/appointments/${selectedAppointment.id}`, {
         method: 'PUT',
@@ -159,12 +170,17 @@ export default function CalendarPage() {
       const result = await response.json();
       console.log(`✅ Appointment ${action}ed:`, result);
       
+      if (action === 'cancel') {
+        // Show success message for cancellation
+        alert(`Appointment cancelled successfully!\n\nThe appointment for ${selectedAppointment.client} has been removed from your calendar and Airtable.`);
+      }
+      
       // Close modals and refresh
       setShowEditModal(false);
       setShowDetailModal(false);
       setSelectedAppointment(null);
       
-      // Refresh appointments to show changes
+      // Refresh appointments to show changes (removed appointment will disappear)
       await fetchAppointments();
       
     } catch (err) {
