@@ -153,30 +153,12 @@ export default function CalendarPage() {
       });
       
       const transformedAppointments: Appointment[] = recordsWithDates.map(record => {
-        // Custom date mapping to match your Airtable calendar view exactly
-        let displayDate = record.lastVisit || '';
-        
-        // Apply specific date corrections to move appointments back by 1 day
-        // This fixes the timezone offset issue
-        if (displayDate && displayDate.includes('2025-07')) {
-          const [year, month, day] = displayDate.split('-');
-          const originalDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-          originalDate.setDate(originalDate.getDate() - 1); // Move back 1 day
-          
-          const newYear = originalDate.getFullYear();
-          const newMonth = String(originalDate.getMonth() + 1).padStart(2, '0');
-          const newDay = String(originalDate.getDate()).padStart(2, '0');
-          displayDate = `${newYear}-${newMonth}-${newDay}`;
-          
-          console.log(`📅 Date adjusted: ${record.lastVisit} → ${displayDate} for ${record.name || record.id.slice(-4)}`);
-        }
-        
         return {
           id: record.id,
           title: record.preferredService || record.name || `Appointment ${record.id.slice(-4)}`,
           client: record.name || `Client ${record.id.slice(-4)}`,
           service: record.preferredService || 'Service',
-          date: displayDate,
+          date: record.lastVisit || '', // Use original date without adjustment
           status: record.tags?.[0] || 'scheduled',
           color: getColorForStatus(record.tags?.[0] || 'scheduled')
         };
