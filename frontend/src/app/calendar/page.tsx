@@ -78,20 +78,26 @@ export default function CalendarPage() {
       // Transform Airtable records to calendar appointments
       const transformedAppointments: Appointment[] = records
         .filter(record => record.lastVisit) // Only include records with dates
-        .map(record => ({
-          id: record.id,
-          title: record.preferredService || record.name || 'Appointment',
-          client: record.name || 'Unknown Client',
-          service: record.preferredService || 'Service',
-          staff: 'Staff', // Could be mapped from another field
-          date: record.lastVisit || '',
-          startTime: '10:00', // Default time, could be extracted from notes or another field
-          endTime: '11:00',   // Default duration
-          status: record.tags?.[0]?.toLowerCase() as "confirmed" | "pending" | "cancelled" | "completed" || 'confirmed',
-          notes: record.notes || '',
-          color: getColorForStatus(record.tags?.[0] || 'confirmed')
-        }));
+        .map(record => {
+          const status = record.tags?.[0]?.toLowerCase() || 'scheduled';
+          return {
+            id: record.id,
+            title: record.preferredService || record.name || 'Appointment',
+            client: record.name || 'Unknown Client',
+            service: record.preferredService || 'Service',
+            staff: 'Staff', // Could be mapped from another field
+            date: record.lastVisit || '',
+            startTime: '10:00', // Default time, could be extracted from notes or another field
+            endTime: '11:00',   // Default duration
+            status: ['completed', 'scheduled', 'cancelled', 'pending'].includes(status) 
+              ? status as "confirmed" | "pending" | "cancelled" | "completed"
+              : 'confirmed',
+            notes: record.notes || '',
+            color: getColorForStatus(record.tags?.[0] || 'scheduled')
+          };
+        });
       
+      console.log('Transformed appointments:', transformedAppointments.slice(0, 3));
       setAppointments(transformedAppointments);
       setError(null);
     } catch (err) {
