@@ -47,25 +47,45 @@ export default function CalendarPage() {
   const fetchAppointments = async () => {
     try {
       setLoading(true);
-      console.log('🔍 Fetching appointments from:', `${API_BASE_URL}/api/records`);
-      console.log('🔍 Environment variable NEXT_PUBLIC_BACKEND_URL:', process.env.NEXT_PUBLIC_BACKEND_URL);
       
-      const response = await fetch(`${API_BASE_URL}/api/records`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        mode: 'cors',
-      });
+      // Try multiple API endpoints
+      const apiUrls = [
+        `${API_BASE_URL}/api/records`,
+        "http://localhost:8001/api/records",
+        "/api/records" // This won't work but worth trying
+      ];
+      
+      let response = null;
+      let usedUrl = "";
+      
+      for (const url of apiUrls) {
+        try {
+          console.log('🔍 Trying API URL:', url);
+          response = await fetch(url, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            mode: 'cors',
+          });
+          
+          if (response.ok) {
+            usedUrl = url;
+            console.log('✅ Successfully connected to:', url);
+            break;
+          } else {
+            console.log(`❌ Failed ${url}: ${response.status}`);
+          }
+        } catch (fetchError) {
+          console.log(`❌ Fetch error for ${url}:`, fetchError.message);
+        }
+      }
+      
+      if (!response || !response.ok) {
+        throw new Error('All API endpoints failed to connect');
+      }
       
       console.log('🔍 Response status:', response.status);
-      console.log('🔍 Response headers:', response.headers);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ Response error:', errorText);
-        throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
-      }
       
       const records: AirtableRecord[] = await response.json();
       console.log('🔍 Total records:', records.length);
@@ -92,10 +112,42 @@ export default function CalendarPage() {
       setAppointments(transformedAppointments);
       setError(null);
     } catch (err) {
-      console.error('❌ Detailed error:', err);
-      const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
-      console.error('❌ Error message:', errorMessage);
-      setError(`Connection failed: ${errorMessage}. Please check if backend is running on port 8001.`);
+      console.error('❌ All connection attempts failed:', err);
+      
+      // Use mock data as fallback
+      console.log('📋 Using mock data as fallback...');
+      const mockAppointments: Appointment[] = [
+        {
+          id: "rec1",
+          title: "A007",
+          client: "A007",
+          service: "Test Service",
+          date: "2025-07-15",
+          status: "scheduled",
+          color: "bg-blue-500"
+        },
+        {
+          id: "rec2",
+          title: "Client Meeting",
+          client: "Bob Bridges",
+          service: "Consultation",
+          date: "2025-07-16",
+          status: "scheduled",
+          color: "bg-blue-500"
+        },
+        {
+          id: "rec3",
+          title: "Feras Appointment",
+          client: "Feras",
+          service: "Service",
+          date: "2025-07-24",
+          status: "completed",
+          color: "bg-green-500"
+        }
+      ];
+      
+      setAppointments(mockAppointments);
+      setError(`Backend connection failed. Showing sample data. Error: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setLoading(false);
     }
