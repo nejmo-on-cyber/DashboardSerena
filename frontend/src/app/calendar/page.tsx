@@ -65,15 +65,20 @@ export default function CalendarPage() {
 
   // Fetch appointments from Airtable
   useEffect(() => {
+    console.log('Calendar component mounted, fetching appointments...');
     fetchAppointments();
   }, []);
 
   const fetchAppointments = async () => {
     try {
       setLoading(true);
+      console.log('Fetching from:', `${API_BASE_URL}/api/records`);
       const response = await fetch(`${API_BASE_URL}/api/records`);
+      console.log('Response status:', response.status);
       if (!response.ok) throw new Error("Failed to fetch appointments");
       const records: AirtableRecord[] = await response.json();
+      console.log('Fetched records:', records.length);
+      console.log('Sample record:', records[0]);
       
       // Transform Airtable records to calendar appointments
       const transformedAppointments: Appointment[] = records
@@ -97,10 +102,12 @@ export default function CalendarPage() {
           };
         });
       
-      console.log('Transformed appointments:', transformedAppointments.slice(0, 3));
+      console.log('Transformed appointments:', transformedAppointments.length);
+      console.log('Sample appointment:', transformedAppointments[0]);
       setAppointments(transformedAppointments);
       setError(null);
     } catch (err) {
+      console.error('Error fetching appointments:', err);
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setLoading(false);
