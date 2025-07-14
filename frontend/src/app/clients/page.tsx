@@ -40,7 +40,7 @@ export default function ClientsPage() {
     notes: "",
   });
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8001";
+  const API_BASE_URL = ""; // Use Next.js proxy
 
   useEffect(() => {
     fetchRecords();
