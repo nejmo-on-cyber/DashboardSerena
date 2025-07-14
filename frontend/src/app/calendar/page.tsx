@@ -83,6 +83,8 @@ export default function CalendarPage() {
         // Custom date mapping to match Airtable calendar view
         let displayDate = record.lastVisit || '';
         
+        console.log(`🔍 Processing record: ${record.name || record.id.slice(-4)} with date ${displayDate}`);
+        
         // Apply specific date corrections based on your Airtable calendar
         const dateCorrections: { [key: string]: string } = {
           '2025-07-15': '2025-07-14', // Move A007 from July 15th to July 14th
@@ -92,8 +94,8 @@ export default function CalendarPage() {
         };
         
         if (dateCorrections[displayDate]) {
+          console.log(`📅 Date corrected: ${displayDate} → ${dateCorrections[displayDate]} for ${record.name || record.id.slice(-4)}`);
           displayDate = dateCorrections[displayDate];
-          console.log(`📅 Date corrected: ${record.lastVisit} → ${displayDate} for ${record.name || record.id.slice(-4)}`);
         }
         
         return {
