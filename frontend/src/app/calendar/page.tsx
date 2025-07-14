@@ -80,22 +80,22 @@ export default function CalendarPage() {
       });
       
       const transformedAppointments: Appointment[] = recordsWithDates.map(record => {
-        // Custom date mapping to match Airtable calendar view
+        // Custom date mapping to match your Airtable calendar view exactly
         let displayDate = record.lastVisit || '';
         
-        console.log(`🔍 Processing record: ${record.name || record.id.slice(-4)} with date ${displayDate}`);
-        
-        // Apply specific date corrections based on your Airtable calendar
-        const dateCorrections: { [key: string]: string } = {
-          '2025-07-15': '2025-07-14', // Move A007 from July 15th to July 14th
-          '2025-07-16': '2025-07-15', // Move appointments from July 16th to July 15th  
-          '2025-07-17': '2025-07-16', // Move appointments from July 17th to July 16th
-          // July 24th stays the same as it seems correct
-        };
-        
-        if (dateCorrections[displayDate]) {
-          console.log(`📅 Date corrected: ${displayDate} → ${dateCorrections[displayDate]} for ${record.name || record.id.slice(-4)}`);
-          displayDate = dateCorrections[displayDate];
+        // Apply specific date corrections to move appointments back by 1 day
+        // This fixes the timezone offset issue
+        if (displayDate && displayDate.includes('2025-07')) {
+          const [year, month, day] = displayDate.split('-');
+          const originalDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+          originalDate.setDate(originalDate.getDate() - 1); // Move back 1 day
+          
+          const newYear = originalDate.getFullYear();
+          const newMonth = String(originalDate.getMonth() + 1).padStart(2, '0');
+          const newDay = String(originalDate.getDate()).padStart(2, '0');
+          displayDate = `${newYear}-${newMonth}-${newDay}`;
+          
+          console.log(`📅 Date adjusted: ${record.lastVisit} → ${displayDate} for ${record.name || record.id.slice(-4)}`);
         }
         
         return {
