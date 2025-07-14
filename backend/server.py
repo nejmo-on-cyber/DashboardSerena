@@ -120,14 +120,20 @@ def map_airtable_record(record):
     """Map Airtable record to our Record model"""
     fields = record.get('fields', {})
     
-    # Handle linked records and arrays for client name
-    client_name = fields.get('Client Name')
-    if isinstance(client_name, list) and len(client_name) > 0:
-        # This is a linked record ID, we'll use the Appointment ID instead for now
-        # In a full implementation, we'd fetch the linked client data
-        client_display_name = fields.get('Appointment ID', f"Client {record.get('id', '')[-4:]}")
+    # Handle linked records and get real client name
+    client_name = "Unknown Client"
+    client_ids = fields.get('Client Name')
+    if isinstance(client_ids, list) and len(client_ids) > 0:
+        # Fetch real client name from Clients table
+        real_client_name = get_client_name(client_ids[0])
+        if real_client_name:
+            client_name = real_client_name
+        else:
+            # Fallback to Appointment ID
+            client_name = fields.get('Appointment ID', f"Client {record.get('id', '')[-4:]}")
     else:
-        client_display_name = fields.get('Appointment ID', f"Client {record.get('id', '')[-4:]}")
+        # Fallback to Appointment ID
+        client_name = fields.get('Appointment ID', f"Client {record.get('id', '')[-4:]}")
     
     # Handle services linked field
     services = fields.get('Services')
@@ -136,16 +142,9 @@ def map_airtable_record(record):
     else:
         services_name = 'Service'
     
-    # Handle stylist linked field  
-    stylist = fields.get('Stylist')
-    if isinstance(stylist, list) and len(stylist) > 0:
-        stylist_name = "Stylist"  # Would need to fetch linked stylist data for real name
-    else:
-        stylist_name = 'Staff'
-    
     return Record(
         id=record.get('id'),
-        name=client_display_name,  # Use Appointment ID as display name
+        name=client_name,  # Now using real client name!
         email='',  # Not available in appointments table
         phone='',  # Not available in appointments table
         lastVisit=fields.get('Appointment Date'),
