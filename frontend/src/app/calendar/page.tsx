@@ -55,7 +55,64 @@ export default function CalendarPage() {
   useEffect(() => {
     console.log('🔍 Component mounted, using Next.js proxy for API calls');
     fetchAppointments();
+    fetchFormOptions();
   }, []);
+
+  const fetchFormOptions = async () => {
+    try {
+      // Fetch clients, services, and employees for dropdowns
+      const [clientsRes, servicesRes, employeesRes] = await Promise.all([
+        fetch('/api/clients'),
+        fetch('/api/services'),
+        fetch('/api/employees')
+      ]);
+
+      if (clientsRes.ok) setClients(await clientsRes.json());
+      if (servicesRes.ok) setServices(await servicesRes.json());
+      if (employeesRes.ok) setEmployees(await employeesRes.json());
+    } catch (err) {
+      console.error('Error fetching form options:', err);
+    }
+  };
+
+  const handleAddAppointment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const response = await fetch('/api/appointments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create appointment');
+      }
+
+      const result = await response.json();
+      console.log('✅ Appointment created:', result);
+      
+      // Reset form and close modal
+      setFormData({
+        client_id: '',
+        service_id: '',
+        employee_id: '',
+        date: '',
+        time: '10:00 AM',
+        notes: ''
+      });
+      setShowAddForm(false);
+      
+      // Refresh appointments to show new one
+      await fetchAppointments();
+      
+    } catch (err) {
+      console.error('❌ Error creating appointment:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create appointment');
+    }
+  };
 
   const fetchAppointments = async () => {
     try {
