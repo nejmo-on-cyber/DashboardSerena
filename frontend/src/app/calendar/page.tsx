@@ -103,7 +103,7 @@ export default function CalendarPage() {
         });
       
       console.log('Transformed appointments:', transformedAppointments.length);
-      console.log('Sample appointment:', transformedAppointments[0]);
+      console.log('July appointments:', transformedAppointments.filter(apt => apt.date.includes('2025-07')));
       setAppointments(transformedAppointments);
       setError(null);
     } catch (err) {
