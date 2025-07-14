@@ -167,10 +167,10 @@ async def create_record(record: RecordCreate):
     
     try:
         # Map to Airtable field names based on your table structure
+        # Only include fields that are not computed
         airtable_fields = {
             "Appointment ID": record.name,
             "Appointment Date": record.lastVisit,
-            "Total Price": record.totalSpent,
             "Appointment Status": record.tags[0] if record.tags else "Scheduled",
             "Notes": record.notes
         }
