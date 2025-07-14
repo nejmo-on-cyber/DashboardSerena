@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -18,6 +18,21 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
+
+interface AirtableRecord {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  lastVisit?: string;
+  nextAppointment?: string;
+  preferredService?: string;
+  totalVisits?: number;
+  totalSpent?: number;
+  tags?: string[];
+  notes?: string;
+  createdAt?: string;
+}
 
 interface Appointment {
   id: string;
@@ -42,59 +57,62 @@ export default function CalendarPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [filterStaff, setFilterStaff] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock appointments data
-  const appointments: Appointment[] = [
-    {
-      id: "1",
-      title: "Hair Cut & Color",
-      client: "Sarah Johnson",
-      service: "Hair Cut & Color",
-      staff: "Jessica",
-      date: "2024-01-20",
-      startTime: "10:00",
-      endTime: "12:00",
-      status: "confirmed",
-      notes: "VIP client, prefers specific hair products",
-      color: "bg-purple-500",
-    },
-    {
-      id: "2",
-      title: "Facial Treatment",
-      client: "Emma Davis",
-      service: "Deep Cleansing Facial",
-      staff: "Maria",
-      date: "2024-01-20",
-      startTime: "14:00",
-      endTime: "15:30",
-      status: "confirmed",
-      color: "bg-blue-500",
-    },
-    {
-      id: "3",
-      title: "Massage Therapy",
-      client: "Mike Chen",
-      service: "Swedish Massage",
-      staff: "David",
-      date: "2024-01-21",
-      startTime: "11:00",
-      endTime: "12:00",
-      status: "pending",
-      color: "bg-green-500",
-    },
-    {
-      id: "4",
-      title: "Manicure",
-      client: "Lisa Wilson",
-      service: "Gel Manicure",
-      staff: "Jessica",
-      date: "2024-01-22",
-      startTime: "16:00",
-      endTime: "17:00",
-      status: "confirmed",
-      color: "bg-pink-500",
-    },
-  ];
+  const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8001";
+
+  // Fetch appointments from Airtable
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
+  const fetchAppointments = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/api/records`);
+      if (!response.ok) throw new Error("Failed to fetch appointments");
+      const records: AirtableRecord[] = await response.json();
+      
+      // Transform Airtable records to calendar appointments
+      const transformedAppointments: Appointment[] = records
+        .filter(record => record.lastVisit) // Only include records with dates
+        .map(record => ({
+          id: record.id,
+          title: record.preferredService || record.name || 'Appointment',
+          client: record.name || 'Unknown Client',
+          service: record.preferredService || 'Service',
+          staff: 'Staff', // Could be mapped from another field
+          date: record.lastVisit || '',
+          startTime: '10:00', // Default time, could be extracted from notes or another field
+          endTime: '11:00',   // Default duration
+          status: record.tags?.[0]?.toLowerCase() as "confirmed" | "pending" | "cancelled" | "completed" || 'confirmed',
+          notes: record.notes || '',
+          color: getColorForStatus(record.tags?.[0] || 'confirmed')
+        }));
+      
+      setAppointments(transformedAppointments);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getColorForStatus = (status: string): string => {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return 'bg-green-500';
+      case 'scheduled':
+        return 'bg-blue-500';
+      case 'cancelled':
+        return 'bg-red-500';
+      default:
+        return 'bg-purple-500';
+    }
+  };
 
   const staff = ["all", "Jessica", "Maria", "David", "Sarah"];
   const statuses = ["all", "confirmed", "pending", "cancelled", "completed"];
