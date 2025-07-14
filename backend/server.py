@@ -275,6 +275,106 @@ async def delete_record(record_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting record: {str(e)}")
 
+@app.get("/api/clients")
+async def get_clients():
+    """Get list of available clients for dropdown"""
+    if not airtable_clients:
+        return []
+    
+    try:
+        clients = airtable_clients.get_all()
+        client_list = []
+        for client in clients:
+            name = client['fields'].get('Client Name', 'Unnamed Client')
+            client_list.append({
+                "id": client['id'],
+                "name": name
+            })
+        return client_list
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching clients: {str(e)}")
+
+@app.get("/api/services")
+async def get_services():
+    """Get list of available services for dropdown"""
+    if not airtable_services:
+        return []
+    
+    try:
+        services = airtable_services.get_all()
+        service_list = []
+        for service in services:
+            name = service['fields'].get('Service Name') or service['fields'].get('Name', 'Unnamed Service')
+            service_list.append({
+                "id": service['id'],
+                "name": name
+            })
+        return service_list
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching services: {str(e)}")
+
+@app.get("/api/employees")
+async def get_employees():
+    """Get list of available therapists/employees for dropdown"""
+    if not airtable_employees:
+        return []
+    
+    try:
+        employees = airtable_employees.get_all()
+        employee_list = []
+        for emp in employees:
+            full_name = emp['fields'].get('Full Name', '')
+            first_name = emp['fields'].get('First Name', '')
+            last_name = emp['fields'].get('Last Name', '')
+            name = full_name or f'{first_name} {last_name}'.strip() or 'Unnamed Therapist'
+            employee_list.append({
+                "id": emp['id'],
+                "name": name
+            })
+        return employee_list
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching employees: {str(e)}")
+
+@app.post("/api/appointments")
+async def create_appointment(appointment_data: dict):
+    """Create a new appointment in Airtable"""
+    if not airtable:
+        raise HTTPException(status_code=503, detail="Airtable not configured")
+    
+    try:
+        # Generate next appointment ID
+        existing_appointments = airtable.get_all()
+        appointment_ids = [apt['fields'].get('Appointment ID', '') for apt in existing_appointments if apt['fields'].get('Appointment ID')]
+        
+        # Find highest number and increment
+        max_num = 0
+        for apt_id in appointment_ids:
+            if apt_id.startswith('A') and apt_id[1:].isdigit():
+                max_num = max(max_num, int(apt_id[1:]))
+        
+        new_appointment_id = f"A{max_num + 1:03d}"
+        
+        # Map to Airtable field names with linked records
+        airtable_fields = {
+            "Appointment ID": new_appointment_id,
+            "Client Name": [appointment_data["client_id"]],  # Linked record
+            "Services": [appointment_data["service_id"]],     # Linked record
+            "Stylist": [appointment_data["employee_id"]],     # Linked record
+            "Appointment Date": appointment_data["date"],
+            "Appointment Time": appointment_data.get("time", "10:00 AM"),
+            "Appointment Status": "Scheduled",
+            "Notes": appointment_data.get("notes", "")
+        }
+        
+        created_record = airtable.insert(airtable_fields)
+        return {
+            "success": True,
+            "appointment_id": new_appointment_id,
+            "record_id": created_record['id']
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating appointment: {str(e)}")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
