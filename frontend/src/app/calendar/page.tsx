@@ -141,7 +141,7 @@ export default function CalendarPage() {
   };
 
   const getAppointmentsForDate = (date: Date) => {
-    const dateString = date.toISOString().split("T")[0];
+    const dateString = date.toISOString().split("T")[0]; // Format: YYYY-MM-DD
     return appointments.filter((apt) => {
       const matchesDate = apt.date === dateString;
       const matchesStaff = filterStaff === "all" || apt.staff === filterStaff;
