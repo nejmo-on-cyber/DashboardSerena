@@ -271,7 +271,10 @@ export default function CalendarPage() {
               <h1 className="text-2xl font-bold text-gray-900">Calendar</h1>
               <p className="text-gray-600">Manage your appointments from Airtable</p>
             </div>
-            <button className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+            <button 
+              onClick={() => setShowAddForm(true)}
+              className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+            >
               <Plus className="w-5 h-5" />
               <span>Add Appointment</span>
             </button>
