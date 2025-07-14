@@ -122,6 +122,8 @@ export default function CalendarPage() {
         return 'bg-blue-500';
       case 'cancelled':
         return 'bg-red-500';
+      case 'pending':
+        return 'bg-yellow-500';
       default:
         return 'bg-purple-500';
     }
