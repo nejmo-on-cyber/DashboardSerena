@@ -1,14 +1,14 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/calendar/page": "app/calendar/page.js",
-  "/clients/page": "app/clients/page.js",
   "/analytics/page": "app/analytics/page.js",
   "/availability/page": "app/availability/page.js",
+  "/calendar/page": "app/calendar/page.js",
+  "/clients/page": "app/clients/page.js",
   "/conversations/page": "app/conversations/page.js",
-  "/revenue/page": "app/revenue/page.js",
+  "/page": "app/page.js",
   "/promotions/page": "app/promotions/page.js",
-  "/voice-calls/page": "app/voice-calls/page.js",
   "/services/page": "app/services/page.js",
-  "/page": "app/page.js"
+  "/voice-calls/page": "app/voice-calls/page.js",
+  "/revenue/page": "app/revenue/page.js"
 }
