@@ -164,7 +164,11 @@ export default function CalendarPage() {
           service: record.preferredService || 'Service',
           date: record.lastVisit || '', // Use original date without adjustment
           status: record.tags?.[0] || 'scheduled',
-          color: getColorForStatus(record.tags?.[0] || 'scheduled')
+          color: getColorForStatus(record.tags?.[0] || 'scheduled'),
+          therapist: record.email || 'Therapist', // Therapist name is stored in email field
+          time: record.phone || '10:00 AM', // Time is stored in phone field
+          price: record.totalSpent || 0,
+          notes: record.notes || ''
         };
       });
       
