@@ -155,13 +155,21 @@ export default function CalendarPage() {
 
   const getAppointmentsForDate = (date: Date) => {
     const dateString = date.toISOString().split("T")[0]; // Format: YYYY-MM-DD
-    return appointments.filter((apt) => {
+    const dayAppointments = appointments.filter((apt) => {
       const matchesDate = apt.date === dateString;
       const matchesStaff = filterStaff === "all" || apt.staff === filterStaff;
       const matchesStatus =
         filterStatus === "all" || apt.status === filterStatus;
       return matchesDate && matchesStaff && matchesStatus;
     });
+    
+    // Debug logging for specific dates
+    if (dateString === "2025-07-15" || dateString === "2025-07-16" || dateString === "2025-07-24") {
+      console.log(`Appointments for ${dateString}:`, dayAppointments);
+      console.log('All appointments:', appointments.length);
+    }
+    
+    return dayAppointments;
   };
 
   const navigateMonth = (direction: "prev" | "next") => {
