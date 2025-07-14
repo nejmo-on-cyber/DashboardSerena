@@ -22,19 +22,19 @@
       "static/chunks/main-app-adc21f9bd355c9ea.js",
       "static/chunks/app/analytics/page-9db251907e4418af.js"
     ],
+    "/calendar/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
+      "static/chunks/684-806c093013864de1.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/calendar/page-cfd6a5f13a28b52c.js"
+    ],
     "/availability/page": [
       "static/chunks/webpack-9edee2920554d0a5.js",
       "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
       "static/chunks/684-806c093013864de1.js",
       "static/chunks/main-app-adc21f9bd355c9ea.js",
       "static/chunks/app/availability/page-007482e0e1e50d06.js"
-    ],
-    "/calendar/page": [
-      "static/chunks/webpack-9edee2920554d0a5.js",
-      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
-      "static/chunks/684-806c093013864de1.js",
-      "static/chunks/main-app-adc21f9bd355c9ea.js",
-      "static/chunks/app/calendar/page-a72fdfeed7155b1c.js"
     ],
     "/clients/page": [
       "static/chunks/webpack-9edee2920554d0a5.js",
