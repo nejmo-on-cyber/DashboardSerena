@@ -42,6 +42,16 @@ export default function CalendarPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    client_id: '',
+    service_id: '',
+    employee_id: '',
+    date: '',
+    time: '10:00 AM',
+    status: 'Scheduled',
+    notes: ''
+  });
   
   // Form data and options
   const [clients, setClients] = useState<{id: string, name: string}[]>([]);
