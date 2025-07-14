@@ -182,10 +182,12 @@ export default function CalendarPage() {
       return matchesDate && matchesStaff && matchesStatus;
     });
     
-    // Debug logging for specific dates
-    if (dateString === "2025-07-15" || dateString === "2025-07-16" || dateString === "2025-07-24") {
-      console.log(`Appointments for ${dateString}:`, dayAppointments);
-      console.log('All appointments:', appointments.length);
+    // Debug logging for July dates only
+    if (dateString.includes("2025-07-15") || dateString.includes("2025-07-16") || dateString.includes("2025-07-24")) {
+      console.log(`📅 Checking ${dateString}:`);
+      console.log(`  - Total appointments in state: ${appointments.length}`);
+      console.log(`  - Appointments for this date: ${dayAppointments.length}`);
+      console.log(`  - Appointment details:`, dayAppointments);
     }
     
     return dayAppointments;
