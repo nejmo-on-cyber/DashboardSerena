@@ -137,7 +137,7 @@ export default function CalendarPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex">
-      <Sidebar />
+      <Sidebar darkMode={darkMode} />
       
       <div className="flex-1 p-6">
         <div className="max-w-7xl mx-auto">
