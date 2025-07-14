@@ -543,26 +543,27 @@ export default function CalendarPage() {
                           {dayAppointments.slice(0, 3).map((apt) => (
                             <div
                               key={apt.id}
-                              className={`text-[10px] p-1 rounded-md text-white truncate ${apt.color} font-medium shadow-sm`}
+                              className={`text-white text-[10px] p-1 rounded-md font-bold border ${apt.color}`}
                               title={`${apt.startTime} - ${apt.client} (${apt.service})`}
                               data-oid="b269r90"
                               style={{
-                                fontSize: '9px', 
+                                fontSize: '8px', 
                                 lineHeight: '10px',
-                                minHeight: '16px',
+                                minHeight: '18px',
                                 display: 'flex',
-                                alignItems: 'center'
+                                alignItems: 'center',
+                                marginBottom: '2px'
                               }}
                             >
-                              {apt.client}
+                              ● {apt.client.slice(0, 8)}
                             </div>
                           ))}
                           {dayAppointments.length > 3 && (
                             <div
-                              className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}
+                              className={`text-xs font-bold ${darkMode ? "text-purple-400" : "text-purple-600"}`}
                               data-oid="9y5e-ru"
                             >
-                              +{dayAppointments.length - 3} more
+                              +{dayAppointments.length - 3}
                             </div>
                           )}
                         </div>
