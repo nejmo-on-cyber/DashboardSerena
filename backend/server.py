@@ -29,7 +29,7 @@ TABLE_NAME = os.getenv("TABLE_NAME", "Table 1")
 
 # Initialize Airtable
 airtable = None
-if AIRTABLE_API_KEY and AIRTABLE_BASE_ID:
+if AIRTABLE_API_KEY and AIRTABLE_BASE_ID and AIRTABLE_API_KEY != "your_airtable_api_key_here" and AIRTABLE_BASE_ID != "your_airtable_base_id_here":
     airtable = Airtable(AIRTABLE_BASE_ID, TABLE_NAME, api_key=AIRTABLE_API_KEY)
 
 # Pydantic models
