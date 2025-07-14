@@ -9,6 +9,6 @@
   "/page": "app/page.js",
   "/promotions/page": "app/promotions/page.js",
   "/revenue/page": "app/revenue/page.js",
-  "/services/page": "app/services/page.js",
-  "/voice-calls/page": "app/voice-calls/page.js"
+  "/voice-calls/page": "app/voice-calls/page.js",
+  "/services/page": "app/services/page.js"
 }
