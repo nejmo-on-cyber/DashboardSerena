@@ -90,19 +90,33 @@ async def health_check():
 def map_airtable_record(record):
     """Map Airtable record to our Record model"""
     fields = record.get('fields', {})
+    
+    # Handle linked records and arrays
+    client_name = fields.get('Client Name')
+    if isinstance(client_name, list) and len(client_name) > 0:
+        client_name = client_name[0]  # Take first linked record ID for now
+    
+    services = fields.get('Services')
+    if isinstance(services, list) and len(services) > 0:
+        services = services[0]  # Take first service ID for now
+    
+    stylist = fields.get('Stylist')
+    if isinstance(stylist, list) and len(stylist) > 0:
+        stylist = stylist[0]  # Take first stylist ID for now
+    
     return Record(
         id=record.get('id'),
-        name=fields.get('Name') or fields.get('name') or fields.get('Client Name'),
-        email=fields.get('Email') or fields.get('email'),
-        phone=fields.get('Phone') or fields.get('phone'),
-        lastVisit=fields.get('Last Visit') or fields.get('lastVisit'),
-        nextAppointment=fields.get('Next Appointment') or fields.get('nextAppointment'),
-        preferredService=fields.get('Preferred Service') or fields.get('preferredService'),
-        totalVisits=fields.get('Total Visits') or fields.get('totalVisits') or 0,
-        totalSpent=fields.get('Total Spent') or fields.get('totalSpent') or 0.0,
-        tags=fields.get('Tags') or fields.get('tags') or [],
-        notes=fields.get('Notes') or fields.get('notes'),
-        createdAt=fields.get('Created At') or fields.get('createdAt')
+        name=fields.get('Appointment ID', ''),  # Using Appointment ID as identifier
+        email='',  # Not available in this table
+        phone='',  # Not available in this table
+        lastVisit=fields.get('Appointment Date'),
+        nextAppointment='',  # Not available
+        preferredService=str(services) if services else '',
+        totalVisits=1,  # Each record is one appointment
+        totalSpent=fields.get('Total Price', 0),
+        tags=[fields.get('Appointment Status', '')] if fields.get('Appointment Status') else [],
+        notes=fields.get('Notes', ''),
+        createdAt=fields.get('Appointment Date', '')
     )
 
 @app.get("/api/records", response_model=List[Record])
