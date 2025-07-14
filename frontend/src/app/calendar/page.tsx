@@ -544,6 +544,7 @@ export default function CalendarPage() {
                               className={`text-xs p-1 rounded text-white truncate ${apt.color}`}
                               title={`${apt.startTime} - ${apt.client} (${apt.service})`}
                               data-oid="b269r90"
+                              style={{fontSize: '10px', lineHeight: '12px'}}
                             >
                               {apt.startTime} {apt.client}
                             </div>
