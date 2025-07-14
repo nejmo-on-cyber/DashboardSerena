@@ -87,8 +87,8 @@ export default function CalendarPage() {
           const status = record.tags?.[0]?.toLowerCase() || 'scheduled';
           return {
             id: record.id,
-            title: record.preferredService || record.name || 'Appointment',
-            client: record.name || 'Unknown Client',
+            title: record.preferredService || record.name || `Appointment ${record.id.slice(-4)}`,
+            client: record.name || `Client ${record.id.slice(-4)}`,
             service: record.preferredService || 'Service',
             staff: 'Staff', // Could be mapped from another field
             date: record.lastVisit || '',
