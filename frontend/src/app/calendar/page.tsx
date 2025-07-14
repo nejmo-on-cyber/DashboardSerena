@@ -337,8 +337,12 @@ export default function CalendarPage() {
                               {dayAppointments.slice(0, 3).map((apt) => (
                                 <div
                                   key={apt.id}
-                                  className={`text-white text-xs p-1 rounded font-bold ${apt.color}`}
+                                  className={`text-white text-xs p-1 rounded font-bold cursor-pointer hover:opacity-80 transition-opacity ${apt.color}`}
                                   title={`${apt.client} - ${apt.service}`}
+                                  onClick={() => {
+                                    setSelectedAppointment(apt);
+                                    setShowDetailModal(true);
+                                  }}
                                 >
                                   {apt.client}
                                 </div>
