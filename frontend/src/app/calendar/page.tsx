@@ -46,12 +46,23 @@ export default function CalendarPage() {
     try {
       setLoading(true);
       console.log('🔍 Fetching appointments from:', `${API_BASE_URL}/api/records`);
+      console.log('🔍 Environment variable NEXT_PUBLIC_BACKEND_URL:', process.env.NEXT_PUBLIC_BACKEND_URL);
       
-      const response = await fetch(`${API_BASE_URL}/api/records`);
+      const response = await fetch(`${API_BASE_URL}/api/records`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'cors',
+      });
+      
       console.log('🔍 Response status:', response.status);
+      console.log('🔍 Response headers:', response.headers);
       
       if (!response.ok) {
-        throw new Error(`Failed to fetch appointments: ${response.status}`);
+        const errorText = await response.text();
+        console.error('❌ Response error:', errorText);
+        throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
       }
       
       const records: AirtableRecord[] = await response.json();
@@ -79,8 +90,10 @@ export default function CalendarPage() {
       setAppointments(transformedAppointments);
       setError(null);
     } catch (err) {
-      console.error('❌ Error:', err);
-      setError(err instanceof Error ? err.message : "Unknown error");
+      console.error('❌ Detailed error:', err);
+      const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
+      console.error('❌ Error message:', errorMessage);
+      setError(`Connection failed: ${errorMessage}. Please check if backend is running on port 8001.`);
     } finally {
       setLoading(false);
     }
