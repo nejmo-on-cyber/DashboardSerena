@@ -91,27 +91,37 @@ def map_airtable_record(record):
     """Map Airtable record to our Record model"""
     fields = record.get('fields', {})
     
-    # Handle linked records and arrays
+    # Handle linked records and arrays for client name
     client_name = fields.get('Client Name')
     if isinstance(client_name, list) and len(client_name) > 0:
-        client_name = client_name[0]  # Take first linked record ID for now
+        # This is a linked record ID, we'll use the Appointment ID instead for now
+        # In a full implementation, we'd fetch the linked client data
+        client_display_name = fields.get('Appointment ID', f"Client {record.get('id', '')[-4:]}")
+    else:
+        client_display_name = fields.get('Appointment ID', f"Client {record.get('id', '')[-4:]}")
     
+    # Handle services linked field
     services = fields.get('Services')
     if isinstance(services, list) and len(services) > 0:
-        services = services[0]  # Take first service ID for now
+        services_name = "Service"  # Would need to fetch linked service data for real name
+    else:
+        services_name = 'Service'
     
+    # Handle stylist linked field  
     stylist = fields.get('Stylist')
     if isinstance(stylist, list) and len(stylist) > 0:
-        stylist = stylist[0]  # Take first stylist ID for now
+        stylist_name = "Stylist"  # Would need to fetch linked stylist data for real name
+    else:
+        stylist_name = 'Staff'
     
     return Record(
         id=record.get('id'),
-        name=fields.get('Appointment ID', ''),  # Using Appointment ID as identifier
-        email='',  # Not available in this table
-        phone='',  # Not available in this table
+        name=client_display_name,  # Use Appointment ID as display name
+        email='',  # Not available in appointments table
+        phone='',  # Not available in appointments table
         lastVisit=fields.get('Appointment Date'),
         nextAppointment='',  # Not available
-        preferredService=str(services) if services else '',
+        preferredService=services_name,
         totalVisits=1,  # Each record is one appointment
         totalSpent=fields.get('Total Price', 0),
         tags=[fields.get('Appointment Status', '')] if fields.get('Appointment Status') else [],
