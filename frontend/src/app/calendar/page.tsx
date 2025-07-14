@@ -76,15 +76,29 @@ export default function CalendarPage() {
       const julyRecords = recordsWithDates.filter(record => record.lastVisit?.includes('2025-07'));
       console.log('🔍 July 2025 records:', julyRecords.length);
       
-      const transformedAppointments: Appointment[] = recordsWithDates.map(record => ({
-        id: record.id,
-        title: record.preferredService || record.name || `Appointment ${record.id.slice(-4)}`,
-        client: record.name || `Client ${record.id.slice(-4)}`,
-        service: record.preferredService || 'Service',
-        date: record.lastVisit || '',
-        status: record.tags?.[0] || 'scheduled',
-        color: getColorForStatus(record.tags?.[0] || 'scheduled')
-      }));
+      const transformedAppointments: Appointment[] = recordsWithDates.map(record => {
+        // Fix timezone offset issue by adjusting the date
+        let adjustedDate = record.lastVisit || '';
+        if (adjustedDate) {
+          // Parse the date and subtract 1 day to fix timezone offset
+          const originalDate = new Date(adjustedDate + 'T00:00:00'); // Treat as local time
+          originalDate.setDate(originalDate.getDate() - 1); // Subtract 1 day
+          const year = originalDate.getFullYear();
+          const month = String(originalDate.getMonth() + 1).padStart(2, '0');
+          const day = String(originalDate.getDate()).padStart(2, '0');
+          adjustedDate = `${year}-${month}-${day}`;
+        }
+        
+        return {
+          id: record.id,
+          title: record.preferredService || record.name || `Appointment ${record.id.slice(-4)}`,
+          client: record.name || `Client ${record.id.slice(-4)}`,
+          service: record.preferredService || 'Service',
+          date: adjustedDate,
+          status: record.tags?.[0] || 'scheduled',
+          color: getColorForStatus(record.tags?.[0] || 'scheduled')
+        };
+      });
       
       console.log('🔍 Transformed appointments:', transformedAppointments.length);
       console.log('🔍 July appointments:', transformedAppointments.filter(apt => apt.date.includes('2025-07')));
