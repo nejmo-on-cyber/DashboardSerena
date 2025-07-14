@@ -35,8 +35,22 @@ export default function CalendarPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [darkMode, setDarkMode] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  
+  // Form data and options
+  const [clients, setClients] = useState<{id: string, name: string}[]>([]);
+  const [services, setServices] = useState<{id: string, name: string}[]>([]);
+  const [employees, setEmployees] = useState<{id: string, name: string}[]>([]);
+  const [formData, setFormData] = useState({
+    client_id: '',
+    service_id: '',
+    employee_id: '',
+    date: '',
+    time: '10:00 AM',
+    notes: ''
+  });
 
-  const API_BASE_URL = ""; // Use relative path to leverage Next.js proxy
+  const API_BASE_URL = ""; // Use Next.js proxy
 
   useEffect(() => {
     console.log('🔍 Component mounted, using Next.js proxy for API calls');
