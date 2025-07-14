@@ -39,6 +39,8 @@ export default function CalendarPage() {
   const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8001";
 
   useEffect(() => {
+    console.log('🔍 Component mounted, API_BASE_URL:', API_BASE_URL);
+    console.log('🔍 Raw env var:', process.env.NEXT_PUBLIC_BACKEND_URL);
     fetchAppointments();
   }, []);
 
