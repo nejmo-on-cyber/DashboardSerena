@@ -541,12 +541,18 @@ export default function CalendarPage() {
                           {dayAppointments.slice(0, 3).map((apt) => (
                             <div
                               key={apt.id}
-                              className={`text-xs p-1 rounded text-white truncate ${apt.color}`}
+                              className={`text-[10px] p-1 rounded-md text-white truncate ${apt.color} font-medium shadow-sm`}
                               title={`${apt.startTime} - ${apt.client} (${apt.service})`}
                               data-oid="b269r90"
-                              style={{fontSize: '10px', lineHeight: '12px'}}
+                              style={{
+                                fontSize: '9px', 
+                                lineHeight: '10px',
+                                minHeight: '16px',
+                                display: 'flex',
+                                alignItems: 'center'
+                              }}
                             >
-                              {apt.startTime} {apt.client}
+                              {apt.client}
                             </div>
                           ))}
                           {dayAppointments.length > 3 && (
