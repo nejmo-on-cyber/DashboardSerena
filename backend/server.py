@@ -166,24 +166,19 @@ async def create_record(record: RecordCreate):
         raise HTTPException(status_code=503, detail="Airtable not configured")
     
     try:
-        # Map to Airtable field names
+        # Map to Airtable field names based on your table structure
         airtable_fields = {
-            "Name": record.name,
-            "Email": record.email,
-            "Phone": record.phone,
-            "Last Visit": record.lastVisit,
-            "Next Appointment": record.nextAppointment,
-            "Preferred Service": record.preferredService,
-            "Total Visits": record.totalVisits,
-            "Total Spent": record.totalSpent,
-            "Tags": record.tags,
+            "Appointment ID": record.name,
+            "Appointment Date": record.lastVisit,
+            "Total Price": record.totalSpent,
+            "Appointment Status": record.tags[0] if record.tags else "Scheduled",
             "Notes": record.notes
         }
         
         # Remove None values
         airtable_fields = {k: v for k, v in airtable_fields.items() if v is not None}
         
-        created_record = airtable.create(airtable_fields)
+        created_record = airtable.insert(airtable_fields)
         return map_airtable_record(created_record)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error creating record: {str(e)}")
