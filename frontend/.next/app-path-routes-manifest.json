@@ -1,14 +1,14 @@
 {
   "/_not-found/page": "/_not-found",
   "/favicon.ico/route": "/favicon.ico",
-  "/analytics/page": "/analytics",
-  "/availability/page": "/availability",
   "/calendar/page": "/calendar",
   "/clients/page": "/clients",
+  "/analytics/page": "/analytics",
+  "/availability/page": "/availability",
   "/conversations/page": "/conversations",
-  "/page": "/",
-  "/promotions/page": "/promotions",
   "/revenue/page": "/revenue",
+  "/promotions/page": "/promotions",
+  "/voice-calls/page": "/voice-calls",
   "/services/page": "/services",
-  "/voice-calls/page": "/voice-calls"
+  "/page": "/"
 }

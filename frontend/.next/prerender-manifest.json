@@ -1,7 +1,7 @@
 {
   "version": 4,
   "routes": {
-    "/conversations": {
+    "/revenue": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -14,8 +14,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/conversations",
-      "dataRoute": "/conversations.rsc",
+      "srcRoute": "/revenue",
+      "dataRoute": "/revenue.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -54,7 +54,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/analytics": {
+    "/conversations": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -67,8 +67,32 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/analytics",
-      "dataRoute": "/analytics.rsc",
+      "srcRoute": "/conversations",
+      "dataRoute": "/conversations.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/clients": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "Next-Action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/clients",
+      "dataRoute": "/clients.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -102,6 +126,30 @@
         "x-next-revalidate-tag-token"
       ]
     },
+    "/calendar": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "Next-Action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/calendar",
+      "dataRoute": "/calendar.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
     "/": {
       "experimentalBypassFor": [
         {
@@ -117,54 +165,6 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/",
       "dataRoute": "/index.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/revenue": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "Next-Action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/revenue",
-      "dataRoute": "/revenue.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/services": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "Next-Action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/services",
-      "dataRoute": "/services.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -222,7 +222,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/clients": {
+    "/analytics": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -235,8 +235,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/clients",
-      "dataRoute": "/clients.rsc",
+      "srcRoute": "/analytics",
+      "dataRoute": "/analytics.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -246,7 +246,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/calendar": {
+    "/services": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -259,8 +259,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/calendar",
-      "dataRoute": "/calendar.rsc",
+      "srcRoute": "/services",
+      "dataRoute": "/services.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -274,8 +274,8 @@
   "dynamicRoutes": {},
   "notFoundRoutes": [],
   "preview": {
-    "previewModeId": "43e5037ef547896b22f88d63f4d75881",
-    "previewModeSigningKey": "6c36881bf638e8ede0a23c2353d521802637d8643e7083dddc02419f359eaf23",
-    "previewModeEncryptionKey": "08d068ceabe0883f782d01451da0c7a230bf3f1ff6f66b3e54ec2106eeddb0d4"
+    "previewModeId": "9cc67114e2869d1f2469e7487faf8f3c",
+    "previewModeSigningKey": "ec8718233bb4a7241b2c62a44016b6f34c7bf8b7cee232db69b418001e7fc4f0",
+    "previewModeEncryptionKey": "a93d7ed76d862f62ef631f0ecc66141dcf478664660004519ff0bc304747ea63"
   }
 }
