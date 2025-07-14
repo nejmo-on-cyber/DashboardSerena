@@ -124,9 +124,63 @@ export default function CalendarPage() {
       // Refresh appointments to show new one
       await fetchAppointments();
       
+  const handleEditAppointment = async (action: 'update' | 'cancel') => {
+    if (!selectedAppointment) return;
+    
+    try {
+      const updateData = {
+        ...editFormData,
+        appointment_id: selectedAppointment.id,
+        action: action
+      };
+      
+      if (action === 'cancel') {
+        updateData.status = 'Cancelled';
+      }
+      
+      const response = await fetch(`/api/appointments/${selectedAppointment.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to ${action} appointment`);
+      }
+
+      const result = await response.json();
+      console.log(`✅ Appointment ${action}ed:`, result);
+      
+      // Close modals and refresh
+      setShowEditModal(false);
+      setShowDetailModal(false);
+      setSelectedAppointment(null);
+      
+      // Refresh appointments to show changes
+      await fetchAppointments();
+      
     } catch (err) {
-      console.error('❌ Error creating appointment:', err);
-      setError(err instanceof Error ? err.message : 'Failed to create appointment');
+      console.error(`❌ Error ${action}ing appointment:`, err);
+      setError(err instanceof Error ? err.message : `Failed to ${action} appointment`);
+    }
+  };
+
+  const openEditModal = () => {
+    if (selectedAppointment) {
+      // Pre-fill form with current appointment data
+      setEditFormData({
+        client_id: '', // We'll need to map this from the name
+        service_id: '',
+        employee_id: '',
+        date: selectedAppointment.date,
+        time: selectedAppointment.time || '10:00 AM',
+        status: selectedAppointment.status,
+        notes: selectedAppointment.notes || ''
+      });
+      setShowDetailModal(false);
+      setShowEditModal(true);
     }
   };
 
