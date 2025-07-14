@@ -770,9 +770,10 @@ export default function CalendarPage() {
                   <button
                     type="button"
                     onClick={() => handleEditAppointment('cancel')}
-                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700"
+                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 flex items-center justify-center space-x-2"
                   >
-                    Cancel Appointment
+                    <span>🗑️</span>
+                    <span>Cancel & Delete</span>
                   </button>
                   <button
                     type="button"
@@ -780,10 +781,17 @@ export default function CalendarPage() {
                       // Keep current data but allow editing
                       console.log('Reschedule mode activated');
                     }}
-                    className="px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-lg hover:bg-orange-700"
+                    className="px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-lg hover:bg-orange-700 flex items-center justify-center space-x-2"
                   >
-                    Reschedule
+                    <span>📅</span>
+                    <span>Reschedule</span>
                   </button>
+                </div>
+
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                  <p className="text-sm text-red-800">
+                    <strong>Note:</strong> Cancelling will permanently remove this appointment from your calendar and Airtable.
+                  </p>
                 </div>
 
                 <div className="border-t pt-4">
