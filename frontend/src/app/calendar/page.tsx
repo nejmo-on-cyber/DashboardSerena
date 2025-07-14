@@ -509,7 +509,7 @@ export default function CalendarPage() {
                 return (
                   <div
                     key={index}
-                    className={`min-h-32 p-2 border-r border-b transition-colors cursor-pointer ${
+                    className={`min-h-24 p-2 border-r border-b transition-colors cursor-pointer ${
                       darkMode
                         ? "border-gray-700 hover:bg-gray-750"
                         : "border-gray-200 hover:bg-gray-50"
