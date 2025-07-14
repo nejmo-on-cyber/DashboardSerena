@@ -74,7 +74,10 @@ export default function CalendarPage() {
       console.log('🔍 Records with dates:', recordsWithDates.length);
       
       const julyRecords = recordsWithDates.filter(record => record.lastVisit?.includes('2025-07'));
-      console.log('🔍 July 2025 records:', julyRecords.length);
+      console.log('🔍 July appointments detail:');
+      julyRecords.forEach(record => {
+        console.log(`  - ${record.name || record.id.slice(-4)}: ${record.lastVisit}`);
+      });
       
       const transformedAppointments: Appointment[] = recordsWithDates.map(record => {
         // Fix timezone offset issue by adjusting the date
