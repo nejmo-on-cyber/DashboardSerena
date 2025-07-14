@@ -714,10 +714,7 @@ export default function CalendarPage() {
                     Close
                   </button>
                   <button
-                    onClick={() => {
-                      // TODO: Add edit functionality
-                      setShowDetailModal(false);
-                    }}
+                    onClick={openEditModal}
                     className="flex-1 px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700"
                   >
                     Edit Appointment
