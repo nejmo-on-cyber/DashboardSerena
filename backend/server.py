@@ -429,9 +429,12 @@ async def update_appointment(appointment_id: str, update_data: dict):
         action = update_data.get('action', 'update')
         
         if action == 'cancel':
-            # Update status to Cancelled
-            airtable_fields = {
-                "Appointment Status": "Cancelled"
+            # Delete the appointment completely from Airtable
+            airtable.delete(appointment_id)
+            return {
+                "success": True,
+                "action": "deleted",
+                "message": "Appointment cancelled and removed from calendar"
             }
         else:
             # Update appointment details
@@ -452,14 +455,29 @@ async def update_appointment(appointment_id: str, update_data: dict):
             if update_data.get('employee_id'):
                 airtable_fields["Stylist"] = [update_data["employee_id"]]
         
-        updated_record = airtable.update(appointment_id, airtable_fields)
-        return {
-            "success": True,
-            "action": action,
-            "record_id": updated_record['id']
-        }
+            updated_record = airtable.update(appointment_id, airtable_fields)
+            return {
+                "success": True,
+                "action": "updated",
+                "record_id": updated_record['id']
+            }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating appointment: {str(e)}")
+
+@app.delete("/api/appointments/{appointment_id}")
+async def delete_appointment(appointment_id: str):
+    """Delete an appointment completely from Airtable"""
+    if not airtable:
+        raise HTTPException(status_code=503, detail="Airtable not configured")
+    
+    try:
+        airtable.delete(appointment_id)
+        return {
+            "success": True,
+            "message": "Appointment deleted successfully"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting appointment: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
