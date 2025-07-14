@@ -72,42 +72,59 @@ export default function CalendarPage() {
   const fetchAppointments = async () => {
     try {
       setLoading(true);
-      console.log('Fetching from:', `${API_BASE_URL}/api/records`);
+      console.log('🔍 Starting to fetch appointments...');
+      console.log('🔍 API URL:', `${API_BASE_URL}/api/records`);
+      
       const response = await fetch(`${API_BASE_URL}/api/records`);
-      console.log('Response status:', response.status);
-      if (!response.ok) throw new Error("Failed to fetch appointments");
+      console.log('🔍 Response status:', response.status);
+      
+      if (!response.ok) {
+        console.error('❌ Response not OK:', response.status, response.statusText);
+        throw new Error("Failed to fetch appointments");
+      }
+      
       const records: AirtableRecord[] = await response.json();
-      console.log('Fetched records:', records.length);
-      console.log('Sample record:', records[0]);
+      console.log('🔍 Total records fetched:', records.length);
+      console.log('🔍 First 3 records:', records.slice(0, 3));
+      
+      // Filter records with dates
+      const recordsWithDates = records.filter(record => record.lastVisit);
+      console.log('🔍 Records with dates:', recordsWithDates.length);
+      
+      // Show July records specifically
+      const julyRecords = recordsWithDates.filter(record => record.lastVisit?.includes('2025-07'));
+      console.log('🔍 July 2025 records:', julyRecords.length);
+      console.log('🔍 July records detail:', julyRecords);
       
       // Transform Airtable records to calendar appointments
-      const transformedAppointments: Appointment[] = records
-        .filter(record => record.lastVisit) // Only include records with dates
-        .map(record => {
-          const status = record.tags?.[0]?.toLowerCase() || 'scheduled';
-          return {
-            id: record.id,
-            title: record.preferredService || record.name || `Appointment ${record.id.slice(-4)}`,
-            client: record.name || `Client ${record.id.slice(-4)}`,
-            service: record.preferredService || 'Service',
-            staff: 'Staff', // Could be mapped from another field
-            date: record.lastVisit || '',
-            startTime: '10:00', // Default time, could be extracted from notes or another field
-            endTime: '11:00',   // Default duration
-            status: ['completed', 'scheduled', 'cancelled', 'pending'].includes(status) 
-              ? status as "confirmed" | "pending" | "cancelled" | "completed"
-              : 'confirmed',
-            notes: record.notes || '',
-            color: getColorForStatus(record.tags?.[0] || 'scheduled')
-          };
-        });
+      const transformedAppointments: Appointment[] = recordsWithDates.map(record => {
+        const status = record.tags?.[0]?.toLowerCase() || 'scheduled';
+        const appointment = {
+          id: record.id,
+          title: record.preferredService || record.name || `Appointment ${record.id.slice(-4)}`,
+          client: record.name || `Client ${record.id.slice(-4)}`,
+          service: record.preferredService || 'Service',
+          staff: 'Staff',
+          date: record.lastVisit || '',
+          startTime: '10:00',
+          endTime: '11:00',
+          status: ['completed', 'scheduled', 'cancelled', 'pending'].includes(status) 
+            ? status as "confirmed" | "pending" | "cancelled" | "completed"
+            : 'confirmed',
+          notes: record.notes || '',
+          color: getColorForStatus(record.tags?.[0] || 'scheduled')
+        };
+        return appointment;
+      });
       
-      console.log('Transformed appointments:', transformedAppointments.length);
-      console.log('July appointments:', transformedAppointments.filter(apt => apt.date.includes('2025-07')));
+      console.log('🔍 Transformed appointments:', transformedAppointments.length);
+      console.log('🔍 July transformed appointments:', transformedAppointments.filter(apt => apt.date.includes('2025-07')));
+      
       setAppointments(transformedAppointments);
+      console.log('✅ Appointments set in state');
       setError(null);
     } catch (err) {
-      console.error('Error fetching appointments:', err);
+      console.error('❌ Error fetching appointments:', err);
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setLoading(false);
