@@ -418,6 +418,35 @@ export default function CalendarPage() {
           </div>
 
           {/* Calendar Grid */}
+          {loading ? (
+            <div className={`rounded-xl shadow-sm border p-8 text-center ${
+              darkMode
+                ? "bg-gray-800 border-gray-700"
+                : "bg-white border-purple-100"
+            }`}>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mb-4"></div>
+              <p className={`${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                Loading appointments from Airtable...
+              </p>
+            </div>
+          ) : error ? (
+            <div className={`rounded-xl shadow-sm border p-8 text-center ${
+              darkMode
+                ? "bg-gray-800 border-gray-700"
+                : "bg-white border-purple-100"
+            }`}>
+              <p className="text-red-600 mb-2">Error loading appointments:</p>
+              <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                {error}
+              </p>
+              <button
+                onClick={fetchAppointments}
+                className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          ) : (
           <div
             className={`rounded-xl shadow-sm border ${
               darkMode
