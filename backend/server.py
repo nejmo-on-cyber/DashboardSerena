@@ -96,6 +96,26 @@ async def health_check():
         "table_name": TABLE_NAME
     }
 
+# Cache for client names to avoid repeated API calls
+client_name_cache = {}
+
+def get_client_name(client_id):
+    """Fetch real client name from Clients table"""
+    if not airtable_clients or not client_id:
+        return None
+        
+    if client_id in client_name_cache:
+        return client_name_cache[client_id]
+    
+    try:
+        client_record = airtable_clients.get(client_id)
+        client_name = client_record['fields'].get('Client Name', '')
+        client_name_cache[client_id] = client_name
+        return client_name
+    except Exception as e:
+        print(f"Error fetching client {client_id}: {e}")
+        return None
+
 def map_airtable_record(record):
     """Map Airtable record to our Record model"""
     fields = record.get('fields', {})
