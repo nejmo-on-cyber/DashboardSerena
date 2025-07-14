@@ -34,6 +34,7 @@ export default function CalendarPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [darkMode, setDarkMode] = useState(false);
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8001";
 
