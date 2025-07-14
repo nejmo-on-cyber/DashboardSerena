@@ -36,11 +36,10 @@ export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [darkMode, setDarkMode] = useState(false);
 
-  const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8001";
+  const API_BASE_URL = ""; // Use relative path to leverage Next.js proxy
 
   useEffect(() => {
-    console.log('🔍 Component mounted, API_BASE_URL:', API_BASE_URL);
-    console.log('🔍 Raw env var:', process.env.NEXT_PUBLIC_BACKEND_URL);
+    console.log('🔍 Component mounted, using Next.js proxy for API calls');
     fetchAppointments();
   }, []);
 
