@@ -548,6 +548,122 @@ export default function CalendarPage() {
           </div>
         </div>
       )}
+
+      {/* Appointment Details Modal */}
+      {showDetailModal && selectedAppointment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg max-w-lg w-full mx-4">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Appointment Details
+                </h3>
+                <button
+                  onClick={() => setShowDetailModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  ✕
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                {/* Client Information */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-800 mb-2">Client Information</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600">Client Name</p>
+                      <p className="font-medium text-gray-900">{selectedAppointment.client}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Status</p>
+                      <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                        selectedAppointment.status.toLowerCase() === 'completed' 
+                          ? 'bg-green-100 text-green-800'
+                          : selectedAppointment.status.toLowerCase() === 'scheduled'
+                          ? 'bg-blue-100 text-blue-800'
+                          : selectedAppointment.status.toLowerCase() === 'cancelled'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {selectedAppointment.status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Appointment Information */}
+                <div className="bg-purple-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-800 mb-2">Appointment Information</h4>
+                  <div className="grid grid-cols-1 gap-3">
+                    <div>
+                      <p className="text-sm text-gray-600">Service</p>
+                      <p className="font-medium text-gray-900">{selectedAppointment.service}</p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Date</p>
+                        <p className="font-medium text-gray-900">
+                          {new Date(selectedAppointment.date).toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Time</p>
+                        <p className="font-medium text-gray-900">{selectedAppointment.time}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Therapist</p>
+                      <p className="font-medium text-gray-900">{selectedAppointment.therapist}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pricing Information */}
+                <div className="bg-green-50 rounded-lg p-4">
+                  <h4 className="font-semibold text-gray-800 mb-2">Pricing</h4>
+                  <div>
+                    <p className="text-sm text-gray-600">Total Price</p>
+                    <p className="text-2xl font-bold text-green-600">${selectedAppointment.price}</p>
+                  </div>
+                </div>
+
+                {/* Notes */}
+                {selectedAppointment.notes && (
+                  <div className="bg-yellow-50 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-800 mb-2">Notes</h4>
+                    <p className="text-gray-700">{selectedAppointment.notes}</p>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex space-x-3 pt-4">
+                  <button
+                    onClick={() => setShowDetailModal(false)}
+                    className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200"
+                  >
+                    Close
+                  </button>
+                  <button
+                    onClick={() => {
+                      // TODO: Add edit functionality
+                      setShowDetailModal(false);
+                    }}
+                    className="flex-1 px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700"
+                  >
+                    Edit Appointment
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
