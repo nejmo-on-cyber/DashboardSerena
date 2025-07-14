@@ -419,6 +419,48 @@ async def create_appointment(appointment_data: dict):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error creating appointment: {str(e)}")
 
+@app.put("/api/appointments/{appointment_id}")
+async def update_appointment(appointment_id: str, update_data: dict):
+    """Update or cancel an appointment in Airtable"""
+    if not airtable:
+        raise HTTPException(status_code=503, detail="Airtable not configured")
+    
+    try:
+        action = update_data.get('action', 'update')
+        
+        if action == 'cancel':
+            # Update status to Cancelled
+            airtable_fields = {
+                "Appointment Status": "Cancelled"
+            }
+        else:
+            # Update appointment details
+            airtable_fields = {}
+            
+            if update_data.get('date'):
+                airtable_fields["Appointment Date"] = update_data["date"]
+            if update_data.get('time'):
+                airtable_fields["Appointment Time"] = update_data["time"]
+            if update_data.get('status'):
+                airtable_fields["Appointment Status"] = update_data["status"]
+            if update_data.get('notes'):
+                airtable_fields["Notes"] = update_data["notes"]
+            if update_data.get('client_id'):
+                airtable_fields["Client Name"] = [update_data["client_id"]]
+            if update_data.get('service_id'):
+                airtable_fields["Services"] = [update_data["service_id"]]
+            if update_data.get('employee_id'):
+                airtable_fields["Stylist"] = [update_data["employee_id"]]
+        
+        updated_record = airtable.update(appointment_id, airtable_fields)
+        return {
+            "success": True,
+            "action": action,
+            "record_id": updated_record['id']
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating appointment: {str(e)}")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
