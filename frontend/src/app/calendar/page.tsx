@@ -121,10 +121,17 @@ export default function CalendarPage() {
     const day = String(date.getDate()).padStart(2, '0');
     const dateString = `${year}-${month}-${day}`;
     
-    const dayAppointments = appointments.filter(apt => apt.date === dateString);
+    const dayAppointments = appointments.filter(apt => {
+      // Ensure we're comparing just the date part, not time/timezone
+      const aptDateOnly = apt.date.split('T')[0]; // Remove time if present
+      return aptDateOnly === dateString;
+    });
     
     if (dateString.includes("2025-07")) {
       console.log(`📅 ${dateString}: ${dayAppointments.length} appointments`);
+      if (dayAppointments.length > 0) {
+        console.log(`   - Appointments: ${dayAppointments.map(apt => apt.client).join(', ')}`);
+      }
     }
     
     return dayAppointments;
