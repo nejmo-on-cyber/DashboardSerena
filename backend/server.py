@@ -30,16 +30,23 @@ TABLE_NAME = os.getenv("TABLE_NAME", "Table 1")
 # Initialize Airtable connections
 airtable = None
 airtable_clients = None
+airtable_services = None
+airtable_employees = None
+
 if AIRTABLE_API_KEY and AIRTABLE_BASE_ID and AIRTABLE_API_KEY != "your_airtable_api_key_here" and AIRTABLE_BASE_ID != "your_airtable_base_id_here":
     airtable = Airtable(AIRTABLE_BASE_ID, TABLE_NAME, api_key=AIRTABLE_API_KEY)
-    # Also connect to Clients table for real client names
+    # Also connect to related tables
     try:
         airtable_clients = Airtable(AIRTABLE_BASE_ID, "Clients", api_key=AIRTABLE_API_KEY)
+        airtable_services = Airtable(AIRTABLE_BASE_ID, "Services", api_key=AIRTABLE_API_KEY)
+        airtable_employees = Airtable(AIRTABLE_BASE_ID, "Employees", api_key=AIRTABLE_API_KEY)
     except Exception as e:
-        print(f"Warning: Could not connect to Clients table: {e}")
+        print(f"Warning: Could not connect to related tables: {e}")
 
-# Cache for client names to avoid repeated API calls
+# Cache for names to avoid repeated API calls
 client_name_cache = {}
+service_name_cache = {}
+employee_name_cache = {}
 
 # Pydantic models
 class Record(BaseModel):
