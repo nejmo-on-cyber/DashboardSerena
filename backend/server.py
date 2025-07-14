@@ -123,6 +123,44 @@ def get_client_name(client_id):
         print(f"Error fetching client {client_id}: {e}")
         return None
 
+def get_service_name(service_id):
+    """Fetch real service name from Services table"""
+    if not airtable_services or not service_id:
+        return None
+        
+    if service_id in service_name_cache:
+        return service_name_cache[service_id]
+    
+    try:
+        service_record = airtable_services.get(service_id)
+        service_name = service_record['fields'].get('Service Name') or service_record['fields'].get('Name', '')
+        service_name_cache[service_id] = service_name
+        return service_name
+    except Exception as e:
+        print(f"Error fetching service {service_id}: {e}")
+        return None
+
+def get_employee_name(employee_id):
+    """Fetch real employee name from Employees table"""
+    if not airtable_employees or not employee_id:
+        return None
+        
+    if employee_id in employee_name_cache:
+        return employee_name_cache[employee_id]
+    
+    try:
+        employee_record = airtable_employees.get(employee_id)
+        fields = employee_record['fields']
+        full_name = fields.get('Full Name', '')
+        first_name = fields.get('First Name', '')
+        last_name = fields.get('Last Name', '')
+        employee_name = full_name or f'{first_name} {last_name}'.strip() or 'Unknown Therapist'
+        employee_name_cache[employee_id] = employee_name
+        return employee_name
+    except Exception as e:
+        print(f"Error fetching employee {employee_id}: {e}")
+        return None
+
 def map_airtable_record(record):
     """Map Airtable record to our Record model"""
     fields = record.get('fields', {})
