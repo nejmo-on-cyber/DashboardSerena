@@ -164,15 +164,17 @@ export default function CalendarPage() {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
+      case "completed":
+        return "text-green-600 bg-green-100 dark:bg-green-900 dark:text-green-300";
+      case "scheduled":
+        return "text-blue-600 bg-blue-100 dark:bg-blue-900 dark:text-blue-300";
+      case "cancelled":
+        return "text-red-600 bg-red-100 dark:bg-red-900 dark:text-red-300";
       case "confirmed":
         return "text-green-600 bg-green-100 dark:bg-green-900 dark:text-green-300";
       case "pending":
         return "text-yellow-600 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-300";
-      case "cancelled":
-        return "text-red-600 bg-red-100 dark:bg-red-900 dark:text-red-300";
-      case "completed":
-        return "text-blue-600 bg-blue-100 dark:bg-blue-900 dark:text-blue-300";
       default:
         return "text-gray-600 bg-gray-100 dark:bg-gray-700 dark:text-gray-300";
     }
