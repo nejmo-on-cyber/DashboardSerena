@@ -479,6 +479,115 @@ async def delete_appointment(appointment_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting appointment: {str(e)}")
 
+@app.get("/api/employee-availability")
+async def get_employee_availability():
+    """Get employee availability and expertise data"""
+    if not airtable_employees:
+        return []
+    
+    try:
+        employees = airtable_employees.get_all()
+        availability_data = []
+        
+        for emp in employees:
+            fields = emp.get('fields', {})
+            
+            # Extract availability days
+            availability_days = []
+            if fields.get('Availability'):
+                if isinstance(fields['Availability'], list):
+                    availability_days = fields['Availability']
+                elif isinstance(fields['Availability'], str):
+                    availability_days = [fields['Availability']]
+            
+            # Extract expertise/specialties
+            expertise = []
+            if fields.get('Expertise'):
+                if isinstance(fields['Expertise'], list):
+                    expertise = fields['Expertise']
+                elif isinstance(fields['Expertise'], str):
+                    expertise = [fields['Expertise']]
+            
+            availability_data.append({
+                "id": emp['id'],
+                "full_name": fields.get('Full Name', ''),
+                "employee_number": fields.get('Employee Number', ''),
+                "availability_days": availability_days,
+                "expertise": expertise,
+                "contact_number": fields.get('Contact Number', ''),
+                "email": fields.get('Email', '')
+            })
+        
+        return availability_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching employee availability: {str(e)}")
+
+@app.get("/api/services-with-duration")
+async def get_services_with_duration():
+    """Get services with duration and pricing information"""
+    if not airtable_services:
+        return []
+    
+    try:
+        services = airtable_services.get_all()
+        services_data = []
+        
+        for service in services:
+            fields = service.get('fields', {})
+            
+            services_data.append({
+                "id": service['id'],
+                "name": fields.get('Service Name', ''),
+                "description": fields.get('Description', ''),
+                "duration": fields.get('Duration (minutes)', 60),  # Default to 60 minutes
+                "price": fields.get('Price', 0),
+                "category": fields.get('Category', '')
+            })
+        
+        return services_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching services: {str(e)}")
+
+@app.get("/api/therapists-by-service/{service_name}")
+async def get_therapists_by_service(service_name: str):
+    """Get therapists who can perform a specific service"""
+    if not airtable_employees:
+        return []
+    
+    try:
+        employees = airtable_employees.get_all()
+        qualified_therapists = []
+        
+        for emp in employees:
+            fields = emp.get('fields', {})
+            expertise = fields.get('Expertise', [])
+            
+            # Check if the service matches any of the therapist's expertise
+            if isinstance(expertise, list):
+                if any(service_name.lower() in exp.lower() for exp in expertise):
+                    qualified_therapists.append({
+                        "id": emp['id'],
+                        "full_name": fields.get('Full Name', ''),
+                        "employee_number": fields.get('Employee Number', ''),
+                        "availability_days": fields.get('Availability', []),
+                        "expertise": expertise,
+                        "contact_number": fields.get('Contact Number', '')
+                    })
+            elif isinstance(expertise, str):
+                if service_name.lower() in expertise.lower():
+                    qualified_therapists.append({
+                        "id": emp['id'],
+                        "full_name": fields.get('Full Name', ''),
+                        "employee_number": fields.get('Employee Number', ''),
+                        "availability_days": fields.get('Availability', []),
+                        "expertise": [expertise],
+                        "contact_number": fields.get('Contact Number', '')
+                    })
+        
+        return qualified_therapists
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching therapists for service: {str(e)}")
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
