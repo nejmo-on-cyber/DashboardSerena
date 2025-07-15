@@ -1732,6 +1732,18 @@ def main():
     tester.test_root_endpoint()
     tester.test_health_check()
     
+    # Test basic employee update functionality first
+    print("\n🔍 BASELINE TEST: Basic Employee Update")
+    print("=" * 80)
+    
+    basic_success, basic_results = tester.test_employee_update_endpoint()
+    
+    # Test with valid expertise values
+    print("\n🔍 VALIDATION TEST: Valid Expertise Updates")
+    print("=" * 80)
+    
+    valid_success, valid_results = tester.test_valid_expertise_updates()
+    
     print("\n🔍 MAIN TEST: SERVICE MAPPING FUNCTIONALITY")
     print("=" * 80)
     
@@ -1744,12 +1756,6 @@ def main():
     # Test with actual service names from the API
     real_service_success, real_service_results = tester.test_employee_update_with_real_service_names()
     
-    # Test basic employee update functionality
-    print("\n🔍 BASELINE TEST: Basic Employee Update")
-    print("=" * 80)
-    
-    basic_success, basic_results = tester.test_employee_update_endpoint()
-    
     # Print final results
     print("\n" + "=" * 80)
     print(f"📊 Testing Results: {tester.tests_passed}/{tester.tests_run} tests completed")
@@ -1757,6 +1763,16 @@ def main():
     # Final verdict on main agent's claims
     print("\n🎯 MAIN AGENT'S SERVICE MAPPING CLAIM VERIFICATION:")
     print("=" * 80)
+    
+    if basic_success:
+        print("✅ BASIC UPDATES: Employee update endpoint working")
+    else:
+        print("❌ BASIC UPDATES: Employee update endpoint failing")
+    
+    if valid_success:
+        print("✅ VALID EXPERTISE: Can update employees with valid Airtable expertise values")
+    else:
+        print("❌ VALID EXPERTISE: Cannot update employees with valid expertise values")
     
     if mapping_success:
         print("✅ SERVICE MAPPING: Working as claimed")
@@ -1768,21 +1784,19 @@ def main():
     else:
         print("❌ REAL SERVICES: Cannot update employees with real service names")
     
-    if basic_success:
-        print("✅ BASIC UPDATES: Employee update endpoint working")
-    else:
-        print("❌ BASIC UPDATES: Employee update endpoint failing")
-    
     # Overall assessment
-    if mapping_success and basic_success:
-        print("\n✅ OVERALL: Main agent's fix appears to be working")
+    if mapping_success and basic_success and valid_success:
+        print("\n✅ OVERALL: Main agent's fix appears to be working completely")
         return 0
-    elif basic_success:
-        print("\n⚠️  OVERALL: Basic functionality works but service mapping may have issues")
+    elif basic_success and valid_success:
+        print("\n⚠️  OVERALL: Basic functionality works but service mapping is not implemented")
         return 1
+    elif basic_success:
+        print("\n⚠️  OVERALL: Basic functionality works but expertise updates have issues")
+        return 2
     else:
         print("\n❌ OVERALL: Employee update functionality has critical issues")
-        return 2
+        return 3
 
 if __name__ == "__main__":
     sys.exit(main())
