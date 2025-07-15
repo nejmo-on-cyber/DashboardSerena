@@ -397,6 +397,152 @@ class BackendAPITester:
         
         return False, {}
 
+    # NEW BOOKING ADMIN ENDPOINTS TESTS
+    def test_employee_availability(self):
+        """Test GET /api/employee-availability endpoint"""
+        success, response_data = self.run_test(
+            "Get Employee Availability",
+            "GET",
+            "api/employee-availability",
+            200
+        )
+        
+        if success and isinstance(response_data, list):
+            print(f"   Found {len(response_data)} employees with availability data")
+            
+            # Validate data structure
+            for emp in response_data[:2]:  # Check first 2 employees
+                required_fields = ['id', 'full_name', 'employee_number', 'availability_days', 'expertise', 'contact_number', 'email']
+                missing_fields = [field for field in required_fields if field not in emp]
+                if missing_fields:
+                    print(f"⚠️  Employee missing fields: {missing_fields}")
+                else:
+                    print(f"✅ Employee {emp.get('full_name', 'Unknown')} has all required fields")
+                    print(f"   Availability: {emp.get('availability_days', [])}")
+                    print(f"   Expertise: {emp.get('expertise', [])}")
+        
+        return success, response_data
+
+    def test_services_with_duration(self):
+        """Test GET /api/services-with-duration endpoint"""
+        success, response_data = self.run_test(
+            "Get Services with Duration",
+            "GET",
+            "api/services-with-duration",
+            200
+        )
+        
+        if success and isinstance(response_data, list):
+            print(f"   Found {len(response_data)} services with duration data")
+            
+            # Validate data structure
+            for service in response_data[:2]:  # Check first 2 services
+                required_fields = ['id', 'name', 'description', 'duration', 'price', 'category']
+                missing_fields = [field for field in required_fields if field not in service]
+                if missing_fields:
+                    print(f"⚠️  Service missing fields: {missing_fields}")
+                else:
+                    print(f"✅ Service {service.get('name', 'Unknown')} has all required fields")
+                    print(f"   Duration: {service.get('duration', 0)} minutes")
+                    print(f"   Price: ${service.get('price', 0)}")
+        
+        return success, response_data
+
+    def test_therapists_by_service(self):
+        """Test GET /api/therapists-by-service/{service_name} endpoint"""
+        # Test with common service names
+        test_services = ["Haircut", "Massage", "Facial", "Coloring", "Styling"]
+        results = {}
+        
+        for service_name in test_services:
+            success, response_data = self.run_test(
+                f"Get Therapists for {service_name}",
+                "GET",
+                f"api/therapists-by-service/{service_name}",
+                200
+            )
+            
+            results[service_name] = {
+                "success": success,
+                "therapist_count": len(response_data) if isinstance(response_data, list) else 0,
+                "data": response_data
+            }
+            
+            if success and isinstance(response_data, list):
+                print(f"   Found {len(response_data)} therapists for {service_name}")
+                
+                # Validate therapist data structure
+                for therapist in response_data[:1]:  # Check first therapist
+                    required_fields = ['id', 'full_name', 'employee_number', 'availability_days', 'expertise', 'contact_number']
+                    missing_fields = [field for field in required_fields if field not in therapist]
+                    if missing_fields:
+                        print(f"⚠️  Therapist missing fields: {missing_fields}")
+                    else:
+                        print(f"✅ Therapist {therapist.get('full_name', 'Unknown')} qualified for {service_name}")
+                        print(f"   Expertise: {therapist.get('expertise', [])}")
+            else:
+                print(f"   No therapists found for {service_name}")
+        
+        return True, results
+
+    def test_therapists_by_invalid_service(self):
+        """Test therapists endpoint with invalid/non-existent service"""
+        invalid_services = ["NonExistentService", "InvalidService123", ""]
+        
+        for invalid_service in invalid_services:
+            success, response_data = self.run_test(
+                f"Get Therapists for Invalid Service: '{invalid_service}'",
+                "GET",
+                f"api/therapists-by-service/{invalid_service}",
+                200  # Should return 200 with empty list
+            )
+            
+            if success and isinstance(response_data, list):
+                if len(response_data) == 0:
+                    print(f"✅ Correctly returned empty list for invalid service: '{invalid_service}'")
+                else:
+                    print(f"⚠️  Unexpected therapists found for invalid service: '{invalid_service}'")
+        
+        return True, {}
+
+    def test_booking_admin_data_consistency(self):
+        """Test data consistency across booking admin endpoints"""
+        print("\n🔍 Testing data consistency across booking admin endpoints...")
+        
+        # Get data from all endpoints
+        emp_success, emp_data = self.test_employee_availability()
+        svc_success, svc_data = self.test_services_with_duration()
+        
+        if not (emp_success and svc_success):
+            print("❌ Cannot test consistency - endpoint failures")
+            return False, {}
+        
+        # Test service filtering logic
+        if isinstance(emp_data, list) and isinstance(svc_data, list):
+            print(f"   Testing with {len(emp_data)} employees and {len(svc_data)} services")
+            
+            # Check if any employee has expertise matching available services
+            service_names = [svc.get('name', '') for svc in svc_data]
+            matched_services = []
+            
+            for service_name in service_names[:3]:  # Test first 3 services
+                if service_name:
+                    _, therapist_results = self.run_test(
+                        f"Consistency Check: {service_name}",
+                        "GET",
+                        f"api/therapists-by-service/{service_name}",
+                        200
+                    )
+                    
+                    if isinstance(therapist_results, list) and len(therapist_results) > 0:
+                        matched_services.append(service_name)
+                        print(f"✅ Service '{service_name}' has {len(therapist_results)} qualified therapists")
+            
+            print(f"   {len(matched_services)} services have qualified therapists")
+            return True, {"matched_services": matched_services}
+        
+        return False, {}
+
 def main():
     print("🚀 Starting Backend API Tests - Complete Deletion Focus")
     print("=" * 60)
