@@ -275,13 +275,16 @@ test_plan:
     implemented: true
     working: false
     file: "/app/backend/server.py"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
     needs_retesting: false
     status_history:
       - working: false
         agent: "testing"
         comment: "❌ CRITICAL ISSUE IDENTIFIED: PUT /api/employees/{id} endpoint returns 500 Internal Server Error due to Airtable field schema mismatch. Root cause: 1) 'Full Name' is a computed field in Airtable and cannot be updated directly (422 INVALID_VALUE_FOR_COLUMN error). 2) Field names like 'Employee Number', 'Email', 'Status', 'Expertise' don't exist in actual Airtable schema (422 UNKNOWN_FIELD_NAME error). ✅ Working fields: contact_number, availability_days. ❌ Failing fields: full_name, employee_number, email, status, expertise. Backend code field mapping doesn't match actual Airtable table structure. Tested with employee ID recE5UU1kgTPCBVcZ - partial updates work but full employee updates fail."
+      - working: false
+        agent: "testing"
+        comment: "❌ MAIN AGENT'S FIX PARTIALLY FAILED: Tested the updated employee endpoint after main agent's fix. ✅ PARTIAL SUCCESS: Basic fields (contact_number, availability_days) now work correctly and update successfully in Airtable. ❌ REMAINING ISSUES: 1) 'status' field still causes 400 error (UNKNOWN_FIELD_NAME - field doesn't exist in Airtable schema). 2) 'expertise' field causes 500 error (INVALID_MULTIPLE_CHOICE_OPTIONS - insufficient permissions to create new select options like 'Facial'). 3) Try-catch blocks in code don't prevent errors from reaching Airtable API call. ✅ CONFIRMED WORKING: contact_number='123-456-7890' and availability_days=['Monday','Tuesday','Wednesday'] update successfully. ❌ CONFIRMED FAILING: expertise=['Massage','Facial'] and status='Active' still cause errors. Main agent needs to refine fix to only use confirmed working fields and improve error handling."
 
 agent_communication:
   - agent: "testing"
