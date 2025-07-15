@@ -699,82 +699,93 @@ export default function EmployeeManagementPage() {
 
           {/* Add Employee Form */}
           {showAddForm && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                <div className="p-6 border-b border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-900">Add New Employee</h3>
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="p-8 border-b border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-2xl font-bold text-gray-900 tracking-tight">Add New Team Member</h3>
+                    <button
+                      onClick={() => {
+                        setShowAddForm(false);
+                        resetForm();
+                      }}
+                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    >
+                      <X className="w-6 h-6 text-gray-500" />
+                    </button>
+                  </div>
                 </div>
                 
-                <div className="p-6 space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-8 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">
                         Full Name *
                       </label>
                       <input
                         type="text"
                         value={formData.full_name}
                         onChange={(e) => setFormData(prev => ({...prev, full_name: e.target.value}))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all duration-200"
                         placeholder="Enter full name"
                       />
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">
                         Employee Number *
                       </label>
                       <input
                         type="text"
                         value={formData.employee_number}
                         onChange={(e) => setFormData(prev => ({...prev, employee_number: e.target.value}))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all duration-200"
                         placeholder="e.g., EMP001"
                       />
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">
                         Email
                       </label>
                       <input
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData(prev => ({...prev, email: e.target.value}))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all duration-200"
                         placeholder="employee@company.com"
                       />
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">
                         Contact Number
                       </label>
                       <input
                         type="text"
                         value={formData.contact_number}
                         onChange={(e) => setFormData(prev => ({...prev, contact_number: e.target.value}))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all duration-200"
                         placeholder="+1 (555) 123-4567"
                       />
                     </div>
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-gray-900 mb-3">
                       Availability Days
                     </label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-4 md:grid-cols-7 gap-2">
                       {daysOfWeek.map((day) => (
                         <button
                           key={day}
                           onClick={() => toggleDay(day)}
-                          className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
+                          className={`px-3 py-2 text-sm rounded-xl border transition-all duration-200 ${
                             formData.availability_days.includes(day)
-                              ? 'bg-purple-600 text-white border-purple-600'
-                              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                              ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                              : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                           }`}
                         >
                           {day.slice(0, 3)}
@@ -784,18 +795,18 @@ export default function EmployeeManagementPage() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-gray-900 mb-3">
                       Services & Expertise
                     </label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-40 overflow-y-auto">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-40 overflow-y-auto">
                       {services.map((service) => (
                         <button
                           key={service.id}
                           onClick={() => toggleService(service.name)}
-                          className={`px-3 py-2 text-sm rounded-lg border transition-colors text-left ${
+                          className={`px-4 py-3 text-sm rounded-xl border transition-all duration-200 text-left ${
                             formData.expertise.includes(service.name)
-                              ? 'bg-blue-600 text-white border-blue-600'
-                              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                              ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                              : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                           }`}
                         >
                           {service.name}
@@ -804,27 +815,27 @@ export default function EmployeeManagementPage() {
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">
                         Start Date
                       </label>
                       <input
                         type="date"
                         value={formData.start_date}
                         onChange={(e) => setFormData(prev => ({...prev, start_date: e.target.value}))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all duration-200"
                       />
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">
                         Status
                       </label>
                       <select
                         value={formData.status}
                         onChange={(e) => setFormData(prev => ({...prev, status: e.target.value}))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all duration-200"
                       >
                         <option value="Active">Active</option>
                         <option value="Inactive">Inactive</option>
@@ -834,35 +845,35 @@ export default function EmployeeManagementPage() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Profile Picture URL (Optional)
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Profile Picture URL
                     </label>
                     <input
                       type="url"
                       value={formData.profile_picture}
                       onChange={(e) => setFormData(prev => ({...prev, profile_picture: e.target.value}))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all duration-200"
                       placeholder="https://example.com/photo.jpg"
                     />
                   </div>
                 </div>
                 
-                <div className="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                <div className="p-8 border-t border-gray-100 flex justify-end space-x-4">
                   <button
                     onClick={() => {
                       setShowAddForm(false);
                       resetForm();
                     }}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200"
+                    className="px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors duration-200"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleCreateEmployee}
                     disabled={loading}
-                    className="px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 disabled:opacity-50"
+                    className="px-6 py-3 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-colors duration-200"
                   >
-                    {loading ? 'Creating...' : 'Create Employee'}
+                    {loading ? 'Creating...' : 'Create Team Member'}
                   </button>
                 </div>
               </div>
