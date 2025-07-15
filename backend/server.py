@@ -764,7 +764,7 @@ async def get_analytics(range: str = "month"):
             employee_ids = fields.get('Stylist', [])
             if isinstance(employee_ids, list) and len(employee_ids) > 0:
                 employee_id = employee_ids[0]
-                employee_name = f"Employee {employee_id[-4:]}" if employee_id else "Unknown Employee"
+                employee_name = f"Employee {str(employee_id)[-4:]}" if employee_id else "Unknown Employee"
                 
                 if employee_name not in employee_stats:
                     employee_stats[employee_name] = {'appointments': 0, 'revenue': 0, 'utilization': 0}
