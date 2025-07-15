@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
   MessageCircle,
@@ -18,47 +18,18 @@ import {
   ChevronRight,
   CalendarDays,
   Clock,
-  User,
-  Plus,
-  Edit,
   UserPlus,
 } from "lucide-react";
-import EmployeeManagement from "./EmployeeManagement";
-
-interface Employee {
-  id: string;
-  full_name: string;
-  employee_number: string;
-  email: string;
-  contact_number: string;
-  availability_days: string[];
-  expertise: string[];
-  profile_picture: string;
-  start_date: string;
-  status: string;
-}
 
 interface SidebarProps {
   darkMode: boolean;
 }
-
-const placeholderImages = [
-  "https://images.unsplash.com/photo-1494790108755-2616b5e7c8b0?w=40&h=40&fit=crop&crop=face",
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face",
-  "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=40&h=40&fit=crop&crop=face",
-  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face",
-  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=40&h=40&fit=crop&crop=face"
-];
 
 export default function Sidebar({ darkMode }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [showEmployeeManagement, setShowEmployeeManagement] = useState(false);
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
-  const [loading, setLoading] = useState(false);
 
   const navigation = [
     { name: "Dashboard", href: "/", icon: Home },
@@ -80,41 +51,6 @@ export default function Sidebar({ darkMode }: SidebarProps) {
       return pathname === "/";
     }
     return pathname.startsWith(href);
-  };
-
-  const fetchEmployees = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/employee-availability');
-      if (!response.ok) throw new Error('Failed to fetch employees');
-      const data = await response.json();
-      setEmployees(data);
-    } catch (error) {
-      console.error('Error fetching employees:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
-
-  const getRandomPlaceholder = () => {
-    return placeholderImages[Math.floor(Math.random() * placeholderImages.length)];
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Active':
-        return 'bg-green-100 text-green-800';
-      case 'Inactive':
-        return 'bg-red-100 text-red-800';
-      case 'On Leave':
-        return 'bg-yellow-100 text-yellow-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
   };
 
   return (
@@ -188,94 +124,6 @@ export default function Sidebar({ darkMode }: SidebarProps) {
             })}
           </nav>
 
-          {/* Employee Section */}
-          <div className="px-4 py-4 border-t border-gray-200">
-            <div className="flex items-center justify-between mb-3">
-              {!isCollapsed && (
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-                  Team Members
-                </h3>
-              )}
-              <button
-                onClick={() => setShowEmployeeManagement(true)}
-                className="p-1 rounded-lg hover:bg-gray-100 text-gray-500"
-                title="Manage Employees"
-              >
-                {isCollapsed ? <UserPlus className="w-5 h-5" /> : <Settings className="w-4 h-4" />}
-              </button>
-            </div>
-
-            {loading ? (
-              <div className="flex items-center justify-center py-4">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
-              </div>
-            ) : (
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {employees.slice(0, 6).map((employee) => (
-                  <div
-                    key={employee.id}
-                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-                    onClick={() => {
-                      setSelectedEmployee(employee);
-                      setShowEmployeeManagement(true);
-                    }}
-                  >
-                    <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
-                      {employee.profile_picture ? (
-                        <img 
-                          src={employee.profile_picture} 
-                          alt={employee.full_name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <img 
-                          src={getRandomPlaceholder()} 
-                          alt={employee.full_name}
-                          className="w-full h-full object-cover"
-                        />
-                      )}
-                    </div>
-                    {!isCollapsed && (
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">
-                          {employee.full_name}
-                        </p>
-                        <div className="flex items-center space-x-2">
-                          <span className={`inline-block px-2 py-1 text-xs rounded-full ${getStatusColor(employee.status)}`}>
-                            {employee.status}
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            #{employee.employee_number}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-                
-                {employees.length > 6 && !isCollapsed && (
-                  <button
-                    onClick={() => setShowEmployeeManagement(true)}
-                    className="w-full text-left px-2 py-1 text-sm text-purple-600 hover:text-purple-700 transition-colors"
-                  >
-                    +{employees.length - 6} more employees
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* Add Employee Button */}
-            {!isCollapsed && (
-              <button
-                onClick={() => setShowEmployeeManagement(true)}
-                className="w-full mt-3 flex items-center space-x-2 px-3 py-2 text-sm text-purple-600 border border-purple-200 rounded-lg hover:bg-purple-50 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add Employee</span>
-              </button>
-            )}
-          </div>
-
           {/* Footer */}
           <div className="p-4 border-t border-gray-200">
             <div className="flex items-center text-sm text-gray-500">
@@ -296,17 +144,6 @@ export default function Sidebar({ darkMode }: SidebarProps) {
       >
         <Menu className="w-5 h-5" />
       </button>
-
-      {/* Employee Management Modal */}
-      <EmployeeManagement
-        isOpen={showEmployeeManagement}
-        onClose={() => {
-          setShowEmployeeManagement(false);
-          setSelectedEmployee(null);
-        }}
-        selectedEmployee={selectedEmployee}
-        onEmployeeUpdate={fetchEmployees}
-      />
     </>
   );
 }
