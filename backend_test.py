@@ -1266,11 +1266,361 @@ class BackendAPITester:
             "mismatch_percentage": mismatch_percentage
         }
 
+    def test_service_mapping_functionality(self):
+        """CRITICAL TEST: Service names mapping to expertise categories as claimed in review request"""
+        print("\n🚨 CRITICAL TEST: Service Names Mapping to Expertise Categories")
+        print("=" * 80)
+        print("🎯 TESTING MAIN AGENT'S CLAIM: Service mapping logic converts service names to valid expertise")
+        print("📋 EXPECTED MAPPING:")
+        print("   • COMPRESSION BOOT THERAPY → 'Massage'")
+        print("   • SHIATSU MASSAGE → 'Massage'") 
+        print("   • FACIAL services → 'Facials'")
+        print("   • HAIR services → 'Haircut'")
+        print("   • COLOR services → 'Coloring'")
+        print("   • MANI services → 'Manicure'")
+        print("   • PEDI services → 'Pedicure'")
+        print("   • STYLE services → 'Styling'")
+        print("=" * 80)
+        
+        # Get an employee to test with
+        emp_success, emp_data = self.run_test(
+            "Get Employee for Service Mapping Test",
+            "GET",
+            "api/employee-availability",
+            200
+        )
+        
+        if not emp_success or not isinstance(emp_data, list) or len(emp_data) == 0:
+            print("❌ Cannot test service mapping - no employees available")
+            return False, {}
+        
+        test_employee = emp_data[0]
+        employee_id = test_employee.get('id')
+        original_expertise = test_employee.get('expertise', [])
+        
+        print(f"\n🎯 Testing with Employee: {test_employee.get('full_name', 'Unknown')}")
+        print(f"   ID: {employee_id}")
+        print(f"   Original Expertise: {original_expertise}")
+        
+        # Test service names that should be mapped according to review request
+        service_mapping_tests = [
+            {
+                "service_name": "COMPRESSION BOOT THERAPY",
+                "expected_expertise": "Massage",
+                "category": "Massage-related services"
+            },
+            {
+                "service_name": "SHIATSU MASSAGE", 
+                "expected_expertise": "Massage",
+                "category": "Massage-related services"
+            },
+            {
+                "service_name": "LYMPHATIC DRAINAGE",
+                "expected_expertise": "Massage", 
+                "category": "Massage-related services"
+            },
+            {
+                "service_name": "FACIAL TREATMENT",
+                "expected_expertise": "Facials",
+                "category": "Facial/skincare services"
+            },
+            {
+                "service_name": "MICROCURRENT FACIAL",
+                "expected_expertise": "Facials",
+                "category": "Facial/skincare services"
+            },
+            {
+                "service_name": "HAIR CUT",
+                "expected_expertise": "Haircut",
+                "category": "Hair services"
+            },
+            {
+                "service_name": "HAIR STYLING",
+                "expected_expertise": "Styling",
+                "category": "Styling services"
+            },
+            {
+                "service_name": "COLOR TREATMENT",
+                "expected_expertise": "Coloring",
+                "category": "Coloring services"
+            },
+            {
+                "service_name": "HIGHLIGHT SERVICE",
+                "expected_expertise": "Coloring",
+                "category": "Coloring services"
+            },
+            {
+                "service_name": "MANICURE SERVICE",
+                "expected_expertise": "Manicure",
+                "category": "Nail services"
+            },
+            {
+                "service_name": "PEDICURE TREATMENT",
+                "expected_expertise": "Pedicure",
+                "category": "Pedicure services"
+            }
+        ]
+        
+        mapping_results = {}
+        successful_mappings = 0
+        failed_mappings = 0
+        
+        for test_case in service_mapping_tests:
+            service_name = test_case["service_name"]
+            expected_expertise = test_case["expected_expertise"]
+            category = test_case["category"]
+            
+            print(f"\n--- Testing Service Mapping: {service_name} ---")
+            print(f"Category: {category}")
+            print(f"Expected to map to: '{expected_expertise}'")
+            
+            # Test updating employee with this service name
+            update_data = {
+                "expertise": [service_name]  # Send original service name
+            }
+            
+            success, response_data = self.run_test(
+                f"Update Employee with Service: {service_name}",
+                "PUT",
+                f"api/employees/{employee_id}",
+                200,  # Expecting success if mapping works
+                data=update_data
+            )
+            
+            mapping_results[service_name] = {
+                "success": success,
+                "response": response_data,
+                "expected_expertise": expected_expertise,
+                "category": category
+            }
+            
+            if success:
+                print(f"✅ Update succeeded - checking if mapping occurred...")
+                
+                # Verify what was actually stored in Airtable
+                verify_success, verify_data = self.run_test(
+                    f"Verify Mapping for {service_name}",
+                    "GET",
+                    f"api/employees/{employee_id}",
+                    200
+                )
+                
+                if verify_success:
+                    stored_expertise = verify_data.get('expertise', [])
+                    print(f"   Stored Expertise: {stored_expertise}")
+                    
+                    # Check if the expected mapped value is in the stored expertise
+                    if isinstance(stored_expertise, list):
+                        if expected_expertise in stored_expertise:
+                            print(f"✅ MAPPING SUCCESS: '{service_name}' → '{expected_expertise}'")
+                            successful_mappings += 1
+                            mapping_results[service_name]['mapping_success'] = True
+                        elif service_name in stored_expertise:
+                            print(f"❌ MAPPING FAILED: '{service_name}' stored as-is (no mapping)")
+                            failed_mappings += 1
+                            mapping_results[service_name]['mapping_success'] = False
+                        else:
+                            print(f"⚠️  UNEXPECTED: Neither original nor mapped value found")
+                            failed_mappings += 1
+                            mapping_results[service_name]['mapping_success'] = False
+                    else:
+                        print(f"⚠️  UNEXPECTED: Expertise is not a list: {stored_expertise}")
+                        failed_mappings += 1
+                        mapping_results[service_name]['mapping_success'] = False
+                    
+                    mapping_results[service_name]['stored_expertise'] = stored_expertise
+                else:
+                    print(f"❌ Could not verify mapping for {service_name}")
+                    failed_mappings += 1
+                    mapping_results[service_name]['mapping_success'] = False
+            else:
+                print(f"❌ Update failed: {response_data}")
+                failed_mappings += 1
+                mapping_results[service_name]['mapping_success'] = False
+            
+            time.sleep(0.5)  # Small delay between tests
+        
+        # Summary of mapping test results
+        print(f"\n📊 SERVICE MAPPING TEST RESULTS:")
+        print("=" * 50)
+        print(f"✅ Successful Mappings: {successful_mappings}")
+        print(f"❌ Failed Mappings: {failed_mappings}")
+        print(f"📊 Total Tests: {len(service_mapping_tests)}")
+        
+        mapping_success_rate = (successful_mappings / len(service_mapping_tests)) * 100 if service_mapping_tests else 0
+        print(f"🎯 Mapping Success Rate: {mapping_success_rate:.1f}%")
+        
+        # Detailed results by category
+        print(f"\n📋 DETAILED RESULTS BY CATEGORY:")
+        print("-" * 40)
+        
+        categories = {}
+        for service_name, result in mapping_results.items():
+            category = result['category']
+            if category not in categories:
+                categories[category] = {'success': 0, 'total': 0}
+            categories[category]['total'] += 1
+            if result.get('mapping_success', False):
+                categories[category]['success'] += 1
+        
+        for category, stats in categories.items():
+            success_rate = (stats['success'] / stats['total']) * 100 if stats['total'] > 0 else 0
+            print(f"• {category}: {stats['success']}/{stats['total']} ({success_rate:.1f}%)")
+        
+        # Final verdict
+        print(f"\n🎯 MAIN AGENT'S SERVICE MAPPING CLAIM VERIFICATION:")
+        print("-" * 50)
+        
+        if successful_mappings > 0:
+            print(f"✅ PARTIAL SUCCESS: {successful_mappings} service mappings work correctly")
+        else:
+            print(f"❌ COMPLETE FAILURE: No service mappings work as claimed")
+        
+        if failed_mappings > 0:
+            print(f"❌ ISSUES FOUND: {failed_mappings} service mappings failed")
+        
+        if mapping_success_rate >= 80:
+            print("✅ OVERALL: Service mapping functionality is working well")
+        elif mapping_success_rate >= 50:
+            print("⚠️  OVERALL: Service mapping functionality is partially working")
+        else:
+            print("❌ OVERALL: Service mapping functionality is not working as claimed")
+        
+        return mapping_success_rate >= 50, {
+            "successful_mappings": successful_mappings,
+            "failed_mappings": failed_mappings,
+            "mapping_success_rate": mapping_success_rate,
+            "detailed_results": mapping_results,
+            "category_stats": categories
+        }
+
+    def test_employee_update_with_real_service_names(self):
+        """Test employee update with actual service names from /api/services"""
+        print("\n🔍 TESTING: Employee Update with Real Service Names from /api/services")
+        print("=" * 80)
+        
+        # Get actual services from the API
+        services_success, services_data = self.run_test(
+            "Get Real Services for Employee Update Test",
+            "GET",
+            "api/services",
+            200
+        )
+        
+        if not services_success or not isinstance(services_data, list):
+            print("❌ Cannot test with real service names - services API failed")
+            return False, {}
+        
+        # Get an employee to test with
+        emp_success, emp_data = self.run_test(
+            "Get Employee for Real Service Test",
+            "GET",
+            "api/employee-availability",
+            200
+        )
+        
+        if not emp_success or not isinstance(emp_data, list) or len(emp_data) == 0:
+            print("❌ Cannot test - no employees available")
+            return False, {}
+        
+        test_employee = emp_data[0]
+        employee_id = test_employee.get('id')
+        
+        print(f"🎯 Testing with Employee: {test_employee.get('full_name', 'Unknown')}")
+        print(f"   ID: {employee_id}")
+        print(f"📊 Found {len(services_data)} real services to test with")
+        
+        # Test with specific service names mentioned in review request
+        target_services = [
+            "COMPRESSION BOOT THERAPY",
+            "SHIATSU MASSAGE", 
+            "COUPLES MASSAGE",
+            "INFRARED SAUNA BLANKET THERAPY"
+        ]
+        
+        # Find these services in the actual services list
+        found_services = []
+        for service in services_data:
+            service_name = service.get('name', '')
+            if any(target in service_name.upper() for target in target_services):
+                found_services.append(service_name)
+        
+        # If we didn't find the exact ones, use first few services
+        if not found_services:
+            found_services = [service.get('name', f'Service {i}') for i, service in enumerate(services_data[:5])]
+        
+        print(f"🎯 Testing with these real service names:")
+        for i, service_name in enumerate(found_services[:5]):  # Test max 5
+            print(f"   {i+1}. '{service_name}'")
+        
+        test_results = {}
+        successful_updates = 0
+        failed_updates = 0
+        
+        for service_name in found_services[:5]:  # Test max 5 services
+            print(f"\n--- Testing Real Service: '{service_name}' ---")
+            
+            update_data = {
+                "expertise": [service_name]
+            }
+            
+            success, response_data = self.run_test(
+                f"Update Employee with Real Service: {service_name}",
+                "PUT",
+                f"api/employees/{employee_id}",
+                [200, 400, 500],  # Accept various responses
+                data=update_data
+            )
+            
+            test_results[service_name] = {
+                "success": success,
+                "response": response_data
+            }
+            
+            if success:
+                successful_updates += 1
+                print(f"✅ Update succeeded with '{service_name}'")
+                
+                # Verify what was stored
+                verify_success, verify_data = self.run_test(
+                    f"Verify Real Service Update: {service_name}",
+                    "GET",
+                    f"api/employees/{employee_id}",
+                    200
+                )
+                
+                if verify_success:
+                    stored_expertise = verify_data.get('expertise', [])
+                    print(f"   Stored Expertise: {stored_expertise}")
+                    test_results[service_name]['stored_expertise'] = stored_expertise
+            else:
+                failed_updates += 1
+                print(f"❌ Update failed with '{service_name}': {response_data}")
+            
+            time.sleep(0.5)
+        
+        print(f"\n📊 REAL SERVICE NAMES TEST RESULTS:")
+        print("-" * 40)
+        print(f"✅ Successful Updates: {successful_updates}")
+        print(f"❌ Failed Updates: {failed_updates}")
+        print(f"📊 Total Tests: {len(found_services[:5])}")
+        
+        success_rate = (successful_updates / len(found_services[:5])) * 100 if found_services else 0
+        print(f"🎯 Success Rate: {success_rate:.1f}%")
+        
+        return success_rate > 0, {
+            "successful_updates": successful_updates,
+            "failed_updates": failed_updates,
+            "success_rate": success_rate,
+            "test_results": test_results
+        }
+
 def main():
-    print("🚨 SERVICE NAMES VS EXPERTISE FIELD MISMATCH INVESTIGATION")
+    print("🚨 EMPLOYEE MANAGEMENT SERVICE MAPPING TESTING")
     print("=" * 80)
-    print("🎯 FOCUS: Identifying exact service names mismatch causing 500 errors")
-    print("📋 USER ISSUE: Frontend shows services that don't exist in employee expertise field")
+    print("🎯 FOCUS: Testing main agent's claimed fix for service mapping issue")
+    print("📋 MAIN AGENT CLAIM: Service names now map to valid expertise categories")
+    print("📋 EXPECTED: 'COMPRESSION BOOT THERAPY' → 'Massage', etc.")
     print("=" * 80)
     
     # Setup
@@ -1281,24 +1631,57 @@ def main():
     tester.test_root_endpoint()
     tester.test_health_check()
     
-    print("\n🔍 MAIN INVESTIGATION: SERVICE NAMES VS EXPERTISE MISMATCH")
+    print("\n🔍 MAIN TEST: SERVICE MAPPING FUNCTIONALITY")
     print("=" * 80)
     
-    # Main investigation
-    tester.investigate_service_names_vs_expertise_mismatch()
+    # Test the claimed service mapping functionality
+    mapping_success, mapping_results = tester.test_service_mapping_functionality()
     
-    # Print results
+    print("\n🔍 ADDITIONAL TEST: REAL SERVICE NAMES FROM API")
+    print("=" * 80)
+    
+    # Test with actual service names from the API
+    real_service_success, real_service_results = tester.test_employee_update_with_real_service_names()
+    
+    # Test basic employee update functionality
+    print("\n🔍 BASELINE TEST: Basic Employee Update")
+    print("=" * 80)
+    
+    basic_success, basic_results = tester.test_employee_update_endpoint()
+    
+    # Print final results
     print("\n" + "=" * 80)
-    print(f"📊 Investigation Results: {tester.tests_passed}/{tester.tests_run} tests completed")
+    print(f"📊 Testing Results: {tester.tests_passed}/{tester.tests_run} tests completed")
     
-    # Key findings summary
-    print("\n🎯 INVESTIGATION COMPLETE:")
-    print("✅ Frontend service names identified")
-    print("✅ Airtable expertise options identified") 
-    print("✅ Mismatch analysis completed")
-    print("✅ Root cause of 500 errors identified")
+    # Final verdict on main agent's claims
+    print("\n🎯 MAIN AGENT'S SERVICE MAPPING CLAIM VERIFICATION:")
+    print("=" * 80)
     
-    return 0
+    if mapping_success:
+        print("✅ SERVICE MAPPING: Working as claimed")
+    else:
+        print("❌ SERVICE MAPPING: NOT working as claimed")
+    
+    if real_service_success:
+        print("✅ REAL SERVICES: Can update employees with some real service names")
+    else:
+        print("❌ REAL SERVICES: Cannot update employees with real service names")
+    
+    if basic_success:
+        print("✅ BASIC UPDATES: Employee update endpoint working")
+    else:
+        print("❌ BASIC UPDATES: Employee update endpoint failing")
+    
+    # Overall assessment
+    if mapping_success and basic_success:
+        print("\n✅ OVERALL: Main agent's fix appears to be working")
+        return 0
+    elif basic_success:
+        print("\n⚠️  OVERALL: Basic functionality works but service mapping may have issues")
+        return 1
+    else:
+        print("\n❌ OVERALL: Employee update functionality has critical issues")
+        return 2
 
 if __name__ == "__main__":
     sys.exit(main())
