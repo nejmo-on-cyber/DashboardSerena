@@ -212,8 +212,14 @@ export default function EmployeeManagementPage() {
     }));
   };
 
-  const getRandomPlaceholder = () => {
-    return placeholderImages[Math.floor(Math.random() * placeholderImages.length)];
+  const getConsistentPlaceholder = (employeeId: string) => {
+    // Use employee ID to generate consistent placeholder
+    const hash = employeeId.split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a;
+    }, 0);
+    const index = Math.abs(hash) % placeholderImages.length;
+    return placeholderImages[index];
   };
 
   const getStatusColor = (status: string) => {
