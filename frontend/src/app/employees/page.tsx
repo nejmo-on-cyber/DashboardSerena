@@ -493,7 +493,7 @@ export default function EmployeeManagementPage() {
                           />
                         ) : (
                           <img 
-                            src={getRandomPlaceholder()} 
+                            src={getConsistentPlaceholder(editingEmployee.id)} 
                             alt={editingEmployee.full_name}
                             className="w-full h-full object-cover"
                           />
