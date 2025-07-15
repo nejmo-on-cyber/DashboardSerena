@@ -544,8 +544,8 @@ class BackendAPITester:
         return False, {}
 
     def test_employee_update_endpoint(self):
-        """Test PUT /api/employees/{id} endpoint - DEBUGGING FOCUS"""
-        print("\n🔍 DEBUGGING: Testing Employee Update Endpoint...")
+        """Test PUT /api/employees/{id} endpoint - SIMPLIFIED SAFE FIELDS ONLY"""
+        print("\n🔍 TESTING: Simplified Employee Update Endpoint (Safe Fields Only)...")
         
         # First get available employees to find a valid ID
         emp_success, emp_data = self.run_test(
@@ -563,48 +563,47 @@ class BackendAPITester:
         test_employee = emp_data[0]
         employee_id = test_employee.get('id')
         original_name = test_employee.get('full_name', 'Unknown')
+        original_contact = test_employee.get('contact_number', 'Unknown')
+        original_availability = test_employee.get('availability_days', [])
         
         print(f"   Testing with Employee ID: {employee_id}")
         print(f"   Original Name: {original_name}")
+        print(f"   Original Contact: {original_contact}")
+        print(f"   Original Availability: {original_availability}")
         
-        # Test data as provided in the review request
-        update_data = {
-            "full_name": "Test Employee Updated",
-            "employee_number": "EMP001",
-            "email": "test@example.com",
-            "contact_number": "123-456-7890",
-            "availability_days": ["Monday", "Tuesday"],
-            "expertise": ["Massage", "Facial"],
-            "status": "Active"
+        # Test data with ONLY SAFE FIELDS as specified in review request
+        safe_update_data = {
+            "contact_number": "555-123-4567",
+            "availability_days": ["Monday", "Wednesday", "Friday"]
         }
         
-        print(f"   Update Data: {json.dumps(update_data, indent=2)}")
+        print(f"   Safe Update Data: {json.dumps(safe_update_data, indent=2)}")
         
-        # Test the PUT endpoint
+        # Test the PUT endpoint with safe fields only
         success, response_data = self.run_test(
-            f"Update Employee {employee_id}",
+            f"Update Employee {employee_id} (Safe Fields Only)",
             "PUT",
             f"api/employees/{employee_id}",
-            200,  # Expecting success
-            data=update_data
+            200,  # Expecting success now
+            data=safe_update_data
         )
         
         if not success:
-            print("❌ Employee update failed - this is the issue!")
+            print("❌ Employee update with safe fields failed!")
             print(f"   Response: {response_data}")
             
             # Try to get more detailed error info
             try:
                 import requests
                 url = f"{self.base_url}/api/employees/{employee_id}"
-                response = requests.put(url, json=update_data, timeout=10)
+                response = requests.put(url, json=safe_update_data, timeout=10)
                 print(f"   Detailed Error - Status: {response.status_code}")
                 print(f"   Detailed Error - Text: {response.text}")
                 print(f"   Detailed Error - Headers: {dict(response.headers)}")
             except Exception as e:
                 print(f"   Error getting detailed info: {e}")
         else:
-            print("✅ Employee update succeeded!")
+            print("✅ Employee update with safe fields succeeded!")
             print(f"   Response: {response_data}")
             
             # Verify the update by getting the employee again
@@ -617,10 +616,56 @@ class BackendAPITester:
             
             if verify_success:
                 print("✅ Employee data retrieved after update")
-                print(f"   Updated Name: {verify_data.get('full_name', 'Unknown')}")
-                print(f"   Updated Email: {verify_data.get('email', 'Unknown')}")
+                updated_contact = verify_data.get('contact_number', 'Unknown')
+                updated_availability = verify_data.get('availability_days', [])
+                
+                print(f"   Updated Contact: {updated_contact}")
+                print(f"   Updated Availability: {updated_availability}")
+                
+                # Check if changes were actually saved
+                if updated_contact == "555-123-4567":
+                    print("✅ Contact number update confirmed in Airtable")
+                else:
+                    print(f"⚠️  Contact number not updated: expected '555-123-4567', got '{updated_contact}'")
+                
+                if "Monday" in updated_availability and "Wednesday" in updated_availability and "Friday" in updated_availability:
+                    print("✅ Availability days update confirmed in Airtable")
+                else:
+                    print(f"⚠️  Availability days not updated correctly: {updated_availability}")
             else:
                 print("❌ Could not verify employee update")
+        
+        return success, response_data
+
+    def test_employee_update_invalid_id(self):
+        """Test PUT /api/employees/{id} endpoint with invalid employee ID"""
+        print("\n🔍 TESTING: Employee Update with Invalid ID...")
+        
+        invalid_employee_id = "invalid_employee_id_12345"
+        
+        # Test data with safe fields
+        safe_update_data = {
+            "contact_number": "555-999-8888",
+            "availability_days": ["Tuesday", "Thursday"]
+        }
+        
+        print(f"   Testing with Invalid Employee ID: {invalid_employee_id}")
+        print(f"   Update Data: {json.dumps(safe_update_data, indent=2)}")
+        
+        # Test the PUT endpoint with invalid ID - should return error
+        success, response_data = self.run_test(
+            f"Update Invalid Employee {invalid_employee_id}",
+            "PUT",
+            f"api/employees/{invalid_employee_id}",
+            404,  # Expecting 404 or 500 error
+            data=safe_update_data
+        )
+        
+        if success:
+            print("✅ Invalid employee ID properly handled with error response")
+            print(f"   Error Response: {response_data}")
+        else:
+            print("❌ Invalid employee ID handling failed")
         
         return success, response_data
 
