@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import requests
 from airtable import Airtable
 import json
+from datetime import datetime, timedelta
 
 # Load environment variables
 load_dotenv()
