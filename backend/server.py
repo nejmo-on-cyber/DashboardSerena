@@ -797,24 +797,8 @@ async def get_analytics(range: str = "month"):
                 "returning": 33,
                 "retention": 73.3
             },
-            "services": sorted([
-                {
-                    "name": name,
-                    "bookings": stats['bookings'],
-                    "revenue": stats['revenue'],
-                    "growth": stats['growth']
-                }
-                for name, stats in service_stats.items()
-            ], key=lambda x: x['revenue'], reverse=True)[:10],
-            "employees": sorted([
-                {
-                    "name": name,
-                    "appointments": stats['appointments'],
-                    "revenue": stats['revenue'],
-                    "utilization": stats['utilization']
-                }
-                for name, stats in employee_stats.items()
-            ], key=lambda x: x['revenue'], reverse=True)[:10],
+            "services": sorted(list(service_stats.items()), key=lambda x: x[1]['revenue'], reverse=True)[:10],
+            "employees": sorted(list(employee_stats.items()), key=lambda x: x[1]['revenue'], reverse=True)[:10],
             "trends": [
                 {
                     "date": f"2024-01-{i:02d}",
