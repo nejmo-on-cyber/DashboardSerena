@@ -279,43 +279,40 @@ export default function BookingAdminPage() {
                 ({selectedService.duration} minutes) - {getDayName(selectedDate)}
               </div>
               
-              <div className="space-y-6">
-                {qualifiedTherapists.map((therapist) => {
-                  const isAvailable = isTherapistAvailable(therapist, selectedDate);
-                  const timeSlots = generateTimeSlots(selectedService.duration);
-                  
-                  return (
-                    <div key={therapist.id} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center space-x-3">
-                          <User className="w-5 h-5 text-gray-500" />
-                          <div>
-                            <h3 className="font-semibold text-gray-900">
-                              {therapist.full_name}
-                            </h3>
-                            <p className="text-sm text-gray-600">
-                              Employee #{therapist.employee_number}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              Specialties: {therapist.expertise.join(', ')}
-                            </p>
+              {hasAvailabilityForSelectedDay() ? (
+                <div className="space-y-6">
+                  {qualifiedTherapists.map((therapist) => {
+                    const isAvailable = isTherapistAvailable(therapist, selectedDate);
+                    
+                    if (!isAvailable) return null;
+                    
+                    const timeSlots = generateTimeSlots(selectedService.duration);
+                    
+                    return (
+                      <div key={therapist.id} className="border rounded-lg p-4">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center space-x-3">
+                            <User className="w-5 h-5 text-gray-500" />
+                            <div>
+                              <h3 className="font-semibold text-gray-900">
+                                {therapist.full_name}
+                              </h3>
+                              <p className="text-sm text-gray-600">
+                                Employee #{therapist.employee_number}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                Specialties: {therapist.expertise.join(', ')}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <CheckCircle className="w-5 h-5 text-green-500" />
+                            <span className="text-sm font-medium text-green-600">
+                              Available
+                            </span>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          {isAvailable ? (
-                            <CheckCircle className="w-5 h-5 text-green-500" />
-                          ) : (
-                            <XCircle className="w-5 h-5 text-red-500" />
-                          )}
-                          <span className={`text-sm font-medium ${
-                            isAvailable ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {isAvailable ? 'Available' : 'Not Available'}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      {isAvailable && (
+                        
                         <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
                           {timeSlots.map((slot, index) => (
                             <button
@@ -333,17 +330,115 @@ export default function BookingAdminPage() {
                             </button>
                           ))}
                         </div>
-                      )}
-                      
-                      {!isAvailable && (
-                        <div className="text-center py-4 text-gray-500">
-                          Therapist not available on {getDayName(selectedDate)}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* No availability message */}
+                  <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+                    <XCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                      No Available Bookings Today
+                    </h3>
+                    <p className="text-gray-600 mb-4">
+                      There are no therapists available for "{selectedService.name}" on {getDayName(selectedDate)}, {new Date(selectedDate).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  {/* Alternative Availability Section */}
+                  {(() => {
+                    const alternatives = getAlternativeAvailability(selectedDate);
+                    const hasAlternatives = alternatives.previous.therapists.length > 0 || alternatives.next.therapists.length > 0;
+                    
+                    return hasAlternatives ? (
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                        <h4 className="text-lg font-medium text-blue-900 mb-4 flex items-center">
+                          <CalendarIcon className="w-5 h-5 mr-2" />
+                          Alternative Availability (24 Hours Before & After)
+                        </h4>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {/* Previous Day */}
+                          {alternatives.previous.therapists.length > 0 && (
+                            <div className="bg-white rounded-lg p-4 border border-blue-200">
+                              <h5 className="font-medium text-gray-900 mb-2 flex items-center">
+                                <div className="w-3 h-3 bg-orange-400 rounded-full mr-2"></div>
+                                Yesterday ({alternatives.previous.dayName})
+                              </h5>
+                              <p className="text-sm text-gray-600 mb-3">
+                                {new Date(alternatives.previous.date).toLocaleDateString()}
+                              </p>
+                              
+                              <div className="space-y-3">
+                                {alternatives.previous.therapists.map((therapist) => (
+                                  <div key={therapist.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                    <div>
+                                      <p className="font-medium text-sm">{therapist.full_name}</p>
+                                      <p className="text-xs text-gray-500">#{therapist.employee_number}</p>
+                                    </div>
+                                    <button
+                                      onClick={() => setSelectedDate(alternatives.previous.date)}
+                                      className="px-3 py-1 text-xs bg-orange-600 text-white rounded hover:bg-orange-700"
+                                    >
+                                      Select
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Next Day */}
+                          {alternatives.next.therapists.length > 0 && (
+                            <div className="bg-white rounded-lg p-4 border border-blue-200">
+                              <h5 className="font-medium text-gray-900 mb-2 flex items-center">
+                                <div className="w-3 h-3 bg-green-400 rounded-full mr-2"></div>
+                                Tomorrow ({alternatives.next.dayName})
+                              </h5>
+                              <p className="text-sm text-gray-600 mb-3">
+                                {new Date(alternatives.next.date).toLocaleDateString()}
+                              </p>
+                              
+                              <div className="space-y-3">
+                                {alternatives.next.therapists.map((therapist) => (
+                                  <div key={therapist.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                    <div>
+                                      <p className="font-medium text-sm">{therapist.full_name}</p>
+                                      <p className="text-xs text-gray-500">#{therapist.employee_number}</p>
+                                    </div>
+                                    <button
+                                      onClick={() => setSelectedDate(alternatives.next.date)}
+                                      className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
+                                    >
+                                      Select
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                        
+                        {alternatives.previous.therapists.length === 0 && alternatives.next.therapists.length === 0 && (
+                          <div className="text-center py-4">
+                            <p className="text-gray-600">
+                              No availability found for 24 hours before or after the selected date.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                        <p className="text-red-700">
+                          No availability found for 24 hours before or after the selected date.
+                        </p>
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
             </div>
           )}
 
