@@ -566,8 +566,13 @@ async def update_employee(employee_id: str, employee_data: dict):
         if employee_data.get("availability_days"):
             airtable_fields["Availability"] = employee_data["availability_days"]
         if employee_data.get("expertise"):
-            # Based on investigation: expertise is multi-select with predefined options
-            airtable_fields["Expertise"] = employee_data["expertise"]
+            # Map service names to valid Airtable expertise categories
+            mapped_expertise = []
+            for service_name in employee_data["expertise"]:
+                mapped_category = map_service_to_expertise(service_name)
+                if mapped_category not in mapped_expertise:
+                    mapped_expertise.append(mapped_category)
+            airtable_fields["Expertise"] = mapped_expertise
         
         # Fields that may exist but are optional
         if employee_data.get("profile_picture"):
