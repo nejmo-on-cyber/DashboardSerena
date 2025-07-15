@@ -694,6 +694,26 @@ async def get_employee_availability():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching employee availability: {str(e)}")
 
+@app.get("/api/test-analytics")
+async def test_analytics():
+    """Test analytics endpoint"""
+    if not airtable:
+        raise HTTPException(status_code=503, detail="Airtable not configured")
+    
+    try:
+        # Fetch all appointments
+        appointments = airtable.get_all()
+        
+        return {
+            "total_appointments": len(appointments),
+            "first_appointment": appointments[0] if appointments else None,
+            "status": "success"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error in test analytics: {str(e)}")
+
+
 @app.get("/api/analytics")
 async def get_analytics(range: str = "month"):
     """Get comprehensive analytics data for the dashboard"""
