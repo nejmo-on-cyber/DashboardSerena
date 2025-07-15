@@ -6,7 +6,7 @@ import json
 def test_review_request_working_fields():
     """Test the review request scenario with only working fields"""
     
-    base_url = "https://a092d38d-5c45-40a1-a065-ffc27435430c.preview.emergentagent.com"
+    base_url = "https://3b39f804-d061-44da-947b-4dd2abd9a8fc.preview.emergentagent.com"
     
     print("🔍 Testing Review Request with ONLY Working Fields")
     print("=" * 60)

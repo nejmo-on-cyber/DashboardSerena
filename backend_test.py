@@ -7,7 +7,7 @@ from datetime import datetime
 import time
 
 class BackendAPITester:
-    def __init__(self, base_url="https://a092d38d-5c45-40a1-a065-ffc27435430c.preview.emergentagent.com"):
+    def __init__(self, base_url="https://3b39f804-d061-44da-947b-4dd2abd9a8fc.preview.emergentagent.com"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
