@@ -543,6 +543,122 @@ class BackendAPITester:
         
         return False, {}
 
+    def test_employee_update_endpoint(self):
+        """Test PUT /api/employees/{id} endpoint - DEBUGGING FOCUS"""
+        print("\n🔍 DEBUGGING: Testing Employee Update Endpoint...")
+        
+        # First get available employees to find a valid ID
+        emp_success, emp_data = self.run_test(
+            "Get Employees for Update Test",
+            "GET",
+            "api/employee-availability",
+            200
+        )
+        
+        if not emp_success or not isinstance(emp_data, list) or len(emp_data) == 0:
+            print("❌ Cannot test employee update - no employees available")
+            return False, {}
+        
+        # Use the first employee for testing
+        test_employee = emp_data[0]
+        employee_id = test_employee.get('id')
+        original_name = test_employee.get('full_name', 'Unknown')
+        
+        print(f"   Testing with Employee ID: {employee_id}")
+        print(f"   Original Name: {original_name}")
+        
+        # Test data as provided in the review request
+        update_data = {
+            "full_name": "Test Employee Updated",
+            "employee_number": "EMP001",
+            "email": "test@example.com",
+            "contact_number": "123-456-7890",
+            "availability_days": ["Monday", "Tuesday"],
+            "expertise": ["Massage", "Facial"],
+            "status": "Active"
+        }
+        
+        print(f"   Update Data: {json.dumps(update_data, indent=2)}")
+        
+        # Test the PUT endpoint
+        success, response_data = self.run_test(
+            f"Update Employee {employee_id}",
+            "PUT",
+            f"api/employees/{employee_id}",
+            200,  # Expecting success
+            data=update_data
+        )
+        
+        if not success:
+            print("❌ Employee update failed - this is the issue!")
+            print(f"   Response: {response_data}")
+            
+            # Try to get more detailed error info
+            try:
+                import requests
+                url = f"{self.base_url}/api/employees/{employee_id}"
+                response = requests.put(url, json=update_data, timeout=10)
+                print(f"   Detailed Error - Status: {response.status_code}")
+                print(f"   Detailed Error - Text: {response.text}")
+                print(f"   Detailed Error - Headers: {dict(response.headers)}")
+            except Exception as e:
+                print(f"   Error getting detailed info: {e}")
+        else:
+            print("✅ Employee update succeeded!")
+            print(f"   Response: {response_data}")
+            
+            # Verify the update by getting the employee again
+            verify_success, verify_data = self.run_test(
+                f"Verify Employee Update {employee_id}",
+                "GET",
+                f"api/employees/{employee_id}",
+                200
+            )
+            
+            if verify_success:
+                print("✅ Employee data retrieved after update")
+                print(f"   Updated Name: {verify_data.get('full_name', 'Unknown')}")
+                print(f"   Updated Email: {verify_data.get('email', 'Unknown')}")
+            else:
+                print("❌ Could not verify employee update")
+        
+        return success, response_data
+
+    def test_employee_get_endpoint(self):
+        """Test GET /api/employees/{id} endpoint"""
+        print("\n🔍 Testing Individual Employee GET Endpoint...")
+        
+        # Get available employees
+        emp_success, emp_data = self.run_test(
+            "Get Employees for Individual Test",
+            "GET",
+            "api/employee-availability",
+            200
+        )
+        
+        if not emp_success or not isinstance(emp_data, list) or len(emp_data) == 0:
+            print("❌ Cannot test individual employee get - no employees available")
+            return False, {}
+        
+        # Test getting individual employee
+        test_employee = emp_data[0]
+        employee_id = test_employee.get('id')
+        
+        success, response_data = self.run_test(
+            f"Get Individual Employee {employee_id}",
+            "GET",
+            f"api/employees/{employee_id}",
+            200
+        )
+        
+        if success:
+            print("✅ Individual employee GET working")
+            print(f"   Employee: {response_data.get('full_name', 'Unknown')}")
+            print(f"   Email: {response_data.get('email', 'Not set')}")
+            print(f"   Status: {response_data.get('status', 'Unknown')}")
+        
+        return success, response_data
+
 def main():
     print("🚀 Starting Backend API Tests - Booking Admin System Focus")
     print("=" * 60)
