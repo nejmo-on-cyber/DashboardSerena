@@ -659,7 +659,7 @@ export default function EmployeeManagementPage() {
                           key={service.id}
                           onClick={() => toggleService(service.name)}
                           className={`px-4 py-3 text-sm rounded-xl border transition-all duration-200 text-left ${
-                            formData.expertise.includes(service.name)
+                            formData.expertise.includes(mapServiceToExpertise(service.name))
                               ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
                               : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                           }`}
@@ -922,7 +922,7 @@ export default function EmployeeManagementPage() {
                           key={service.id}
                           onClick={() => toggleService(service.name)}
                           className={`px-4 py-3 text-sm rounded-xl border transition-all duration-200 text-left ${
-                            formData.expertise.includes(service.name)
+                            formData.expertise.includes(mapServiceToExpertise(service.name))
                               ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
                               : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                           }`}
