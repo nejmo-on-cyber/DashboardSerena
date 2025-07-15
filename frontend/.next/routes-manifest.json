@@ -34,12 +34,6 @@
       "namedRegex": "^/analytics(?:/)?$"
     },
     {
-      "page": "/availability",
-      "regex": "^/availability(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/availability(?:/)?$"
-    },
-    {
       "page": "/booking-admin",
       "regex": "^/booking\\-admin(?:/)?$",
       "routeKeys": {},
