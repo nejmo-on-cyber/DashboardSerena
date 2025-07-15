@@ -256,9 +256,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Cancel button functionality in calendar"
-    - "Confirmation dialog for appointment cancellation"
-    - "Real-time calendar updates after deletion"
+    - "GET /api/employee-availability endpoint"
+    - "GET /api/services-with-duration endpoint"
+    - "GET /api/therapists-by-service/{service_name} endpoint"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -268,3 +268,5 @@ agent_communication:
     message: "✅ BACKEND TESTING COMPLETE: All critical deletion functionality working correctly. Both DELETE and UPDATE with cancel action successfully remove appointments completely from Airtable. Verified through actual API testing that deleted appointments no longer appear in GET /api/records. Error handling for invalid IDs working properly. All existing CRUD operations remain functional. Ready for frontend testing with user permission."
   - agent: "testing"
     message: "✅ FRONTEND TESTING COMPLETE: All critical appointment cancellation functionality working perfectly! Calendar interface loads correctly with appointments displayed. Appointment detail and edit modals work properly. Cancel & Delete button is prominently styled (red with delete icon). Confirmation dialog shows proper warnings about permanent deletion and mentions both calendar and Airtable. Real-time calendar updates work - appointment count decreased from 10 to 9 after deletion, and statistics updated correctly. Both modals close automatically after successful deletion. Add appointment functionality also working. Complete deletion workflow is fully functional as requested by user."
+  - agent: "testing"
+    message: "✅ NEW BOOKING ADMIN ENDPOINTS TESTING COMPLETE: All three new endpoints working perfectly! GET /api/employee-availability returns 6 employees with complete availability and expertise data (Luna Star: Mon/Wed/Fri, Haircut/Styling; Leo King: Tue/Thu/Sat, Coloring/Facials). GET /api/services-with-duration returns 31 services with pricing and duration (Face Camp $370/60min, Infrared Sauna $420/60min). GET /api/therapists-by-service/{service_name} correctly filters therapists by expertise - Haircut(2), Massage(1), Facial(3), Coloring(2), Styling(2) therapists found. Service filtering logic works correctly, matching therapist expertise with service names. Error handling properly returns empty arrays for invalid services. All data structures match expected format for booking admin interface. Airtable connections stable throughout testing."
