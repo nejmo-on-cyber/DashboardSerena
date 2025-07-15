@@ -683,7 +683,10 @@ async def get_employee_availability():
                 "availability_days": availability_days,
                 "expertise": expertise,
                 "contact_number": fields.get('Contact Number', ''),
-                "email": fields.get('Email', '')
+                "email": fields.get('Email', ''),
+                "status": fields.get('Status', 'Active'),  # Add status field with default Active
+                "profile_picture": fields.get('Profile Picture', ''),
+                "start_date": fields.get('Start Date', '')
             })
         
         return availability_data
