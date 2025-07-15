@@ -75,6 +75,9 @@ export default function EmployeeManagementPage() {
     status: "Active"
   });
 
+  const [pictureUploadMode, setPictureUploadMode] = useState<'url' | 'upload'>('url');
+  const [uploadedPicture, setUploadedPicture] = useState<string | null>(null);
+
   useEffect(() => {
     fetchEmployees();
     fetchServices();
