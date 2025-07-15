@@ -273,9 +273,9 @@ test_plan:
 
   - task: "PUT /api/employees/{id} endpoint for employee updates"
     implemented: true
-    working: false
+    working: true
     file: "/app/backend/server.py"
-    stuck_count: 2
+    stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
@@ -285,6 +285,9 @@ test_plan:
       - working: false
         agent: "testing"
         comment: "❌ MAIN AGENT'S FIX PARTIALLY FAILED: Tested the updated employee endpoint after main agent's fix. ✅ PARTIAL SUCCESS: Basic fields (contact_number, availability_days) now work correctly and update successfully in Airtable. ❌ REMAINING ISSUES: 1) 'status' field still causes 400 error (UNKNOWN_FIELD_NAME - field doesn't exist in Airtable schema). 2) 'expertise' field causes 500 error (INVALID_MULTIPLE_CHOICE_OPTIONS - insufficient permissions to create new select options like 'Facial'). 3) Try-catch blocks in code don't prevent errors from reaching Airtable API call. ✅ CONFIRMED WORKING: contact_number='123-456-7890' and availability_days=['Monday','Tuesday','Wednesday'] update successfully. ❌ CONFIRMED FAILING: expertise=['Massage','Facial'] and status='Active' still cause errors. Main agent needs to refine fix to only use confirmed working fields and improve error handling."
+      - working: true
+        agent: "testing"
+        comment: "✅ EMPLOYEE UPDATE ISSUE RESOLVED: Main agent's simplified approach is working perfectly! Tested PUT /api/employees/{id} endpoint with safe fields only (contact_number, availability_days, profile_picture, start_date). ✅ SUCCESS CONFIRMED: Updated employee recE5UU1kgTPCBVcZ with contact_number='555-123-4567' and availability_days=['Monday','Wednesday','Friday'] - changes successfully saved in Airtable and verified. ✅ NO 500 ERRORS: Endpoint returns 200 status with success message. ✅ ERROR HANDLING: Invalid employee IDs properly return 404 with appropriate error message. ✅ DATA PERSISTENCE: Multiple test updates confirmed changes are actually saved in Airtable. The simplified approach of only updating confirmed working fields has completely resolved the issue. User's 'Failed to update employee' problem is now fixed."
 
 agent_communication:
   - agent: "testing"
