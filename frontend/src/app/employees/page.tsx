@@ -353,20 +353,38 @@ export default function EmployeeManagementPage() {
           </div>
 
           {/* Employee Cards */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 p-8">
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-sm border border-gray-200/50 p-10">
             <h2 className="text-2xl font-bold text-gray-900 mb-8 tracking-tight">Team Members</h2>
             
             {loading ? (
-              <div className="text-center py-16">
-                <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent mx-auto"></div>
-                <p className="text-gray-600 mt-4 font-medium">Loading team members...</p>
+              <div className="text-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto"></div>
+                <p className="text-gray-600 mt-6 font-medium">Loading team members...</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredEmployees.map((employee) => (
-                  <div key={employee.id} className="bg-white rounded-2xl shadow-sm border border-gray-200/50 p-8 hover:shadow-md transition-all duration-200 group">
-                    <div className="flex items-center space-x-5 mb-6">
-                      <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden shadow-inner">
+                  <div 
+                    key={employee.id} 
+                    onClick={() => {
+                      setEditingEmployee(employee);
+                      setFormData({
+                        full_name: employee.full_name || "",
+                        employee_number: employee.employee_number || "",
+                        email: employee.email || "",
+                        contact_number: employee.contact_number || "",
+                        availability_days: employee.availability_days || [],
+                        expertise: employee.expertise || [],
+                        profile_picture: employee.profile_picture || "",
+                        start_date: employee.start_date || "",
+                        status: employee.status || "Active"
+                      });
+                      setShowEditForm(true);
+                    }}
+                    className="bg-white rounded-3xl shadow-sm border border-gray-200/50 p-8 hover:shadow-lg transition-all duration-300 cursor-pointer group hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    <div className="flex flex-col items-center text-center mb-6">
+                      <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center overflow-hidden shadow-inner mb-4 group-hover:shadow-md transition-shadow duration-300">
                         {employee.profile_picture ? (
                           <img 
                             src={employee.profile_picture} 
@@ -381,81 +399,56 @@ export default function EmployeeManagementPage() {
                           />
                         )}
                       </div>
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-gray-900 mb-1 tracking-tight">{employee.full_name}</h3>
-                        <p className="text-sm text-gray-600 font-medium mb-2">#{employee.employee_number}</p>
-                        <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(employee.status)}`}>
-                          {employee.status}
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 tracking-tight">{employee.full_name}</h3>
+                      <p className="text-sm text-gray-600 font-medium mb-3">#{employee.employee_number}</p>
+                      <span className={`inline-flex px-4 py-2 text-xs font-semibold rounded-full border ${getStatusColor(employee.status)}`}>
+                        {employee.status}
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-4 mb-6">
+                      <div className="flex items-center justify-center space-x-3 text-sm">
+                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                          <Mail className="w-4 h-4 text-gray-600" />
+                        </div>
+                        <span className="text-gray-700 font-medium truncate">{employee.email || 'No email'}</span>
+                      </div>
+                      <div className="flex items-center justify-center space-x-3 text-sm">
+                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                          <Phone className="w-4 h-4 text-gray-600" />
+                        </div>
+                        <span className="text-gray-700 font-medium">{employee.contact_number || 'No phone'}</span>
+                      </div>
+                      <div className="flex items-center justify-center space-x-3 text-sm">
+                        <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-gray-600" />
+                        </div>
+                        <span className="text-gray-700 font-medium text-center">
+                          {employee.availability_days.length > 0 ? `${employee.availability_days.length} days` : 'No availability'}
                         </span>
                       </div>
                     </div>
                     
-                    <div className="space-y-4 mb-6">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                          <Mail className="w-4 h-4 text-gray-600" />
-                        </div>
-                        <span className="text-sm text-gray-700 font-medium">{employee.email || 'No email'}</span>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                          <Phone className="w-4 h-4 text-gray-600" />
-                        </div>
-                        <span className="text-sm text-gray-700 font-medium">{employee.contact_number || 'No phone'}</span>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-                          <Calendar className="w-4 h-4 text-gray-600" />
-                        </div>
-                        <span className="text-sm text-gray-700 font-medium">{employee.availability_days.join(', ') || 'No availability set'}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="mb-6">
+                    <div className="text-center">
                       <p className="text-sm font-semibold text-gray-900 mb-3">Expertise</p>
-                      <div className="flex flex-wrap gap-2">
-                        {employee.expertise.slice(0, 3).map((skill) => (
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {employee.expertise.slice(0, 2).map((skill) => (
                           <span key={skill} className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full border border-blue-200">
                             {skill}
                           </span>
                         ))}
-                        {employee.expertise.length > 3 && (
+                        {employee.expertise.length > 2 && (
                           <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200">
-                            +{employee.expertise.length - 3} more
+                            +{employee.expertise.length - 2} more
                           </span>
                         )}
                       </div>
                     </div>
                     
-                    <div className="flex space-x-3">
-                      <button
-                        onClick={() => {
-                          setEditingEmployee(employee);
-                          setFormData({
-                            full_name: employee.full_name || "",
-                            employee_number: employee.employee_number || "",
-                            email: employee.email || "",
-                            contact_number: employee.contact_number || "",
-                            availability_days: employee.availability_days || [],
-                            expertise: employee.expertise || [],
-                            profile_picture: employee.profile_picture || "",
-                            start_date: employee.start_date || "",
-                            status: employee.status || "Active"
-                          });
-                          setShowEditForm(true);
-                        }}
-                        className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition-all duration-200"
-                      >
-                        <Edit className="w-4 h-4" />
-                        <span>Edit</span>
-                      </button>
-                      <button
-                        onClick={() => handleDeleteEmployee(employee.id)}
-                        className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-xl hover:bg-red-700 transition-all duration-200"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        <span>Delete</span>
-                      </button>
+                    <div className="mt-6 pt-4 border-t border-gray-100">
+                      <div className="text-center text-xs text-gray-500">
+                        Click to view details
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -463,12 +456,12 @@ export default function EmployeeManagementPage() {
             )}
 
             {filteredEmployees.length === 0 && !loading && (
-              <div className="text-center py-16">
-                <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
+              <div className="text-center py-20">
+                <User className="w-20 h-20 text-gray-400 mx-auto mb-6" />
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
                   No team members found
                 </h3>
-                <p className="text-gray-600 font-medium">
+                <p className="text-gray-600 font-medium text-lg">
                   {searchTerm || filterStatus !== "All" 
                     ? "Try adjusting your search or filters"
                     : "Add your first team member to get started"
@@ -477,6 +470,232 @@ export default function EmployeeManagementPage() {
               </div>
             )}
           </div>
+
+          {/* Employee Details Modal */}
+          {showEditForm && editingEmployee && (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="p-8 border-b border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                        {editingEmployee.profile_picture ? (
+                          <img 
+                            src={editingEmployee.profile_picture} 
+                            alt={editingEmployee.full_name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <img 
+                            src={getRandomPlaceholder()} 
+                            alt={editingEmployee.full_name}
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-gray-900 tracking-tight">{editingEmployee.full_name}</h3>
+                        <p className="text-gray-600 font-medium">#{editingEmployee.employee_number}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setShowEditForm(false);
+                        setEditingEmployee(null);
+                        resetForm();
+                      }}
+                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    >
+                      <X className="w-6 h-6 text-gray-500" />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="p-8 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.full_name}
+                        onChange={(e) => setFormData(prev => ({...prev, full_name: e.target.value}))}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all duration-200"
+                        placeholder="Enter full name"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">
+                        Employee Number
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.employee_number}
+                        onChange={(e) => setFormData(prev => ({...prev, employee_number: e.target.value}))}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all duration-200"
+                        placeholder="e.g., EMP001"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData(prev => ({...prev, email: e.target.value}))}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all duration-200"
+                        placeholder="employee@company.com"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">
+                        Contact Number
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.contact_number}
+                        onChange={(e) => setFormData(prev => ({...prev, contact_number: e.target.value}))}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all duration-200"
+                        placeholder="+1 (555) 123-4567"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-3">
+                      Availability Days
+                    </label>
+                    <div className="grid grid-cols-4 md:grid-cols-7 gap-2">
+                      {daysOfWeek.map((day) => (
+                        <button
+                          key={day}
+                          onClick={() => toggleDay(day)}
+                          className={`px-3 py-2 text-sm rounded-xl border transition-all duration-200 ${
+                            formData.availability_days.includes(day)
+                              ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                              : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                          }`}
+                        >
+                          {day.slice(0, 3)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-3">
+                      Services & Expertise
+                    </label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-40 overflow-y-auto">
+                      {services.map((service) => (
+                        <button
+                          key={service.id}
+                          onClick={() => toggleService(service.name)}
+                          className={`px-4 py-3 text-sm rounded-xl border transition-all duration-200 text-left ${
+                            formData.expertise.includes(service.name)
+                              ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                              : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                          }`}
+                        >
+                          {service.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">
+                        Start Date
+                      </label>
+                      <input
+                        type="date"
+                        value={formData.start_date}
+                        onChange={(e) => setFormData(prev => ({...prev, start_date: e.target.value}))}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all duration-200"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">
+                        Status
+                      </label>
+                      <select
+                        value={formData.status}
+                        onChange={(e) => setFormData(prev => ({...prev, status: e.target.value}))}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all duration-200"
+                      >
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="On Leave">On Leave</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">
+                      Profile Picture URL
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.profile_picture}
+                      onChange={(e) => setFormData(prev => ({...prev, profile_picture: e.target.value}))}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition-all duration-200"
+                      placeholder="https://example.com/photo.jpg"
+                    />
+                  </div>
+                </div>
+                
+                <div className="p-8 border-t border-gray-100 flex flex-col sm:flex-row justify-between gap-4">
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => {
+                        setShowEditForm(false);
+                        setEditingEmployee(null);
+                        resetForm();
+                      }}
+                      className="px-6 py-3 text-sm font-semibold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors duration-200"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleUpdateEmployee}
+                      disabled={loading}
+                      className="px-6 py-3 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-colors duration-200"
+                    >
+                      {loading ? 'Saving...' : 'Save Changes'}
+                    </button>
+                  </div>
+                  
+                  {/* Hidden Delete Options */}
+                  <div className="relative">
+                    <button
+                      onClick={() => {
+                        if (window.confirm('Are you sure you want to delete this team member? This action cannot be undone.')) {
+                          if (editingEmployee) {
+                            handleDeleteEmployee(editingEmployee.id);
+                            setShowEditForm(false);
+                            setEditingEmployee(null);
+                            resetForm();
+                          }
+                        }
+                      }}
+                      className="px-4 py-3 text-sm font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 rounded-xl transition-colors duration-200"
+                    >
+                      Delete Member
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Add Employee Form */}
           {showAddForm && (
