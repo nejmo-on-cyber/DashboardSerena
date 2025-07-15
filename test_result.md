@@ -304,6 +304,18 @@ test_plan:
         agent: "testing"
         comment: "✅ COMPREHENSIVE EMPLOYEE TABLE INVESTIGATION COMPLETE: Conducted detailed analysis of Airtable Employee table structure as requested. 📊 FIELD INVENTORY: Found 7 fields - id (string), full_name (string), employee_number (empty string), email (empty string), contact_number (string), availability_days (list), expertise (list). 🎯 EXPERTISE FIELD FINDINGS: Field name is exactly 'expertise' (not 'services'), it's a multi-select list type with 7 predefined options: Haircut, Styling, Coloring, Facials, Manicure, Pedicure, Massage. All 6 employees have populated expertise data. ✅ UPDATE PERMISSIONS: Only contact_number and availability_days can be updated successfully. ❌ EXPERTISE UPDATE ROOT CAUSE: The expertise field EXISTS and contains proper data, but backend code intentionally excludes it from updates (lines 522-541 in server.py) as part of 'safe fields only' approach. The field is functional but filtered out to avoid Airtable permission errors. 🔍 NO NEW FIELDS NEEDED: All expected fields exist in Airtable schema. The issue is backend code limitation, not missing Airtable fields."
 
+  - task: "Service names vs expertise field mismatch investigation"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL ROOT CAUSE IDENTIFIED: Conducted comprehensive investigation of service names vs expertise field mismatch causing 500 errors. ✅ FRONTEND SERVICES: /api/services returns 31 services including 'COMPRESSION BOOT THERAPY', 'SHIATSU MASSAGE', 'COUPLES MASSAGE', 'INFRARED SAUNA BLANKET THERAPY'. ✅ AIRTABLE EXPERTISE: Employee expertise field only accepts 7 predefined options: ['Coloring', 'Facials', 'Haircut', 'Manicure', 'Massage', 'Pedicure', 'Styling']. ❌ CRITICAL MISMATCH: 54.8% mismatch rate (17/31 services don't match expertise options). ✅ CONFIRMED 500 ERRORS: Testing updates with mismatched services like 'COMPRESSION BOOT THERAPY' causes 422 Airtable errors. 🎯 ROOT CAUSE: Frontend fetches from Services table but saves to Employee expertise field with different constraints. 💡 SOLUTION: Map service names to expertise values OR use endpoint returning only valid expertise options."
+
 agent_communication:
   - agent: "testing"
     message: "✅ BACKEND TESTING COMPLETE: All critical deletion functionality working correctly. Both DELETE and UPDATE with cancel action successfully remove appointments completely from Airtable. Verified through actual API testing that deleted appointments no longer appear in GET /api/records. Error handling for invalid IDs working properly. All existing CRUD operations remain functional. Ready for frontend testing with user permission."
