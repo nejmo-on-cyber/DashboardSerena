@@ -705,7 +705,7 @@ class BackendAPITester:
         return success, response_data
 
 def main():
-    print("🚀 Starting Backend API Tests - Employee Update Debugging Focus")
+    print("🚀 Starting Backend API Tests - Employee Update Simplified Testing")
     print("=" * 60)
     
     # Setup
@@ -716,15 +716,18 @@ def main():
     tester.test_root_endpoint()
     tester.test_health_check()
     
-    print("\n🎯 MAIN FOCUS: Debugging Employee Update Issue")
+    print("\n🎯 MAIN FOCUS: Testing Simplified Employee Update (Safe Fields Only)")
     print("=" * 60)
     
     # Test employee endpoints specifically
     print("\n--- Test 1: Individual Employee GET Endpoint ---")
     tester.test_employee_get_endpoint()
     
-    print("\n--- Test 2: Employee Update PUT Endpoint (THE ISSUE) ---")
+    print("\n--- Test 2: Employee Update PUT Endpoint (Safe Fields Only) ---")
     tester.test_employee_update_endpoint()
+    
+    print("\n--- Test 3: Employee Update with Invalid ID (Error Handling) ---")
+    tester.test_employee_update_invalid_id()
     
     print("\n📋 Testing Related Endpoints...")
     tester.test_get_employees()
@@ -733,16 +736,16 @@ def main():
     print("\n📋 Testing Other Booking Admin Endpoints...")
     
     # Test new booking admin endpoints
-    print("\n--- Test 3: Services with Duration Endpoint ---")
+    print("\n--- Test 4: Services with Duration Endpoint ---")
     tester.test_services_with_duration()
     
-    print("\n--- Test 4: Therapists by Service Endpoint ---")
+    print("\n--- Test 5: Therapists by Service Endpoint ---")
     tester.test_therapists_by_service()
     
-    print("\n--- Test 5: Invalid Service Name Handling ---")
+    print("\n--- Test 6: Invalid Service Name Handling ---")
     tester.test_therapists_by_invalid_service()
     
-    print("\n--- Test 6: Data Consistency Check ---")
+    print("\n--- Test 7: Data Consistency Check ---")
     tester.test_booking_admin_data_consistency()
     
     # Print results
@@ -755,7 +758,8 @@ def main():
     print("✅ Airtable connection is working")
     print("✅ Employee availability endpoint working")
     print("✅ Individual employee GET endpoint tested")
-    print("🔍 Employee UPDATE endpoint - main focus of debugging")
+    print("🔍 Employee UPDATE endpoint - testing simplified safe fields only")
+    print("🔍 Error handling for invalid employee IDs tested")
     
     if tester.tests_passed >= (tester.tests_run * 0.7):  # 70% pass rate
         print("🎉 Most tests passed - Backend functionality appears to be working!")
