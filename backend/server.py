@@ -708,7 +708,6 @@ async def get_analytics(range: str = "month"):
         employees = airtable_employees.get_all()
         
         # Calculate date range
-        from datetime import datetime, timedelta
         end_date = datetime.now()
         if range == "week":
             start_date = end_date - timedelta(days=7)
