@@ -289,6 +289,18 @@ test_plan:
         agent: "testing"
         comment: "✅ EMPLOYEE UPDATE ISSUE RESOLVED: Main agent's simplified approach is working perfectly! Tested PUT /api/employees/{id} endpoint with safe fields only (contact_number, availability_days, profile_picture, start_date). ✅ SUCCESS CONFIRMED: Updated employee recE5UU1kgTPCBVcZ with contact_number='555-123-4567' and availability_days=['Monday','Wednesday','Friday'] - changes successfully saved in Airtable and verified. ✅ NO 500 ERRORS: Endpoint returns 200 status with success message. ✅ ERROR HANDLING: Invalid employee IDs properly return 404 with appropriate error message. ✅ DATA PERSISTENCE: Multiple test updates confirmed changes are actually saved in Airtable. The simplified approach of only updating confirmed working fields has completely resolved the issue. User's 'Failed to update employee' problem is now fixed."
 
+  - task: "Airtable Employee table structure investigation"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ COMPREHENSIVE EMPLOYEE TABLE INVESTIGATION COMPLETE: Conducted detailed analysis of Airtable Employee table structure as requested. 📊 FIELD INVENTORY: Found 7 fields - id (string), full_name (string), employee_number (empty string), email (empty string), contact_number (string), availability_days (list), expertise (list). 🎯 EXPERTISE FIELD FINDINGS: Field name is exactly 'expertise' (not 'services'), it's a multi-select list type with 7 predefined options: Haircut, Styling, Coloring, Facials, Manicure, Pedicure, Massage. All 6 employees have populated expertise data. ✅ UPDATE PERMISSIONS: Only contact_number and availability_days can be updated successfully. ❌ EXPERTISE UPDATE ROOT CAUSE: The expertise field EXISTS and contains proper data, but backend code intentionally excludes it from updates (lines 522-541 in server.py) as part of 'safe fields only' approach. The field is functional but filtered out to avoid Airtable permission errors. 🔍 NO NEW FIELDS NEEDED: All expected fields exist in Airtable schema. The issue is backend code limitation, not missing Airtable fields."
+
 agent_communication:
   - agent: "testing"
     message: "✅ BACKEND TESTING COMPLETE: All critical deletion functionality working correctly. Both DELETE and UPDATE with cancel action successfully remove appointments completely from Airtable. Verified through actual API testing that deleted appointments no longer appear in GET /api/records. Error handling for invalid IDs working properly. All existing CRUD operations remain functional. Ready for frontend testing with user permission."
