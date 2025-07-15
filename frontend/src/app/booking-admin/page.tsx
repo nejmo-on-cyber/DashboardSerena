@@ -36,6 +36,7 @@ export default function BookingAdminPage() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [darkMode, setDarkMode] = useState(false);
 
   // Generate time slots for the day
   const generateTimeSlots = (duration: number): TimeSlot[] => {
