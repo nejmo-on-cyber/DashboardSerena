@@ -17,6 +17,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CalendarDays,
+  Clock,
 } from "lucide-react";
 
 interface SidebarProps {
