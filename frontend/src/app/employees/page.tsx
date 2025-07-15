@@ -195,6 +195,21 @@ export default function EmployeeManagementPage() {
       start_date: "",
       status: "Active"
     });
+    setPictureUploadMode('url');
+    setUploadedPicture(null);
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64String = e.target?.result as string;
+        setUploadedPicture(base64String);
+        setFormData(prev => ({ ...prev, profile_picture: base64String }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const toggleDay = (day: string) => {
