@@ -518,14 +518,19 @@ async def update_employee(employee_id: str, employee_data: dict):
         raise HTTPException(status_code=503, detail="Airtable not configured")
     
     try:
-        # Only update fields that we know work based on testing
+        # Map employee data to Airtable fields based on investigation
         airtable_fields = {}
         
-        # These fields are confirmed to work
+        # Fields that are confirmed to work
         if employee_data.get("contact_number"):
             airtable_fields["Contact Number"] = employee_data["contact_number"]
         if employee_data.get("availability_days"):
             airtable_fields["Availability"] = employee_data["availability_days"]
+        if employee_data.get("expertise"):
+            # Based on investigation: expertise is multi-select with predefined options
+            airtable_fields["Expertise"] = employee_data["expertise"]
+        
+        # Fields that may exist but are optional
         if employee_data.get("profile_picture"):
             airtable_fields["Profile Picture"] = employee_data["profile_picture"]
         if employee_data.get("start_date"):
