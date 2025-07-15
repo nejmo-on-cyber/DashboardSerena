@@ -34,8 +34,10 @@ def map_service_to_expertise(service_name: str) -> str:
     if any(keyword in service_upper for keyword in ['FACIAL', 'FACE', 'SKIN', 'MICROCURRENT', 'LIGHT THERAPY']):
         return 'Facials'
     
-    # Hair services
-    if any(keyword in service_upper for keyword in ['HAIR', 'CUT', 'STYLE']):
+    # Hair services (prioritize styling over haircut for styling keywords)
+    if 'STYLING' in service_upper:
+        return 'Styling'
+    elif any(keyword in service_upper for keyword in ['HAIR', 'CUT']):
         return 'Haircut'
     
     # Coloring services
