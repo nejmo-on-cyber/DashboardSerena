@@ -566,7 +566,7 @@ export default function Dashboard() {
                   data-oid="ukazzyy"
                 >
                   <button
-                    onClick={() => router.push("/availability")}
+                    onClick={() => router.push("/booking-admin")}
                     className={`w-full flex items-center justify-center space-x-2 py-2 rounded-lg transition-colors ${
                       darkMode
                         ? "text-purple-400 hover:bg-gray-700"
