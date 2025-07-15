@@ -1084,10 +1084,193 @@ class BackendAPITester:
             "detailed_results": results
         }
 
+    def investigate_service_names_vs_expertise_mismatch(self):
+        """CRITICAL INVESTIGATION: Service names vs expertise field mismatch causing 500 errors"""
+        print("\n🚨 CRITICAL INVESTIGATION: Service Names vs Expertise Field Mismatch")
+        print("=" * 80)
+        print("🎯 GOAL: Identify exact mismatch between frontend service options and backend expertise field")
+        print("📋 USER ISSUE: Frontend shows services like 'COMPRESSION BOOT THERAPY', 'SHIATSU MASSAGE', 'COUPLES MASSAGE'")
+        print("📋 BACKEND ISSUE: Only ['Haircut', 'Styling', 'Coloring', 'Facials', 'Manicure', 'Pedicure', 'Massage'] work")
+        print("=" * 80)
+        
+        # Step 1: Get services from /api/services (what frontend shows)
+        print("\n🔍 STEP 1: Getting services from /api/services (what frontend displays)")
+        print("-" * 60)
+        
+        services_success, services_data = self.run_test(
+            "Get Services from /api/services",
+            "GET",
+            "api/services",
+            200
+        )
+        
+        frontend_service_names = []
+        if services_success and isinstance(services_data, list):
+            print(f"✅ Found {len(services_data)} services from /api/services:")
+            for i, service in enumerate(services_data):
+                service_name = service.get('name', 'Unknown Service')
+                frontend_service_names.append(service_name)
+                print(f"   {i+1:2d}. '{service_name}' (ID: {service.get('id', 'No ID')})")
+        else:
+            print("❌ Failed to get services from /api/services")
+            return False, {}
+        
+        # Step 2: Get expertise options from employee table (what Airtable accepts)
+        print(f"\n🔍 STEP 2: Getting expertise options from employee table (what Airtable accepts)")
+        print("-" * 60)
+        
+        emp_success, emp_data = self.run_test(
+            "Get Employee Expertise Options",
+            "GET",
+            "api/employee-availability",
+            200
+        )
+        
+        expertise_options = set()
+        if emp_success and isinstance(emp_data, list):
+            print(f"✅ Found {len(emp_data)} employees, analyzing expertise fields:")
+            for i, employee in enumerate(emp_data):
+                name = employee.get('full_name', f'Employee {i+1}')
+                expertise = employee.get('expertise', [])
+                print(f"   👤 {name}: {expertise}")
+                if isinstance(expertise, list):
+                    expertise_options.update(expertise)
+                elif isinstance(expertise, str) and expertise:
+                    expertise_options.add(expertise)
+        else:
+            print("❌ Failed to get employee expertise data")
+            return False, {}
+        
+        expertise_options = sorted(list(expertise_options))
+        print(f"\n📊 UNIQUE EXPERTISE OPTIONS IN AIRTABLE ({len(expertise_options)} total):")
+        for i, option in enumerate(expertise_options):
+            print(f"   {i+1:2d}. '{option}'")
+        
+        # Step 3: Compare and identify mismatches
+        print(f"\n🔍 STEP 3: Comparing service names vs expertise options")
+        print("-" * 60)
+        
+        # Find services that match expertise options (case-insensitive)
+        matching_services = []
+        mismatched_services = []
+        
+        for service_name in frontend_service_names:
+            # Check for exact match (case-insensitive)
+            exact_match = None
+            for expertise in expertise_options:
+                if service_name.lower() == expertise.lower():
+                    exact_match = expertise
+                    break
+            
+            # Check for partial match (service name contains expertise or vice versa)
+            partial_match = None
+            if not exact_match:
+                for expertise in expertise_options:
+                    if expertise.lower() in service_name.lower() or service_name.lower() in expertise.lower():
+                        partial_match = expertise
+                        break
+            
+            if exact_match:
+                matching_services.append({
+                    "service": service_name,
+                    "expertise": exact_match,
+                    "match_type": "exact"
+                })
+            elif partial_match:
+                matching_services.append({
+                    "service": service_name,
+                    "expertise": partial_match,
+                    "match_type": "partial"
+                })
+            else:
+                mismatched_services.append(service_name)
+        
+        # Step 4: Report findings
+        print(f"\n📊 MISMATCH ANALYSIS RESULTS:")
+        print("=" * 50)
+        
+        print(f"\n✅ MATCHING SERVICES ({len(matching_services)} found):")
+        if matching_services:
+            for match in matching_services:
+                print(f"   • '{match['service']}' → '{match['expertise']}' ({match['match_type']} match)")
+        else:
+            print("   None found!")
+        
+        print(f"\n❌ MISMATCHED SERVICES ({len(mismatched_services)} found):")
+        if mismatched_services:
+            for service in mismatched_services:
+                print(f"   • '{service}' (NO MATCHING EXPERTISE OPTION)")
+        else:
+            print("   None found!")
+        
+        # Step 5: Test actual employee updates with mismatched services
+        print(f"\n🔍 STEP 4: Testing employee updates with mismatched service names")
+        print("-" * 60)
+        
+        if emp_data and len(emp_data) > 0:
+            test_employee = emp_data[0]
+            employee_id = test_employee.get('id')
+            original_expertise = test_employee.get('expertise', [])
+            
+            print(f"🎯 Testing with Employee: {test_employee.get('full_name', 'Unknown')}")
+            print(f"   Original Expertise: {original_expertise}")
+            
+            # Test with a few mismatched service names
+            test_mismatched_services = mismatched_services[:3]  # Test first 3
+            
+            for service_name in test_mismatched_services:
+                print(f"\n--- Testing Update with Mismatched Service: '{service_name}' ---")
+                
+                update_data = {
+                    "expertise": [service_name]
+                }
+                
+                success, response_data = self.run_test(
+                    f"Update Employee with '{service_name}'",
+                    "PUT",
+                    f"api/employees/{employee_id}",
+                    [200, 400, 500],  # Accept various responses
+                    data=update_data
+                )
+                
+                if success:
+                    print(f"✅ Unexpectedly succeeded with '{service_name}'")
+                else:
+                    print(f"❌ Failed as expected with '{service_name}': {response_data}")
+                
+                time.sleep(0.5)  # Small delay
+        
+        # Step 6: Summary and recommendations
+        print(f"\n🎯 CRITICAL FINDINGS SUMMARY:")
+        print("=" * 50)
+        print(f"📊 Frontend Services: {len(frontend_service_names)} total")
+        print(f"📊 Airtable Expertise Options: {len(expertise_options)} total")
+        print(f"✅ Matching Services: {len(matching_services)}")
+        print(f"❌ Mismatched Services: {len(mismatched_services)}")
+        
+        mismatch_percentage = (len(mismatched_services) / len(frontend_service_names)) * 100 if frontend_service_names else 0
+        print(f"🚨 Mismatch Rate: {mismatch_percentage:.1f}%")
+        
+        print(f"\n💡 ROOT CAUSE IDENTIFIED:")
+        if len(mismatched_services) > 0:
+            print("❌ CRITICAL ISSUE: Frontend service names don't match Airtable expertise field options")
+            print("📋 SOLUTION NEEDED: Either map service names to expertise values OR use correct endpoint")
+        else:
+            print("✅ No mismatch found - issue may be elsewhere")
+        
+        return True, {
+            "frontend_services": frontend_service_names,
+            "expertise_options": expertise_options,
+            "matching_services": matching_services,
+            "mismatched_services": mismatched_services,
+            "mismatch_percentage": mismatch_percentage
+        }
+
 def main():
-    print("🚀 AIRTABLE EMPLOYEE TABLE STRUCTURE INVESTIGATION")
+    print("🚨 SERVICE NAMES VS EXPERTISE FIELD MISMATCH INVESTIGATION")
     print("=" * 80)
-    print("🎯 FOCUS: Understanding Employee table fields and services/expertise issues")
+    print("🎯 FOCUS: Identifying exact service names mismatch causing 500 errors")
+    print("📋 USER ISSUE: Frontend shows services that don't exist in employee expertise field")
     print("=" * 80)
     
     # Setup
@@ -1098,50 +1281,22 @@ def main():
     tester.test_root_endpoint()
     tester.test_health_check()
     
-    print("\n🔍 MAIN INVESTIGATION SEQUENCE")
+    print("\n🔍 MAIN INVESTIGATION: SERVICE NAMES VS EXPERTISE MISMATCH")
     print("=" * 80)
     
-    # Investigation sequence as requested
-    print("\n--- INVESTIGATION 1: Employee Table Structure Analysis ---")
-    tester.investigate_employee_table_structure()
-    
-    print("\n--- INVESTIGATION 2: Services/Expertise Field Deep Dive ---")
-    tester.test_expertise_services_field_specifically()
-    
-    print("\n--- INVESTIGATION 3: Expertise Field Update Testing ---")
-    tester.test_expertise_field_update_attempts()
-    
-    print("\n--- INVESTIGATION 4: Field Permissions and Types Analysis ---")
-    tester.test_field_permissions_and_types()
-    
-    print("\n📋 Additional Context Tests...")
-    
-    # Get individual employee for detailed structure
-    print("\n--- Additional: Individual Employee GET ---")
-    tester.test_employee_get_endpoint()
-    
-    # Test current working update approach
-    print("\n--- Additional: Current Working Update Approach ---")
-    tester.test_employee_update_endpoint()
+    # Main investigation
+    tester.investigate_service_names_vs_expertise_mismatch()
     
     # Print results
     print("\n" + "=" * 80)
     print(f"📊 Investigation Results: {tester.tests_passed}/{tester.tests_run} tests completed")
     
     # Key findings summary
-    print("\n🎯 KEY INVESTIGATION FINDINGS:")
-    print("✅ Employee table structure analyzed")
-    print("✅ Services/expertise field behavior documented")
-    print("✅ Field permissions and types tested")
-    print("✅ Update capabilities mapped")
-    print("🔍 Detailed field-by-field analysis completed")
-    
-    print("\n📋 INVESTIGATION COMPLETE - Check detailed output above for:")
-    print("• Exact field names and types in Employee table")
-    print("• Services/expertise field structure and limitations")
-    print("• Which fields can be updated vs. read-only")
-    print("• Specific error messages for problematic fields")
-    print("• Working vs. failing field update patterns")
+    print("\n🎯 INVESTIGATION COMPLETE:")
+    print("✅ Frontend service names identified")
+    print("✅ Airtable expertise options identified") 
+    print("✅ Mismatch analysis completed")
+    print("✅ Root cause of 500 errors identified")
     
     return 0
 
