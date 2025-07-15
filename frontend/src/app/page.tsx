@@ -222,7 +222,7 @@ export default function Dashboard() {
   };
 
   const handleAvailabilitySlotClick = (time: string) => {
-    router.push(`/availability?time=${encodeURIComponent(time)}`);
+    router.push(`/booking-admin?time=${encodeURIComponent(time)}`);
   };
 
   const handleClientRebookingClick = (clientName: string) => {
