@@ -746,7 +746,7 @@ async def get_analytics(range: str = "month"):
             service_ids = fields.get('Services', [])
             if isinstance(service_ids, list) and len(service_ids) > 0:
                 service_id = service_ids[0]
-                service_name = f"Service {service_id[-4:]}" if service_id else "Unknown Service"
+                service_name = f"Service {str(service_id)[-4:]}" if service_id else "Unknown Service"
                 
                 if service_name not in service_stats:
                     service_stats[service_name] = {'bookings': 0, 'revenue': 0, 'growth': 0}
