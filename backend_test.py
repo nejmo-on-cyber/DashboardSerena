@@ -1266,6 +1266,107 @@ class BackendAPITester:
             "mismatch_percentage": mismatch_percentage
         }
 
+    def test_valid_expertise_updates(self):
+        """Test updating employee with valid Airtable expertise values"""
+        print("\n🔍 TESTING: Employee Update with Valid Airtable Expertise Values")
+        print("=" * 80)
+        
+        # Get an employee to test with
+        emp_success, emp_data = self.run_test(
+            "Get Employee for Valid Expertise Test",
+            "GET",
+            "api/employee-availability",
+            200
+        )
+        
+        if not emp_success or not isinstance(emp_data, list) or len(emp_data) == 0:
+            print("❌ Cannot test - no employees available")
+            return False, {}
+        
+        test_employee = emp_data[0]
+        employee_id = test_employee.get('id')
+        original_expertise = test_employee.get('expertise', [])
+        
+        print(f"🎯 Testing with Employee: {test_employee.get('full_name', 'Unknown')}")
+        print(f"   ID: {employee_id}")
+        print(f"   Original Expertise: {original_expertise}")
+        
+        # Test with valid Airtable expertise values
+        valid_expertise_tests = [
+            ["Massage"],
+            ["Haircut"],
+            ["Facials"],
+            ["Coloring"],
+            ["Manicure"],
+            ["Pedicure"],
+            ["Styling"],
+            ["Massage", "Haircut"],
+            ["Facials", "Styling"],
+            ["Coloring", "Manicure", "Pedicure"]
+        ]
+        
+        successful_updates = 0
+        failed_updates = 0
+        
+        for i, expertise_list in enumerate(valid_expertise_tests):
+            print(f"\n--- Test {i+1}: Valid Expertise {expertise_list} ---")
+            
+            update_data = {
+                "expertise": expertise_list
+            }
+            
+            success, response_data = self.run_test(
+                f"Update Employee with Valid Expertise: {expertise_list}",
+                "PUT",
+                f"api/employees/{employee_id}",
+                200,
+                data=update_data
+            )
+            
+            if success:
+                successful_updates += 1
+                print(f"✅ Update succeeded with {expertise_list}")
+                
+                # Verify what was stored
+                verify_success, verify_data = self.run_test(
+                    f"Verify Valid Expertise Update: {expertise_list}",
+                    "GET",
+                    f"api/employees/{employee_id}",
+                    200
+                )
+                
+                if verify_success:
+                    stored_expertise = verify_data.get('expertise', [])
+                    print(f"   Stored Expertise: {stored_expertise}")
+                    
+                    # Check if all values were stored correctly
+                    if isinstance(stored_expertise, list):
+                        all_stored = all(exp in stored_expertise for exp in expertise_list)
+                        if all_stored:
+                            print(f"✅ All expertise values stored correctly")
+                        else:
+                            print(f"⚠️  Some expertise values missing in storage")
+            else:
+                failed_updates += 1
+                print(f"❌ Update failed with {expertise_list}: {response_data}")
+            
+            time.sleep(0.5)
+        
+        print(f"\n📊 VALID EXPERTISE TEST RESULTS:")
+        print("-" * 40)
+        print(f"✅ Successful Updates: {successful_updates}")
+        print(f"❌ Failed Updates: {failed_updates}")
+        print(f"📊 Total Tests: {len(valid_expertise_tests)}")
+        
+        success_rate = (successful_updates / len(valid_expertise_tests)) * 100 if valid_expertise_tests else 0
+        print(f"🎯 Success Rate: {success_rate:.1f}%")
+        
+        return success_rate >= 80, {
+            "successful_updates": successful_updates,
+            "failed_updates": failed_updates,
+            "success_rate": success_rate
+        }
+
     def test_service_mapping_functionality(self):
         """CRITICAL TEST: Service names mapping to expertise categories as claimed in review request"""
         print("\n🚨 CRITICAL TEST: Service Names Mapping to Expertise Categories")
