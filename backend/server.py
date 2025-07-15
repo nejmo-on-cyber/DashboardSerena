@@ -772,7 +772,22 @@ async def get_analytics(range: str = "month"):
             employee_ids = fields.get('Stylist', [])
             if isinstance(employee_ids, list) and len(employee_ids) > 0:
                 employee_id = employee_ids[0]
-                employee_name = get_employee_name(employee_id) or "Unknown Employee"
+                # Get employee name safely
+                employee_name = "Unknown Employee"
+                try:
+                    if employee_id in employee_name_cache:
+                        employee_name = employee_name_cache[employee_id]
+                    elif airtable_employees:
+                        employee_record = airtable_employees.get(employee_id)
+                        fields_emp = employee_record['fields']
+                        full_name = fields_emp.get('Full Name', '')
+                        first_name = fields_emp.get('First Name', '')
+                        last_name = fields_emp.get('Last Name', '')
+                        employee_name = full_name or f'{first_name} {last_name}'.strip() or 'Unknown Employee'
+                        employee_name_cache[employee_id] = employee_name
+                except Exception as e:
+                    print(f"Error fetching employee {employee_id}: {e}")
+                    employee_name = f"Employee {employee_id[-4:]}"
                 
                 if employee_name not in employee_stats:
                     employee_stats[employee_name] = {
