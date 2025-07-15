@@ -25,15 +25,40 @@ import {
 } from "lucide-react";
 import EmployeeManagement from "./EmployeeManagement";
 
+interface Employee {
+  id: string;
+  full_name: string;
+  employee_number: string;
+  email: string;
+  contact_number: string;
+  availability_days: string[];
+  expertise: string[];
+  profile_picture: string;
+  start_date: string;
+  status: string;
+}
+
 interface SidebarProps {
   darkMode: boolean;
 }
+
+const placeholderImages = [
+  "https://images.unsplash.com/photo-1494790108755-2616b5e7c8b0?w=40&h=40&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=40&h=40&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=40&h=40&fit=crop&crop=face"
+];
 
 export default function Sidebar({ darkMode }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [showEmployeeManagement, setShowEmployeeManagement] = useState(false);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const navigation = [
     { name: "Dashboard", href: "/", icon: Home },
