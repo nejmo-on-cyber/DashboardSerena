@@ -479,6 +479,116 @@ async def delete_appointment(appointment_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting appointment: {str(e)}")
 
+@app.post("/api/employees")
+async def create_employee(employee_data: dict):
+    """Create a new employee in Airtable"""
+    if not airtable_employees:
+        raise HTTPException(status_code=503, detail="Airtable not configured")
+    
+    try:
+        # Map employee data to Airtable fields
+        airtable_fields = {
+            "Full Name": employee_data.get("full_name", ""),
+            "Employee Number": employee_data.get("employee_number", ""),
+            "Email": employee_data.get("email", ""),
+            "Contact Number": employee_data.get("contact_number", ""),
+            "Availability": employee_data.get("availability_days", []),
+            "Expertise": employee_data.get("expertise", []),
+            "Profile Picture": employee_data.get("profile_picture", ""),
+            "Start Date": employee_data.get("start_date", ""),
+            "Status": employee_data.get("status", "Active")
+        }
+        
+        # Remove None values
+        airtable_fields = {k: v for k, v in airtable_fields.items() if v is not None and v != ""}
+        
+        created_employee = airtable_employees.insert(airtable_fields)
+        return {
+            "success": True,
+            "employee_id": created_employee['id'],
+            "message": "Employee created successfully"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating employee: {str(e)}")
+
+@app.put("/api/employees/{employee_id}")
+async def update_employee(employee_id: str, employee_data: dict):
+    """Update an employee in Airtable"""
+    if not airtable_employees:
+        raise HTTPException(status_code=503, detail="Airtable not configured")
+    
+    try:
+        # Map employee data to Airtable fields
+        airtable_fields = {}
+        
+        if employee_data.get("full_name"):
+            airtable_fields["Full Name"] = employee_data["full_name"]
+        if employee_data.get("employee_number"):
+            airtable_fields["Employee Number"] = employee_data["employee_number"]
+        if employee_data.get("email"):
+            airtable_fields["Email"] = employee_data["email"]
+        if employee_data.get("contact_number"):
+            airtable_fields["Contact Number"] = employee_data["contact_number"]
+        if employee_data.get("availability_days"):
+            airtable_fields["Availability"] = employee_data["availability_days"]
+        if employee_data.get("expertise"):
+            airtable_fields["Expertise"] = employee_data["expertise"]
+        if employee_data.get("profile_picture"):
+            airtable_fields["Profile Picture"] = employee_data["profile_picture"]
+        if employee_data.get("start_date"):
+            airtable_fields["Start Date"] = employee_data["start_date"]
+        if employee_data.get("status"):
+            airtable_fields["Status"] = employee_data["status"]
+        
+        updated_employee = airtable_employees.update(employee_id, airtable_fields)
+        return {
+            "success": True,
+            "employee_id": updated_employee['id'],
+            "message": "Employee updated successfully"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating employee: {str(e)}")
+
+@app.delete("/api/employees/{employee_id}")
+async def delete_employee(employee_id: str):
+    """Delete an employee from Airtable"""
+    if not airtable_employees:
+        raise HTTPException(status_code=503, detail="Airtable not configured")
+    
+    try:
+        airtable_employees.delete(employee_id)
+        return {
+            "success": True,
+            "message": "Employee deleted successfully"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting employee: {str(e)}")
+
+@app.get("/api/employees/{employee_id}")
+async def get_employee(employee_id: str):
+    """Get a specific employee by ID"""
+    if not airtable_employees:
+        raise HTTPException(status_code=503, detail="Airtable not configured")
+    
+    try:
+        employee = airtable_employees.get(employee_id)
+        fields = employee.get('fields', {})
+        
+        return {
+            "id": employee['id'],
+            "full_name": fields.get('Full Name', ''),
+            "employee_number": fields.get('Employee Number', ''),
+            "email": fields.get('Email', ''),
+            "contact_number": fields.get('Contact Number', ''),
+            "availability_days": fields.get('Availability', []),
+            "expertise": fields.get('Expertise', []),
+            "profile_picture": fields.get('Profile Picture', ''),
+            "start_date": fields.get('Start Date', ''),
+            "status": fields.get('Status', 'Active')
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching employee: {str(e)}")
+
 @app.get("/api/employee-availability")
 async def get_employee_availability():
     """Get employee availability and expertise data"""
