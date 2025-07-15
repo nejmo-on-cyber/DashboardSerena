@@ -220,12 +220,62 @@ export default function EmployeeManagementPage() {
     }));
   };
 
+  // Map service names to expertise field values that work in Airtable
+  const mapServiceToExpertise = (serviceName: string): string => {
+    const serviceUpper = serviceName.toUpperCase();
+    
+    // Massage-related services
+    if (serviceUpper.includes('MASSAGE') || serviceUpper.includes('LYMPHATIC') || serviceUpper.includes('COMPRESSION')) {
+      return 'Massage';
+    }
+    
+    // Facial/skincare services
+    if (serviceUpper.includes('FACIAL') || serviceUpper.includes('FACE') || serviceUpper.includes('SKIN') || 
+        serviceUpper.includes('MICROCURRENT') || serviceUpper.includes('LIGHT THERAPY')) {
+      return 'Facials';
+    }
+    
+    // Hair services
+    if (serviceUpper.includes('HAIR') || serviceUpper.includes('CUT') || serviceUpper.includes('STYLE')) {
+      return 'Haircut';
+    }
+    
+    // Coloring services
+    if (serviceUpper.includes('COLOR') || serviceUpper.includes('DYE') || serviceUpper.includes('HIGHLIGHT')) {
+      return 'Coloring';
+    }
+    
+    // Nail services
+    if (serviceUpper.includes('MANI') || serviceUpper.includes('NAIL')) {
+      return 'Manicure';
+    }
+    
+    if (serviceUpper.includes('PEDI') || serviceUpper.includes('FOOT')) {
+      return 'Pedicure';
+    }
+    
+    // Styling services
+    if (serviceUpper.includes('STYLE') || serviceUpper.includes('STYLING')) {
+      return 'Styling';
+    }
+    
+    // Default to Massage for spa/therapy services
+    if (serviceUpper.includes('THERAPY') || serviceUpper.includes('TREATMENT') || serviceUpper.includes('SPA')) {
+      return 'Massage';
+    }
+    
+    // If no mapping found, return original (will likely fail, but at least we try)
+    return serviceName;
+  };
+
   const toggleService = (serviceName: string) => {
+    const mappedExpertise = mapServiceToExpertise(serviceName);
+    
     setFormData(prev => ({
       ...prev,
-      expertise: prev.expertise.includes(serviceName)
-        ? prev.expertise.filter(s => s !== serviceName)
-        : [...prev.expertise, serviceName]
+      expertise: prev.expertise.includes(mappedExpertise)
+        ? prev.expertise.filter(s => s !== mappedExpertise)
+        : [...prev.expertise, mappedExpertise]
     }));
   };
 
