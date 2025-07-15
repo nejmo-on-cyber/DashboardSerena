@@ -544,7 +544,7 @@ class BackendAPITester:
         return False, {}
 
 def main():
-    print("🚀 Starting Backend API Tests - Complete Deletion Focus")
+    print("🚀 Starting Backend API Tests - Booking Admin System Focus")
     print("=" * 60)
     
     # Setup
@@ -568,11 +568,30 @@ def main():
     tester.test_get_services() 
     tester.test_get_employees()
     
+    print("\n🎯 MAIN FOCUS: Testing NEW Booking Admin Endpoints")
+    print("=" * 60)
+    
+    # Test new booking admin endpoints
+    print("\n--- Test 1: Employee Availability Endpoint ---")
+    tester.test_employee_availability()
+    
+    print("\n--- Test 2: Services with Duration Endpoint ---")
+    tester.test_services_with_duration()
+    
+    print("\n--- Test 3: Therapists by Service Endpoint ---")
+    tester.test_therapists_by_service()
+    
+    print("\n--- Test 4: Invalid Service Name Handling ---")
+    tester.test_therapists_by_invalid_service()
+    
+    print("\n--- Test 5: Data Consistency Check ---")
+    tester.test_booking_admin_data_consistency()
+    
     print("\n📋 Testing Complete Deletion Functionality...")
-    print("🎯 MAIN FOCUS: Testing that cancelled appointments are COMPLETELY DELETED")
+    print("🎯 SECONDARY FOCUS: Testing that cancelled appointments are COMPLETELY DELETED")
     
     # Test 1: Create appointment and cancel via UPDATE endpoint
-    print("\n--- Test 1: Cancel via UPDATE endpoint ---")
+    print("\n--- Test 6: Cancel via UPDATE endpoint ---")
     create_success = tester.test_create_appointment()
     if create_success[0]:
         time.sleep(1)  # Brief pause for Airtable sync
@@ -582,15 +601,15 @@ def main():
             tester.test_verify_appointment_deleted()
     
     # Test 2: Direct DELETE endpoint
-    print("\n--- Test 2: Direct DELETE endpoint ---")
+    print("\n--- Test 7: Direct DELETE endpoint ---")
     tester.test_delete_appointment_direct()
     
     # Test 3: Error handling for invalid IDs
-    print("\n--- Test 3: Error handling for invalid appointment IDs ---")
+    print("\n--- Test 8: Error handling for invalid appointment IDs ---")
     tester.test_invalid_appointment_deletion()
     
     # Test 4: Regular update functionality still works
-    print("\n--- Test 4: Regular appointment updates still work ---")
+    print("\n--- Test 9: Regular appointment updates still work ---")
     tester.test_appointment_update_functionality()
     
     # Test existing CRUD operations
@@ -608,12 +627,15 @@ def main():
     print("✅ Backend server is running and accessible")
     print("✅ Airtable connection is working")
     print("✅ All dropdown endpoints (clients, services, employees) working")
+    print("✅ NEW: Employee availability endpoint tested")
+    print("✅ NEW: Services with duration endpoint tested")
+    print("✅ NEW: Therapists by service filtering tested")
     
     if tester.tests_passed >= (tester.tests_run * 0.8):  # 80% pass rate
-        print("🎉 Most tests passed - Backend deletion functionality appears to be working!")
+        print("🎉 Most tests passed - Backend booking admin functionality appears to be working!")
         return 0
     else:
-        print("⚠️  Some critical tests failed - Backend deletion functionality needs attention")
+        print("⚠️  Some critical tests failed - Backend booking admin functionality needs attention")
         return 1
 
 if __name__ == "__main__":
