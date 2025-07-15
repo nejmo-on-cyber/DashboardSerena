@@ -16,6 +16,7 @@ import {
   Activity,
   Zap,
   RefreshCw,
+  X,
 } from "lucide-react";
 
 interface AnalyticsData {
