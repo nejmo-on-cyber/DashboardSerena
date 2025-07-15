@@ -1,7 +1,7 @@
 {
   "version": 4,
   "routes": {
-    "/calendar": {
+    "/voice-calls": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -14,56 +14,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/calendar",
-      "dataRoute": "/calendar.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "Next-Action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/",
-      "dataRoute": "/index.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/availability": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "Next-Action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/availability",
-      "dataRoute": "/availability.rsc",
+      "srcRoute": "/voice-calls",
+      "dataRoute": "/voice-calls.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -97,7 +49,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/voice-calls": {
+    "/availability": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -110,8 +62,109 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/voice-calls",
-      "dataRoute": "/voice-calls.rsc",
+      "srcRoute": "/availability",
+      "dataRoute": "/availability.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/favicon.ico": {
+      "initialHeaders": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "image/x-icon",
+        "x-next-cache-tags": "_N_T_/layout,_N_T_/favicon.ico/layout,_N_T_/favicon.ico/route,_N_T_/favicon.ico"
+      },
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "Next-Action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/favicon.ico",
+      "dataRoute": null,
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/calendar": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "Next-Action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/calendar",
+      "dataRoute": "/calendar.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/employees": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "Next-Action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/employees",
+      "dataRoute": "/employees.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/conversations": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "Next-Action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/conversations",
+      "dataRoute": "/conversations.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -136,30 +189,6 @@
       "initialRevalidateSeconds": false,
       "srcRoute": "/analytics",
       "dataRoute": "/analytics.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/booking-admin": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "Next-Action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/booking-admin",
-      "dataRoute": "/booking-admin.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -217,30 +246,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/conversations": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "Next-Action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/conversations",
-      "dataRoute": "/conversations.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/revenue": {
       "experimentalBypassFor": [
         {
@@ -265,12 +270,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/favicon.ico": {
-      "initialHeaders": {
-        "cache-control": "public, max-age=0, must-revalidate",
-        "content-type": "image/x-icon",
-        "x-next-cache-tags": "_N_T_/layout,_N_T_/favicon.ico/layout,_N_T_/favicon.ico/route,_N_T_/favicon.ico"
-      },
+    "/": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -283,8 +283,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/favicon.ico",
-      "dataRoute": null,
+      "srcRoute": "/",
+      "dataRoute": "/index.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -294,7 +294,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/employees": {
+    "/booking-admin": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -307,8 +307,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/employees",
-      "dataRoute": "/employees.rsc",
+      "srcRoute": "/booking-admin",
+      "dataRoute": "/booking-admin.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -322,8 +322,8 @@
   "dynamicRoutes": {},
   "notFoundRoutes": [],
   "preview": {
-    "previewModeId": "9a4121fa4891b565b02b45c0ef5e57ab",
-    "previewModeSigningKey": "bffc7f74b2975276246cbe935012694a2fc052b0ded75d5c8b5fcde6f7670620",
-    "previewModeEncryptionKey": "71d74b81edb15b076188642c9e9d3d91f0c43b5107ae8f1dd67df0f3d928c50b"
+    "previewModeId": "c27041f64ee3d33fd4eeb9b7c11d5f94",
+    "previewModeSigningKey": "187b5d30d216e872543b9ba7d0fb8fbad233a295657eb729671083ac9d313d47",
+    "previewModeEncryptionKey": "3a7c79e45314bf8c6b65935cbed934fde3af5365332229ad6c78619a6c58ce81"
   }
 }
