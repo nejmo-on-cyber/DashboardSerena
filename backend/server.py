@@ -740,7 +740,18 @@ async def get_analytics(range: str = "month"):
             service_ids = fields.get('Services', [])
             if isinstance(service_ids, list) and len(service_ids) > 0:
                 service_id = service_ids[0]
-                service_name = get_service_name(service_id) or "Unknown Service"
+                # Get service name safely
+                service_name = "Unknown Service"
+                try:
+                    if service_id in service_name_cache:
+                        service_name = service_name_cache[service_id]
+                    elif airtable_services:
+                        service_record = airtable_services.get(service_id)
+                        service_name = service_record['fields'].get('Service Name') or service_record['fields'].get('Name', 'Unknown Service')
+                        service_name_cache[service_id] = service_name
+                except Exception as e:
+                    print(f"Error fetching service {service_id}: {e}")
+                    service_name = f"Service {service_id[-4:]}"
                 
                 if service_name not in service_stats:
                     service_stats[service_name] = {
