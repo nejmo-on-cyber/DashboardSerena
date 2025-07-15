@@ -118,6 +118,54 @@ backend:
         agent: "testing"
         comment: "✅ Airtable connection working perfectly. Health check endpoint shows status='healthy', airtable='connected', with proper API key and base ID configuration."
 
+  - task: "GET /api/employee-availability endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ Employee availability endpoint working correctly. Returns 6 employees with all required fields: id, full_name, employee_number, availability_days, expertise, contact_number, email. Found employees like Luna Star (Monday/Wednesday/Friday availability, Haircut/Styling expertise) and Leo King (Tuesday/Thursday/Saturday availability, Coloring/Facials expertise)."
+
+  - task: "GET /api/services-with-duration endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ Services with duration endpoint working correctly. Returns 31 services with all required fields: id, name, description, duration, price, category. Examples include Face Camp therapy ($370, 60 min) and Infrared Sauna therapy ($420, 60 min). All services have proper pricing and duration information."
+
+  - task: "GET /api/therapists-by-service/{service_name} endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ Therapists by service filtering endpoint working correctly. Successfully filters therapists based on expertise: Haircut (2 therapists), Massage (1 therapist), Facial (3 therapists), Coloring (2 therapists), Styling (2 therapists). Correctly returns empty arrays for invalid service names. Service filtering logic properly matches therapist expertise with service names."
+
+  - task: "Error handling for invalid service names in therapist filtering"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ Error handling working correctly for invalid service names. Returns empty arrays for non-existent services like 'NonExistentService' and 'InvalidService123'. Minor: Empty service names cause 404 errors which is expected behavior for malformed URLs."
+
 frontend:
   - task: "Cancel button functionality in calendar"
     implemented: true
