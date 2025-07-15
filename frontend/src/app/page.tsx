@@ -85,7 +85,7 @@ export default function Dashboard() {
       value: 47,
       icon: Calendar,
       color: "text-purple-400",
-      onClick: () => router.push("/availability"),
+      onClick: () => router.push("/booking-admin"),
     },
     {
       title: "This Month",
