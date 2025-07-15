@@ -22,6 +22,45 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+def map_service_to_expertise(service_name: str) -> str:
+    """Map service names to valid Airtable expertise categories"""
+    service_upper = service_name.upper()
+    
+    # Massage-related services
+    if any(keyword in service_upper for keyword in ['MASSAGE', 'LYMPHATIC', 'COMPRESSION']):
+        return 'Massage'
+    
+    # Facial/skincare services
+    if any(keyword in service_upper for keyword in ['FACIAL', 'FACE', 'SKIN', 'MICROCURRENT', 'LIGHT THERAPY']):
+        return 'Facials'
+    
+    # Hair services
+    if any(keyword in service_upper for keyword in ['HAIR', 'CUT', 'STYLE']):
+        return 'Haircut'
+    
+    # Coloring services
+    if any(keyword in service_upper for keyword in ['COLOR', 'DYE', 'HIGHLIGHT']):
+        return 'Coloring'
+    
+    # Nail services
+    if any(keyword in service_upper for keyword in ['MANI', 'NAIL']):
+        return 'Manicure'
+    
+    if any(keyword in service_upper for keyword in ['PEDI', 'FOOT']):
+        return 'Pedicure'
+    
+    # Styling services
+    if 'STYLING' in service_upper:
+        return 'Styling'
+    
+    # Default to Massage for spa/therapy services
+    if any(keyword in service_upper for keyword in ['THERAPY', 'TREATMENT', 'SPA']):
+        return 'Massage'
+    
+    # If no mapping found, return original (will likely fail, but at least we try)
+    return service_name
+
+
 # Airtable configuration
 AIRTABLE_API_KEY = os.getenv("AIRTABLE_API_KEY")
 AIRTABLE_BASE_ID = os.getenv("AIRTABLE_BASE_ID")
