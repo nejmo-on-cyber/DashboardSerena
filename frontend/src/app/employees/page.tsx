@@ -219,13 +219,13 @@ export default function EmployeeManagementPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Active':
-        return 'bg-green-100 text-green-800';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
       case 'Inactive':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-50 text-red-700 border-red-200';
       case 'On Leave':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-amber-50 text-amber-700 border-amber-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
 
@@ -240,34 +240,34 @@ export default function EmployeeManagementPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50/50">
       <Sidebar darkMode={darkMode} />
       
       <div className="ml-64 p-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Employee Management
+          <div className="mb-10">
+            <h1 className="text-4xl font-bold text-gray-900 mb-3 tracking-tight">
+              Team Management
             </h1>
-            <p className="text-gray-600">
+            <p className="text-lg text-gray-600 font-medium">
               Manage your team members, schedules, and service assignments
             </p>
           </div>
 
           {/* Actions and Filters */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 p-8 mb-8">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
               <div className="flex flex-col sm:flex-row gap-4">
                 {/* Search */}
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
                     type="text"
-                    placeholder="Search employees..."
+                    placeholder="Search team members..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="pl-12 pr-4 py-3 w-80 border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 focus:outline-none bg-white/50 backdrop-blur-sm transition-all duration-200"
                   />
                 </div>
 
@@ -275,7 +275,7 @@ export default function EmployeeManagementPage() {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="px-4 py-3 border border-gray-200/50 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 focus:outline-none bg-white/50 backdrop-blur-sm transition-all duration-200"
                 >
                   <option value="All">All Status</option>
                   <option value="Active">Active</option>
@@ -287,64 +287,64 @@ export default function EmployeeManagementPage() {
               {/* Add Employee Button */}
               <button
                 onClick={() => setShowAddForm(true)}
-                className="flex items-center space-x-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                className="flex items-center space-x-3 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md font-medium"
               >
                 <Plus className="w-5 h-5" />
-                <span>Add New Employee</span>
+                <span>Add Team Member</span>
               </button>
             </div>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 p-8 hover:shadow-md transition-all duration-200">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <User className="w-6 h-6 text-blue-600" />
+                <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center">
+                  <User className="w-7 h-7 text-blue-600" />
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm text-gray-600">Total Employees</p>
-                  <p className="text-2xl font-bold text-gray-900">{employees.length}</p>
+                <div className="ml-6">
+                  <p className="text-sm text-gray-600 font-medium">Total Team</p>
+                  <p className="text-3xl font-bold text-gray-900">{employees.length}</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 p-8 hover:shadow-md transition-all duration-200">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Check className="w-6 h-6 text-green-600" />
+                <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center">
+                  <Check className="w-7 h-7 text-emerald-600" />
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm text-gray-600">Active</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                <div className="ml-6">
+                  <p className="text-sm text-gray-600 font-medium">Active</p>
+                  <p className="text-3xl font-bold text-gray-900">
                     {employees.filter(e => e.status === 'Active').length}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 p-8 hover:shadow-md transition-all duration-200">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                  <Clock className="w-6 h-6 text-yellow-600" />
+                <div className="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center">
+                  <Clock className="w-7 h-7 text-amber-600" />
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm text-gray-600">On Leave</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                <div className="ml-6">
+                  <p className="text-sm text-gray-600 font-medium">On Leave</p>
+                  <p className="text-3xl font-bold text-gray-900">
                     {employees.filter(e => e.status === 'On Leave').length}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 p-8 hover:shadow-md transition-all duration-200">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                  <X className="w-6 h-6 text-red-600" />
+                <div className="w-14 h-14 bg-red-100 rounded-2xl flex items-center justify-center">
+                  <X className="w-7 h-7 text-red-600" />
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm text-gray-600">Inactive</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                <div className="ml-6">
+                  <p className="text-sm text-gray-600 font-medium">Inactive</p>
+                  <p className="text-3xl font-bold text-gray-900">
                     {employees.filter(e => e.status === 'Inactive').length}
                   </p>
                 </div>
@@ -353,20 +353,20 @@ export default function EmployeeManagementPage() {
           </div>
 
           {/* Employee Cards */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Team Members</h2>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-8 tracking-tight">Team Members</h2>
             
             {loading ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
-                <p className="text-gray-600 mt-2">Loading employees...</p>
+              <div className="text-center py-16">
+                <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent mx-auto"></div>
+                <p className="text-gray-600 mt-4 font-medium">Loading team members...</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredEmployees.map((employee) => (
-                  <div key={employee.id} className="bg-gray-50 rounded-lg p-6 border border-gray-200 hover:shadow-md transition-shadow">
-                    <div className="flex items-center space-x-4 mb-4">
-                      <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden">
+                  <div key={employee.id} className="bg-white rounded-2xl shadow-sm border border-gray-200/50 p-8 hover:shadow-md transition-all duration-200 group">
+                    <div className="flex items-center space-x-5 mb-6">
+                      <div className="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center overflow-hidden shadow-inner">
                         {employee.profile_picture ? (
                           <img 
                             src={employee.profile_picture} 
@@ -382,46 +382,52 @@ export default function EmployeeManagementPage() {
                         )}
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900">{employee.full_name}</h3>
-                        <p className="text-sm text-gray-600">#{employee.employee_number}</p>
-                        <span className={`inline-block px-2 py-1 text-xs rounded-full ${getStatusColor(employee.status)}`}>
+                        <h3 className="text-xl font-bold text-gray-900 mb-1 tracking-tight">{employee.full_name}</h3>
+                        <p className="text-sm text-gray-600 font-medium mb-2">#{employee.employee_number}</p>
+                        <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(employee.status)}`}>
                           {employee.status}
                         </span>
                       </div>
                     </div>
                     
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <Mail className="w-4 h-4" />
-                        <span>{employee.email || 'No email'}</span>
+                    <div className="space-y-4 mb-6">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <Mail className="w-4 h-4 text-gray-600" />
+                        </div>
+                        <span className="text-sm text-gray-700 font-medium">{employee.email || 'No email'}</span>
                       </div>
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <Phone className="w-4 h-4" />
-                        <span>{employee.contact_number || 'No phone'}</span>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <Phone className="w-4 h-4 text-gray-600" />
+                        </div>
+                        <span className="text-sm text-gray-700 font-medium">{employee.contact_number || 'No phone'}</span>
                       </div>
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <Calendar className="w-4 h-4" />
-                        <span>{employee.availability_days.join(', ') || 'No availability set'}</span>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <Calendar className="w-4 h-4 text-gray-600" />
+                        </div>
+                        <span className="text-sm text-gray-700 font-medium">{employee.availability_days.join(', ') || 'No availability set'}</span>
                       </div>
                     </div>
                     
-                    <div className="mb-4">
-                      <p className="text-sm font-medium text-gray-700 mb-2">Expertise:</p>
-                      <div className="flex flex-wrap gap-1">
+                    <div className="mb-6">
+                      <p className="text-sm font-semibold text-gray-900 mb-3">Expertise</p>
+                      <div className="flex flex-wrap gap-2">
                         {employee.expertise.slice(0, 3).map((skill) => (
-                          <span key={skill} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                          <span key={skill} className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full border border-blue-200">
                             {skill}
                           </span>
                         ))}
                         {employee.expertise.length > 3 && (
-                          <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded">
+                          <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200">
                             +{employee.expertise.length - 3} more
                           </span>
                         )}
                       </div>
                     </div>
                     
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-3">
                       <button
                         onClick={() => {
                           setEditingEmployee(employee);
@@ -438,14 +444,14 @@ export default function EmployeeManagementPage() {
                           });
                           setShowEditForm(true);
                         }}
-                        className="flex items-center space-x-1 px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+                        className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition-all duration-200"
                       >
                         <Edit className="w-4 h-4" />
                         <span>Edit</span>
                       </button>
                       <button
                         onClick={() => handleDeleteEmployee(employee.id)}
-                        className="flex items-center space-x-1 px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
+                        className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-xl hover:bg-red-700 transition-all duration-200"
                       >
                         <Trash2 className="w-4 h-4" />
                         <span>Delete</span>
@@ -457,15 +463,15 @@ export default function EmployeeManagementPage() {
             )}
 
             {filteredEmployees.length === 0 && !loading && (
-              <div className="text-center py-8">
-                <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  No employees found
+              <div className="text-center py-16">
+                <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  No team members found
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 font-medium">
                   {searchTerm || filterStatus !== "All" 
                     ? "Try adjusting your search or filters"
-                    : "Add your first employee to get started"
+                    : "Add your first team member to get started"
                   }
                 </p>
               </div>
