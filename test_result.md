@@ -9,7 +9,15 @@
 - Dropdown data endpoints (clients, services, employees) - ✅ Working correctly
 - Airtable connection and health check - ✅ Working correctly
 
+**NEW BOOKING ADMIN ENDPOINTS:**
+- GET `/api/employee-availability` - ✅ Working correctly
+- GET `/api/services-with-duration` - ✅ Working correctly  
+- GET `/api/therapists-by-service/{service_name}` - ✅ Working correctly
+- Error handling for invalid service names - ✅ Working correctly
+
 **Key Finding**: Both deletion methods completely remove appointments from Airtable, and deleted appointments no longer appear in subsequent GET requests. The complete deletion functionality is working as requested.
+
+**New Key Finding**: All new booking admin endpoints are working perfectly. Employee availability returns 6 employees with complete data (availability days, expertise, contact info). Services endpoint returns 31 services with pricing and duration. Therapist filtering correctly matches expertise with service names - found qualified therapists for Haircut(2), Massage(1), Facial(3), Coloring(2), Styling(2). Data structure matches expected format for admin booking interface.
 
 ### Frontend Testing (Completed ✅)
 - Cancel button functionality in calendar - ✅ Working correctly
