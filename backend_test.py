@@ -126,6 +126,277 @@ class BackendAPITester:
             200
         )
 
+    def test_get_clients(self):
+        """Test getting clients for dropdown"""
+        return self.run_test(
+            "Get Clients",
+            "GET", 
+            "api/clients",
+            200
+        )
+
+    def test_get_services(self):
+        """Test getting services for dropdown"""
+        return self.run_test(
+            "Get Services",
+            "GET",
+            "api/services", 
+            200
+        )
+
+    def test_get_employees(self):
+        """Test getting employees for dropdown"""
+        return self.run_test(
+            "Get Employees",
+            "GET",
+            "api/employees",
+            200
+        )
+
+    def test_create_appointment(self):
+        """Test creating a new appointment"""
+        # First get available clients, services, and employees
+        clients_success, clients_data = self.test_get_clients()
+        services_success, services_data = self.test_get_services()
+        employees_success, employees_data = self.test_get_employees()
+        
+        if not (clients_success and services_success and employees_success):
+            print("❌ Cannot create appointment - missing dropdown data")
+            return False, {}
+            
+        if not (clients_data and services_data and employees_data):
+            print("❌ Cannot create appointment - empty dropdown data")
+            return False, {}
+
+        # Create appointment with real data
+        appointment_data = {
+            "client_id": clients_data[0]["id"],
+            "service_id": services_data[0]["id"], 
+            "employee_id": employees_data[0]["id"],
+            "date": "2024-02-15",
+            "time": "2:00 PM",
+            "notes": "Test appointment for deletion testing"
+        }
+        
+        success, response_data = self.run_test(
+            "Create Appointment",
+            "POST",
+            "api/appointments",
+            200,
+            data=appointment_data
+        )
+        
+        if success and response_data.get("record_id"):
+            self.created_appointment_id = response_data["record_id"]
+            print(f"   Created appointment with ID: {self.created_appointment_id}")
+        
+        return success, response_data
+
+    def test_update_appointment_cancel(self):
+        """Test cancelling appointment via UPDATE endpoint (should delete completely)"""
+        if not self.created_appointment_id:
+            print("❌ No appointment ID available for cancel test")
+            return False, {}
+            
+        cancel_data = {
+            "action": "cancel"
+        }
+        
+        success, response_data = self.run_test(
+            "Cancel Appointment (UPDATE with action=cancel)",
+            "PUT",
+            f"api/appointments/{self.created_appointment_id}",
+            200,
+            data=cancel_data
+        )
+        
+        if success:
+            expected_action = response_data.get("action")
+            if expected_action == "deleted":
+                print("✅ Appointment was completely deleted as expected")
+            else:
+                print(f"⚠️  Expected action='deleted', got action='{expected_action}'")
+                
+        return success, response_data
+
+    def test_verify_appointment_deleted(self):
+        """Verify the cancelled appointment no longer exists in records"""
+        success, records_data = self.run_test(
+            "Verify Appointment Deleted from Records",
+            "GET",
+            "api/records",
+            200
+        )
+        
+        if success and isinstance(records_data, list):
+            # Check if our deleted appointment still exists
+            deleted_found = False
+            for record in records_data:
+                if record.get("id") == self.created_appointment_id:
+                    deleted_found = True
+                    break
+                    
+            if not deleted_found:
+                print("✅ Deleted appointment not found in records - complete deletion confirmed")
+                return True, {"deleted_confirmed": True}
+            else:
+                print("❌ Deleted appointment still found in records - deletion failed")
+                return False, {"deleted_confirmed": False}
+        
+        return success, records_data
+
+    def test_delete_appointment_direct(self):
+        """Test direct DELETE endpoint for appointments"""
+        # Create another appointment to test direct deletion
+        clients_success, clients_data = self.test_get_clients()
+        services_success, services_data = self.test_get_services() 
+        employees_success, employees_data = self.test_get_employees()
+        
+        if clients_data and services_data and employees_data:
+            appointment_data = {
+                "client_id": clients_data[0]["id"],
+                "service_id": services_data[0]["id"],
+                "employee_id": employees_data[0]["id"], 
+                "date": "2024-02-16",
+                "time": "3:00 PM",
+                "notes": "Test appointment for direct deletion"
+            }
+            
+            create_success, create_response = self.run_test(
+                "Create Appointment for Direct Delete Test",
+                "POST",
+                "api/appointments", 
+                200,
+                data=appointment_data
+            )
+            
+            if create_success and create_response.get("record_id"):
+                delete_appointment_id = create_response["record_id"]
+                
+                # Now test direct deletion
+                success, response_data = self.run_test(
+                    "Direct DELETE Appointment",
+                    "DELETE",
+                    f"api/appointments/{delete_appointment_id}",
+                    200
+                )
+                
+                if success:
+                    # Verify it's deleted from records
+                    verify_success, records_data = self.run_test(
+                        "Verify Direct Delete from Records",
+                        "GET", 
+                        "api/records",
+                        200
+                    )
+                    
+                    if verify_success and isinstance(records_data, list):
+                        deleted_found = False
+                        for record in records_data:
+                            if record.get("id") == delete_appointment_id:
+                                deleted_found = True
+                                break
+                                
+                        if not deleted_found:
+                            print("✅ Direct deleted appointment not found in records - deletion confirmed")
+                        else:
+                            print("❌ Direct deleted appointment still found in records")
+                            
+                return success, response_data
+        
+        return False, {}
+
+    def test_invalid_appointment_deletion(self):
+        """Test error handling for invalid appointment IDs"""
+        invalid_id = "invalid_appointment_id_12345"
+        
+        # Test UPDATE with cancel on invalid ID
+        cancel_data = {"action": "cancel"}
+        update_success, update_response = self.run_test(
+            "Cancel Invalid Appointment ID (UPDATE)",
+            "PUT",
+            f"api/appointments/{invalid_id}",
+            500,  # Should return error
+            data=cancel_data
+        )
+        
+        # Test DELETE on invalid ID  
+        delete_success, delete_response = self.run_test(
+            "Delete Invalid Appointment ID (DELETE)",
+            "DELETE",
+            f"api/appointments/{invalid_id}",
+            500  # Should return error
+        )
+        
+        return update_success and delete_success, {
+            "update_response": update_response,
+            "delete_response": delete_response
+        }
+
+    def test_appointment_update_functionality(self):
+        """Test regular appointment update (not cancel) still works"""
+        # Create appointment for update test
+        clients_success, clients_data = self.test_get_clients()
+        services_success, services_data = self.test_get_services()
+        employees_success, employees_data = self.test_get_employees()
+        
+        if clients_data and services_data and employees_data:
+            appointment_data = {
+                "client_id": clients_data[0]["id"],
+                "service_id": services_data[0]["id"],
+                "employee_id": employees_data[0]["id"],
+                "date": "2024-02-17", 
+                "time": "4:00 PM",
+                "notes": "Test appointment for update"
+            }
+            
+            create_success, create_response = self.run_test(
+                "Create Appointment for Update Test",
+                "POST",
+                "api/appointments",
+                200,
+                data=appointment_data
+            )
+            
+            if create_success and create_response.get("record_id"):
+                update_appointment_id = create_response["record_id"]
+                
+                # Test regular update (not cancel)
+                update_data = {
+                    "action": "update",
+                    "date": "2024-02-18",
+                    "time": "5:00 PM", 
+                    "notes": "Updated appointment notes",
+                    "status": "Confirmed"
+                }
+                
+                success, response_data = self.run_test(
+                    "Update Appointment Details",
+                    "PUT",
+                    f"api/appointments/{update_appointment_id}",
+                    200,
+                    data=update_data
+                )
+                
+                if success:
+                    expected_action = response_data.get("action")
+                    if expected_action == "updated":
+                        print("✅ Regular appointment update working correctly")
+                    else:
+                        print(f"⚠️  Expected action='updated', got action='{expected_action}'")
+                
+                # Clean up - delete the test appointment
+                self.run_test(
+                    "Cleanup Update Test Appointment",
+                    "DELETE",
+                    f"api/appointments/{update_appointment_id}",
+                    200
+                )
+                        
+                return success, response_data
+        
+        return False, {}
+
 def main():
     print("🚀 Starting Backend API Tests")
     print("=" * 50)
