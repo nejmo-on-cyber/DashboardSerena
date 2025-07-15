@@ -51,9 +51,8 @@ def map_service_to_expertise(service_name: str) -> str:
     if any(keyword in service_upper for keyword in ['PEDI', 'FOOT']):
         return 'Pedicure'
     
-    # Styling services
-    if 'STYLING' in service_upper:
-        return 'Styling'
+    # Styling services (removed from hair services above)
+    # This is now handled in the hair services section
     
     # Default to Massage for spa/therapy services
     if any(keyword in service_upper for keyword in ['THERAPY', 'TREATMENT', 'SPA']):
