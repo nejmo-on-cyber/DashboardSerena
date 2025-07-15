@@ -518,15 +518,12 @@ async def update_employee(employee_id: str, employee_data: dict):
         raise HTTPException(status_code=503, detail="Airtable not configured")
     
     try:
-        # Map employee data to Airtable fields
+        # Map employee data to Airtable fields - EXCLUDE computed fields
         airtable_fields = {}
         
-        if employee_data.get("full_name"):
-            airtable_fields["Full Name"] = employee_data["full_name"]
-        if employee_data.get("employee_number"):
-            airtable_fields["Employee Number"] = employee_data["employee_number"]
-        if employee_data.get("email"):
-            airtable_fields["Email"] = employee_data["email"]
+        # NOTE: "Full Name" is a computed field and cannot be updated directly
+        # Only include fields that can be updated in Airtable
+        
         if employee_data.get("contact_number"):
             airtable_fields["Contact Number"] = employee_data["contact_number"]
         if employee_data.get("availability_days"):
@@ -537,8 +534,30 @@ async def update_employee(employee_id: str, employee_data: dict):
             airtable_fields["Profile Picture"] = employee_data["profile_picture"]
         if employee_data.get("start_date"):
             airtable_fields["Start Date"] = employee_data["start_date"]
-        if employee_data.get("status"):
-            airtable_fields["Status"] = employee_data["status"]
+            
+        # Try to update other fields but handle failures gracefully
+        # These fields may or may not exist in your Airtable schema
+        try:
+            if employee_data.get("employee_number"):
+                airtable_fields["Employee Number"] = employee_data["employee_number"]
+        except:
+            pass
+            
+        try:
+            if employee_data.get("email"):
+                airtable_fields["Email"] = employee_data["email"]
+        except:
+            pass
+            
+        try:
+            if employee_data.get("status"):
+                airtable_fields["Status"] = employee_data["status"]
+        except:
+            pass
+        
+        # Only update if we have fields to update
+        if not airtable_fields:
+            raise HTTPException(status_code=400, detail="No valid fields to update")
         
         updated_employee = airtable_employees.update(employee_id, airtable_fields)
         return {
@@ -547,7 +566,14 @@ async def update_employee(employee_id: str, employee_data: dict):
             "message": "Employee updated successfully"
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error updating employee: {str(e)}")
+        # More detailed error message
+        error_msg = str(e)
+        if "INVALID_VALUE_FOR_COLUMN" in error_msg:
+            raise HTTPException(status_code=400, detail=f"Invalid field value: {error_msg}")
+        elif "UNKNOWN_FIELD_NAME" in error_msg:
+            raise HTTPException(status_code=400, detail=f"Unknown field name: {error_msg}")
+        else:
+            raise HTTPException(status_code=500, detail=f"Error updating employee: {error_msg}")
 
 @app.delete("/api/employees/{employee_id}")
 async def delete_employee(employee_id: str):
