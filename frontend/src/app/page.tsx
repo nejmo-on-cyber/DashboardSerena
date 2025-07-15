@@ -523,7 +523,7 @@ export default function Dashboard() {
                         Today's Availability
                       </h2>
                       <button
-                        onClick={() => router.push("/availability")}
+                        onClick={() => router.push("/booking-admin")}
                         className={`p-1 rounded-lg transition-colors hover:scale-105 ${
                           darkMode
                             ? "text-gray-400 hover:text-gray-300"
@@ -535,7 +535,7 @@ export default function Dashboard() {
                       </button>
                     </div>
                     <button
-                      onClick={() => router.push("/availability")}
+                      onClick={() => router.push("/booking-admin")}
                       className="p-2 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900 rounded-lg transition-all duration-200 hover:scale-105 focus-ring"
                       data-oid="nzxd9l4"
                     >
