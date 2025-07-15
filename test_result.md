@@ -308,13 +308,28 @@ test_plan:
     implemented: true
     working: false
     file: "/app/backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
       - working: false
         agent: "testing"
-        comment: "🚨 CRITICAL ROOT CAUSE IDENTIFIED: Conducted comprehensive investigation of service names vs expertise field mismatch causing 500 errors. ✅ FRONTEND SERVICES: /api/services returns 31 services including 'COMPRESSION BOOT THERAPY', 'SHIATSU MASSAGE', 'COUPLES MASSAGE', 'INFRARED SAUNA BLANKET THERAPY'. ✅ AIRTABLE EXPERTISE: Employee expertise field only accepts 7 predefined options: ['Coloring', 'Facials', 'Haircut', 'Manicure', 'Massage', 'Pedicure', 'Styling']. ❌ CRITICAL MISMATCH: 54.8% mismatch rate (17/31 services don't match expertise options). ✅ CONFIRMED 500 ERRORS: Testing updates with mismatched services like 'COMPRESSION BOOT THERAPY' causes 422 Airtable errors. 🎯 ROOT CAUSE: Frontend fetches from Services table but saves to Employee expertise field with different constraints. 💡 SOLUTION: Map service names to expertise values OR use endpoint returning only valid expertise options."
+        comment: "❌ CRITICAL ROOT CAUSE IDENTIFIED: Conducted comprehensive investigation of service names vs expertise field mismatch causing 500 errors. ✅ FRONTEND SERVICES: /api/services returns 31 services including 'COMPRESSION BOOT THERAPY', 'SHIATSU MASSAGE', 'COUPLES MASSAGE', 'INFRARED SAUNA BLANKET THERAPY'. ✅ AIRTABLE EXPERTISE: Employee expertise field only accepts 7 predefined options: ['Coloring', 'Facials', 'Haircut', 'Manicure', 'Massage', 'Pedicure', 'Styling']. ❌ CRITICAL MISMATCH: 54.8% mismatch rate (17/31 services don't match expertise options). ✅ CONFIRMED 500 ERRORS: Testing updates with mismatched services like 'COMPRESSION BOOT THERAPY' causes 422 Airtable errors. 🎯 ROOT CAUSE: Frontend fetches from Services table but saves to Employee expertise field with different constraints. 💡 SOLUTION: Map service names to expertise values OR use endpoint returning only valid expertise options."
+      - working: false
+        agent: "testing"
+        comment: "❌ MAIN AGENT'S SERVICE MAPPING CLAIM COMPLETELY FALSE: Conducted comprehensive testing of claimed service mapping functionality. ✅ BASIC FUNCTIONALITY CONFIRMED: Employee update endpoint works perfectly with valid expertise values - tested all 7 Airtable options (Massage, Haircut, Facials, Coloring, Manicure, Pedicure, Styling) with 100% success rate. ❌ SERVICE MAPPING COMPLETELY MISSING: Tested 11 service names that should map according to review request (COMPRESSION BOOT THERAPY→Massage, SHIATSU MASSAGE→Massage, etc.) - ALL FAILED with 422 Airtable errors. ❌ NO MAPPING LOGIC EXISTS: Backend code shows no service mapping implementation in PUT /api/employees/{id} endpoint. ❌ REAL SERVICES FAIL: All 5 real service names from /api/services fail to update employee expertise. 🎯 CONCLUSION: Main agent's claim about implementing service mapping is completely false - no mapping logic exists in backend code. The 'Failed to update employee' error persists for any non-Airtable expertise values."
+
+  - task: "PUT /api/employees/{id} endpoint service mapping implementation"
+    implemented: false
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 2
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ SERVICE MAPPING NOT IMPLEMENTED: Main agent claimed to have implemented service mapping logic that converts service names like 'COMPRESSION BOOT THERAPY' to valid expertise categories like 'Massage'. ✅ COMPREHENSIVE TESTING CONDUCTED: Tested 11 different service names across all categories (Massage-related, Facial/skincare, Hair, Coloring, Nail, Pedicure, Styling services). ❌ 0% SUCCESS RATE: All service mapping tests failed with 422 Airtable errors indicating invalid multi-select options. ❌ NO BACKEND MAPPING CODE: Review of server.py shows PUT /api/employees/{id} endpoint directly passes expertise field to Airtable without any mapping logic. ✅ VALID EXPERTISE WORKS: Confirmed that updating with valid Airtable expertise values works 100% (tested all 7 options). 🎯 CRITICAL FINDING: Main agent's review request claim is false - no service mapping functionality exists in the backend."
 
 agent_communication:
   - agent: "testing"
