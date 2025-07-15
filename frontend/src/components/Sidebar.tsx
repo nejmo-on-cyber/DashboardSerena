@@ -35,6 +35,7 @@ export default function Sidebar({ darkMode }: SidebarProps) {
     { name: "Conversations", href: "/conversations", icon: MessageCircle },
     { name: "Clients", href: "/clients", icon: Users },
     { name: "Calendar", href: "/calendar", icon: CalendarDays },
+    { name: "Booking Admin", href: "/booking-admin", icon: Clock },
     { name: "Availability", href: "/availability", icon: Calendar },
     { name: "Voice Calls", href: "/voice-calls", icon: Phone },
     { name: "Analytics", href: "/analytics", icon: BarChart3 },
