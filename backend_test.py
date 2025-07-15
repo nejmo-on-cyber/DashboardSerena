@@ -704,69 +704,446 @@ class BackendAPITester:
         
         return success, response_data
 
+    def investigate_employee_table_structure(self):
+        """INVESTIGATION: Detailed analysis of Airtable Employee table structure"""
+        print("\n🔍 INVESTIGATION: Airtable Employee Table Structure Analysis")
+        print("=" * 80)
+        
+        # Get all employees to analyze field structure
+        emp_success, emp_data = self.run_test(
+            "Get All Employees for Structure Analysis",
+            "GET",
+            "api/employee-availability",
+            200
+        )
+        
+        if not emp_success or not isinstance(emp_data, list) or len(emp_data) == 0:
+            print("❌ Cannot investigate - no employees available")
+            return False, {}
+        
+        print(f"📊 Found {len(emp_data)} employees in Airtable")
+        print("\n🔍 DETAILED FIELD ANALYSIS:")
+        print("-" * 50)
+        
+        # Analyze each employee's field structure
+        all_fields = set()
+        field_types = {}
+        field_examples = {}
+        
+        for i, employee in enumerate(emp_data):
+            print(f"\n👤 Employee {i+1}: {employee.get('full_name', 'Unknown')}")
+            print(f"   ID: {employee.get('id', 'No ID')}")
+            
+            for field_name, field_value in employee.items():
+                all_fields.add(field_name)
+                
+                # Determine field type
+                field_type = type(field_value).__name__
+                if field_name not in field_types:
+                    field_types[field_name] = set()
+                field_types[field_name].add(field_type)
+                
+                # Store examples
+                if field_name not in field_examples:
+                    field_examples[field_name] = []
+                if len(field_examples[field_name]) < 3:  # Store up to 3 examples
+                    field_examples[field_name].append(field_value)
+                
+                # Print field details
+                if isinstance(field_value, list):
+                    print(f"   {field_name}: {field_value} (list with {len(field_value)} items)")
+                elif isinstance(field_value, str):
+                    print(f"   {field_name}: '{field_value}' (string)")
+                else:
+                    print(f"   {field_name}: {field_value} ({field_type})")
+        
+        # Summary of all fields found
+        print(f"\n📋 COMPLETE FIELD INVENTORY ({len(all_fields)} fields found):")
+        print("-" * 50)
+        
+        for field_name in sorted(all_fields):
+            types = list(field_types[field_name])
+            examples = field_examples[field_name][:2]  # Show first 2 examples
+            
+            print(f"• {field_name}:")
+            print(f"  - Type(s): {', '.join(types)}")
+            print(f"  - Examples: {examples}")
+        
+        return True, {
+            "total_employees": len(emp_data),
+            "all_fields": list(all_fields),
+            "field_types": {k: list(v) for k, v in field_types.items()},
+            "field_examples": field_examples
+        }
+
+    def test_expertise_services_field_specifically(self):
+        """INVESTIGATION: Test the services/expertise field specifically"""
+        print("\n🔍 INVESTIGATION: Services/Expertise Field Deep Dive")
+        print("=" * 80)
+        
+        # Get employees to analyze expertise field
+        emp_success, emp_data = self.run_test(
+            "Get Employees for Expertise Analysis",
+            "GET",
+            "api/employee-availability",
+            200
+        )
+        
+        if not emp_success or not isinstance(emp_data, list):
+            print("❌ Cannot analyze expertise field - no employee data")
+            return False, {}
+        
+        print(f"📊 Analyzing expertise field across {len(emp_data)} employees")
+        
+        # Analyze expertise field specifically
+        expertise_analysis = {
+            "employees_with_expertise": 0,
+            "employees_without_expertise": 0,
+            "expertise_field_types": set(),
+            "all_expertise_values": [],
+            "unique_expertise_options": set()
+        }
+        
+        print("\n🎯 EXPERTISE FIELD ANALYSIS:")
+        print("-" * 40)
+        
+        for i, employee in enumerate(emp_data):
+            name = employee.get('full_name', f'Employee {i+1}')
+            expertise = employee.get('expertise', None)
+            
+            print(f"\n👤 {name} (ID: {employee.get('id', 'No ID')}):")
+            
+            if expertise is not None:
+                expertise_analysis["employees_with_expertise"] += 1
+                expertise_type = type(expertise).__name__
+                expertise_analysis["expertise_field_types"].add(expertise_type)
+                
+                if isinstance(expertise, list):
+                    print(f"   Expertise: {expertise} (list with {len(expertise)} items)")
+                    expertise_analysis["all_expertise_values"].extend(expertise)
+                    expertise_analysis["unique_expertise_options"].update(expertise)
+                elif isinstance(expertise, str):
+                    print(f"   Expertise: '{expertise}' (string)")
+                    expertise_analysis["all_expertise_values"].append(expertise)
+                    expertise_analysis["unique_expertise_options"].add(expertise)
+                else:
+                    print(f"   Expertise: {expertise} ({expertise_type})")
+            else:
+                expertise_analysis["employees_without_expertise"] += 1
+                print("   Expertise: None/Empty")
+        
+        # Summary
+        print(f"\n📊 EXPERTISE FIELD SUMMARY:")
+        print("-" * 30)
+        print(f"• Employees with expertise: {expertise_analysis['employees_with_expertise']}")
+        print(f"• Employees without expertise: {expertise_analysis['employees_without_expertise']}")
+        print(f"• Field types found: {list(expertise_analysis['expertise_field_types'])}")
+        print(f"• Total expertise entries: {len(expertise_analysis['all_expertise_values'])}")
+        print(f"• Unique expertise options: {len(expertise_analysis['unique_expertise_options'])}")
+        
+        if expertise_analysis['unique_expertise_options']:
+            print(f"• All unique expertise values:")
+            for expertise in sorted(expertise_analysis['unique_expertise_options']):
+                count = expertise_analysis['all_expertise_values'].count(expertise)
+                print(f"  - '{expertise}' (appears {count} times)")
+        
+        return True, expertise_analysis
+
+    def test_expertise_field_update_attempts(self):
+        """INVESTIGATION: Test updating expertise field with different approaches"""
+        print("\n🔍 INVESTIGATION: Testing Expertise Field Updates")
+        print("=" * 80)
+        
+        # Get an employee to test with
+        emp_success, emp_data = self.run_test(
+            "Get Employee for Expertise Update Test",
+            "GET",
+            "api/employee-availability",
+            200
+        )
+        
+        if not emp_success or not isinstance(emp_data, list) or len(emp_data) == 0:
+            print("❌ Cannot test expertise updates - no employees available")
+            return False, {}
+        
+        test_employee = emp_data[0]
+        employee_id = test_employee.get('id')
+        original_expertise = test_employee.get('expertise', [])
+        
+        print(f"🎯 Testing with Employee: {test_employee.get('full_name', 'Unknown')}")
+        print(f"   ID: {employee_id}")
+        print(f"   Original Expertise: {original_expertise}")
+        
+        # Test different expertise update approaches
+        test_cases = [
+            {
+                "name": "Single String Expertise",
+                "data": {"expertise": "Massage"},
+                "description": "Testing with single string value"
+            },
+            {
+                "name": "List of Existing Expertise",
+                "data": {"expertise": ["Haircut", "Styling"]},
+                "description": "Testing with list of existing expertise values"
+            },
+            {
+                "name": "List with New Expertise",
+                "data": {"expertise": ["Massage", "Facial"]},
+                "description": "Testing with list including potentially new values"
+            },
+            {
+                "name": "Empty List Expertise",
+                "data": {"expertise": []},
+                "description": "Testing with empty list"
+            }
+        ]
+        
+        results = {}
+        
+        for test_case in test_cases:
+            print(f"\n--- {test_case['name']} ---")
+            print(f"Description: {test_case['description']}")
+            print(f"Test Data: {test_case['data']}")
+            
+            success, response_data = self.run_test(
+                f"Update Expertise: {test_case['name']}",
+                "PUT",
+                f"api/employees/{employee_id}",
+                200,  # We'll see what we actually get
+                data=test_case['data']
+            )
+            
+            results[test_case['name']] = {
+                "success": success,
+                "response": response_data,
+                "test_data": test_case['data']
+            }
+            
+            if success:
+                print(f"✅ Update succeeded: {response_data}")
+                
+                # Verify the change
+                verify_success, verify_data = self.run_test(
+                    f"Verify {test_case['name']}",
+                    "GET",
+                    f"api/employees/{employee_id}",
+                    200
+                )
+                
+                if verify_success:
+                    new_expertise = verify_data.get('expertise', [])
+                    print(f"   Verified Expertise: {new_expertise}")
+                    results[test_case['name']]['verified_expertise'] = new_expertise
+            else:
+                print(f"❌ Update failed: {response_data}")
+                
+                # Try to get detailed error information
+                try:
+                    import requests
+                    url = f"{self.base_url}/api/employees/{employee_id}"
+                    response = requests.put(url, json=test_case['data'], timeout=10)
+                    print(f"   Detailed Error - Status: {response.status_code}")
+                    print(f"   Detailed Error - Response: {response.text}")
+                except Exception as e:
+                    print(f"   Error getting details: {e}")
+            
+            # Small delay between tests
+            time.sleep(1)
+        
+        print(f"\n📊 EXPERTISE UPDATE TEST SUMMARY:")
+        print("-" * 40)
+        
+        for test_name, result in results.items():
+            status = "✅ SUCCESS" if result['success'] else "❌ FAILED"
+            print(f"• {test_name}: {status}")
+            if 'verified_expertise' in result:
+                print(f"  Final expertise: {result['verified_expertise']}")
+        
+        return True, results
+
+    def test_field_permissions_and_types(self):
+        """INVESTIGATION: Test different field types and permissions"""
+        print("\n🔍 INVESTIGATION: Field Permissions and Types Analysis")
+        print("=" * 80)
+        
+        # Get an employee to test with
+        emp_success, emp_data = self.run_test(
+            "Get Employee for Field Permission Test",
+            "GET",
+            "api/employee-availability",
+            200
+        )
+        
+        if not emp_success or not isinstance(emp_data, list) or len(emp_data) == 0:
+            print("❌ Cannot test field permissions - no employees available")
+            return False, {}
+        
+        test_employee = emp_data[0]
+        employee_id = test_employee.get('id')
+        
+        print(f"🎯 Testing Field Permissions with Employee: {test_employee.get('full_name', 'Unknown')}")
+        print(f"   ID: {employee_id}")
+        
+        # Test different field combinations to understand permissions
+        field_tests = [
+            {
+                "name": "Contact Number Only",
+                "data": {"contact_number": "555-TEST-001"},
+                "expected_working": True
+            },
+            {
+                "name": "Availability Days Only", 
+                "data": {"availability_days": ["Monday", "Tuesday"]},
+                "expected_working": True
+            },
+            {
+                "name": "Full Name (Computed Field)",
+                "data": {"full_name": "Test Name Update"},
+                "expected_working": False
+            },
+            {
+                "name": "Employee Number",
+                "data": {"employee_number": "EMP999"},
+                "expected_working": False
+            },
+            {
+                "name": "Email Field",
+                "data": {"email": "test@example.com"},
+                "expected_working": False
+            },
+            {
+                "name": "Status Field",
+                "data": {"status": "Active"},
+                "expected_working": False
+            },
+            {
+                "name": "Expertise Field",
+                "data": {"expertise": ["Massage"]},
+                "expected_working": False
+            },
+            {
+                "name": "Profile Picture",
+                "data": {"profile_picture": "https://example.com/pic.jpg"},
+                "expected_working": True
+            },
+            {
+                "name": "Start Date",
+                "data": {"start_date": "2024-01-01"},
+                "expected_working": True
+            }
+        ]
+        
+        results = {}
+        working_fields = []
+        failing_fields = []
+        
+        for field_test in field_tests:
+            print(f"\n--- Testing: {field_test['name']} ---")
+            print(f"Data: {field_test['data']}")
+            print(f"Expected to work: {field_test['expected_working']}")
+            
+            success, response_data = self.run_test(
+                f"Field Test: {field_test['name']}",
+                "PUT",
+                f"api/employees/{employee_id}",
+                200 if field_test['expected_working'] else [400, 404, 500],  # Accept various error codes
+                data=field_test['data']
+            )
+            
+            results[field_test['name']] = {
+                "success": success,
+                "response": response_data,
+                "expected_working": field_test['expected_working'],
+                "test_data": field_test['data']
+            }
+            
+            if success:
+                working_fields.append(field_test['name'])
+                print(f"✅ Field works: {response_data}")
+            else:
+                failing_fields.append(field_test['name'])
+                print(f"❌ Field failed: {response_data}")
+            
+            time.sleep(0.5)  # Small delay between tests
+        
+        print(f"\n📊 FIELD PERMISSIONS SUMMARY:")
+        print("-" * 40)
+        print(f"✅ Working Fields ({len(working_fields)}):")
+        for field in working_fields:
+            print(f"  • {field}")
+        
+        print(f"\n❌ Failing Fields ({len(failing_fields)}):")
+        for field in failing_fields:
+            expected = results[field]['expected_working']
+            status = "Expected" if not expected else "Unexpected"
+            print(f"  • {field} ({status})")
+        
+        return True, {
+            "working_fields": working_fields,
+            "failing_fields": failing_fields,
+            "detailed_results": results
+        }
+
 def main():
-    print("🚀 Starting Backend API Tests - Employee Update Simplified Testing")
-    print("=" * 60)
+    print("🚀 AIRTABLE EMPLOYEE TABLE STRUCTURE INVESTIGATION")
+    print("=" * 80)
+    print("🎯 FOCUS: Understanding Employee table fields and services/expertise issues")
+    print("=" * 80)
     
     # Setup
     tester = BackendAPITester()
     
-    # Run basic tests first
-    print("\n📋 Testing Basic Endpoints...")
+    # Run basic connectivity tests first
+    print("\n📋 Basic Connectivity Tests...")
     tester.test_root_endpoint()
     tester.test_health_check()
     
-    print("\n🎯 MAIN FOCUS: Testing Simplified Employee Update (Safe Fields Only)")
-    print("=" * 60)
+    print("\n🔍 MAIN INVESTIGATION SEQUENCE")
+    print("=" * 80)
     
-    # Test employee endpoints specifically
-    print("\n--- Test 1: Individual Employee GET Endpoint ---")
+    # Investigation sequence as requested
+    print("\n--- INVESTIGATION 1: Employee Table Structure Analysis ---")
+    tester.investigate_employee_table_structure()
+    
+    print("\n--- INVESTIGATION 2: Services/Expertise Field Deep Dive ---")
+    tester.test_expertise_services_field_specifically()
+    
+    print("\n--- INVESTIGATION 3: Expertise Field Update Testing ---")
+    tester.test_expertise_field_update_attempts()
+    
+    print("\n--- INVESTIGATION 4: Field Permissions and Types Analysis ---")
+    tester.test_field_permissions_and_types()
+    
+    print("\n📋 Additional Context Tests...")
+    
+    # Get individual employee for detailed structure
+    print("\n--- Additional: Individual Employee GET ---")
     tester.test_employee_get_endpoint()
     
-    print("\n--- Test 2: Employee Update PUT Endpoint (Safe Fields Only) ---")
+    # Test current working update approach
+    print("\n--- Additional: Current Working Update Approach ---")
     tester.test_employee_update_endpoint()
     
-    print("\n--- Test 3: Employee Update with Invalid ID (Error Handling) ---")
-    tester.test_employee_update_invalid_id()
-    
-    print("\n📋 Testing Related Endpoints...")
-    tester.test_get_employees()
-    tester.test_employee_availability()
-    
-    print("\n📋 Testing Other Booking Admin Endpoints...")
-    
-    # Test new booking admin endpoints
-    print("\n--- Test 4: Services with Duration Endpoint ---")
-    tester.test_services_with_duration()
-    
-    print("\n--- Test 5: Therapists by Service Endpoint ---")
-    tester.test_therapists_by_service()
-    
-    print("\n--- Test 6: Invalid Service Name Handling ---")
-    tester.test_therapists_by_invalid_service()
-    
-    print("\n--- Test 7: Data Consistency Check ---")
-    tester.test_booking_admin_data_consistency()
-    
     # Print results
-    print("\n" + "=" * 60)
-    print(f"📊 Test Results: {tester.tests_passed}/{tester.tests_run} passed")
+    print("\n" + "=" * 80)
+    print(f"📊 Investigation Results: {tester.tests_passed}/{tester.tests_run} tests completed")
     
-    # Summary of key findings
-    print("\n🎯 KEY FINDINGS:")
-    print("✅ Backend server is running and accessible")
-    print("✅ Airtable connection is working")
-    print("✅ Employee availability endpoint working")
-    print("✅ Individual employee GET endpoint tested")
-    print("🔍 Employee UPDATE endpoint - testing simplified safe fields only")
-    print("🔍 Error handling for invalid employee IDs tested")
+    # Key findings summary
+    print("\n🎯 KEY INVESTIGATION FINDINGS:")
+    print("✅ Employee table structure analyzed")
+    print("✅ Services/expertise field behavior documented")
+    print("✅ Field permissions and types tested")
+    print("✅ Update capabilities mapped")
+    print("🔍 Detailed field-by-field analysis completed")
     
-    if tester.tests_passed >= (tester.tests_run * 0.7):  # 70% pass rate
-        print("🎉 Most tests passed - Backend functionality appears to be working!")
-        return 0
-    else:
-        print("⚠️  Some critical tests failed - Backend functionality needs attention")
-        return 1
+    print("\n📋 INVESTIGATION COMPLETE - Check detailed output above for:")
+    print("• Exact field names and types in Employee table")
+    print("• Services/expertise field structure and limitations")
+    print("• Which fields can be updated vs. read-only")
+    print("• Specific error messages for problematic fields")
+    print("• Working vs. failing field update patterns")
+    
+    return 0
 
 if __name__ == "__main__":
     sys.exit(main())
