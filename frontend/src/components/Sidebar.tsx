@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
   MessageCircle,
@@ -18,7 +18,12 @@ import {
   ChevronRight,
   CalendarDays,
   Clock,
+  User,
+  Plus,
+  Edit,
+  UserPlus,
 } from "lucide-react";
+import EmployeeManagement from "./EmployeeManagement";
 
 interface SidebarProps {
   darkMode: boolean;
