@@ -271,6 +271,18 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+  - task: "PUT /api/employees/{id} endpoint for employee updates"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE IDENTIFIED: PUT /api/employees/{id} endpoint returns 500 Internal Server Error due to Airtable field schema mismatch. Root cause: 1) 'Full Name' is a computed field in Airtable and cannot be updated directly (422 INVALID_VALUE_FOR_COLUMN error). 2) Field names like 'Employee Number', 'Email', 'Status', 'Expertise' don't exist in actual Airtable schema (422 UNKNOWN_FIELD_NAME error). ✅ Working fields: contact_number, availability_days. ❌ Failing fields: full_name, employee_number, email, status, expertise. Backend code field mapping doesn't match actual Airtable table structure. Tested with employee ID recE5UU1kgTPCBVcZ - partial updates work but full employee updates fail."
+
 agent_communication:
   - agent: "testing"
     message: "✅ BACKEND TESTING COMPLETE: All critical deletion functionality working correctly. Both DELETE and UPDATE with cancel action successfully remove appointments completely from Airtable. Verified through actual API testing that deleted appointments no longer appear in GET /api/records. Error handling for invalid IDs working properly. All existing CRUD operations remain functional. Ready for frontend testing with user permission."
@@ -278,3 +290,5 @@ agent_communication:
     message: "✅ FRONTEND TESTING COMPLETE: All critical appointment cancellation functionality working perfectly! Calendar interface loads correctly with appointments displayed. Appointment detail and edit modals work properly. Cancel & Delete button is prominently styled (red with delete icon). Confirmation dialog shows proper warnings about permanent deletion and mentions both calendar and Airtable. Real-time calendar updates work - appointment count decreased from 10 to 9 after deletion, and statistics updated correctly. Both modals close automatically after successful deletion. Add appointment functionality also working. Complete deletion workflow is fully functional as requested by user."
   - agent: "testing"
     message: "✅ NEW BOOKING ADMIN ENDPOINTS TESTING COMPLETE: All three new endpoints working perfectly! GET /api/employee-availability returns 6 employees with complete availability and expertise data (Luna Star: Mon/Wed/Fri, Haircut/Styling; Leo King: Tue/Thu/Sat, Coloring/Facials). GET /api/services-with-duration returns 31 services with pricing and duration (Face Camp $370/60min, Infrared Sauna $420/60min). GET /api/therapists-by-service/{service_name} correctly filters therapists by expertise - Haircut(2), Massage(1), Facial(3), Coloring(2), Styling(2) therapists found. Service filtering logic works correctly, matching therapist expertise with service names. Error handling properly returns empty arrays for invalid services. All data structures match expected format for booking admin interface. Airtable connections stable throughout testing."
+  - agent: "testing"
+    message: "❌ EMPLOYEE UPDATE ISSUE DEBUGGED: Found exact cause of PUT /api/employees/{id} 500 errors. Problem is Airtable field schema mismatch: 1) 'Full Name' is computed field (cannot update), 2) Fields 'Employee Number', 'Email', 'Status', 'Expertise' don't exist in Airtable schema. Only 'Contact Number' and 'Availability' fields work. Backend code assumes field names that don't match actual Airtable table structure. Tested with employee recE5UU1kgTPCBVcZ - confirmed partial updates work but full updates fail. Need to fix field mapping in server.py lines 524-541 to match actual Airtable schema."
