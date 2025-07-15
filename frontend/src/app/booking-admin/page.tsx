@@ -159,6 +159,46 @@ export default function BookingAdminPage() {
     return therapist.availability_days.includes(dayName);
   };
 
+  const getAlternativeAvailability = (selectedDate: string) => {
+    const currentDate = new Date(selectedDate);
+    const previousDate = new Date(currentDate);
+    previousDate.setDate(currentDate.getDate() - 1);
+    const nextDate = new Date(currentDate);
+    nextDate.setDate(currentDate.getDate() + 1);
+
+    const formatDate = (date: Date) => date.toISOString().split('T')[0];
+    
+    const previousDateStr = formatDate(previousDate);
+    const nextDateStr = formatDate(nextDate);
+
+    const previousDayAvailable = qualifiedTherapists.filter(therapist => 
+      isTherapistAvailable(therapist, previousDateStr)
+    );
+    
+    const nextDayAvailable = qualifiedTherapists.filter(therapist => 
+      isTherapistAvailable(therapist, nextDateStr)
+    );
+
+    return {
+      previous: {
+        date: previousDateStr,
+        dayName: getDayName(previousDateStr),
+        therapists: previousDayAvailable
+      },
+      next: {
+        date: nextDateStr,
+        dayName: getDayName(nextDateStr),
+        therapists: nextDayAvailable
+      }
+    };
+  };
+
+  const hasAvailabilityForSelectedDay = () => {
+    return qualifiedTherapists.some(therapist => 
+      isTherapistAvailable(therapist, selectedDate)
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar darkMode={darkMode} />
