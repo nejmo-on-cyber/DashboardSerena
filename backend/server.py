@@ -931,16 +931,55 @@ async def get_conversations():
             # Group messages by phone number to create conversations
             conversations_dict = {}
             for msg in messages:
-                phone = msg.get("phone", "")
+                # Extract phone number from different possible fields
+                phone = ""
+                if msg.get("phone"):
+                    phone = msg.get("phone")
+                elif msg.get("chatId"):
+                    phone = msg.get("chatId", "").replace("@c.us", "").replace("@g.us", "")
+                elif msg.get("to"):
+                    phone = msg.get("to", "").replace("@c.us", "").replace("@g.us", "")
+                elif msg.get("chat", {}).get("id"):
+                    phone = msg.get("chat", {}).get("id", "").replace("@c.us", "").replace("@g.us", "")
+                
                 if phone.startswith("971") and not phone.startswith("+"):
                     phone = "+" + phone
                 
-                if phone not in conversations_dict:
+                # Get message body from different possible fields
+                message_body = ""
+                if msg.get("body"):
+                    message_body = msg.get("body")
+                elif msg.get("text"):
+                    message_body = msg.get("text")
+                elif msg.get("content"):
+                    message_body = msg.get("content")
+                elif msg.get("message"):
+                    message_body = msg.get("message")
+                
+                # Get sender name from different possible fields
+                sender_name = ""
+                if msg.get("senderName"):
+                    sender_name = msg.get("senderName")
+                elif msg.get("sender", {}).get("name"):
+                    sender_name = msg.get("sender", {}).get("name")
+                elif msg.get("contact", {}).get("name"):
+                    sender_name = msg.get("contact", {}).get("name")
+                elif msg.get("from"):
+                    sender_name = f"Contact {msg.get('from')}"
+                
+                if not sender_name:
+                    sender_name = f"Contact {phone}"
+                
+                # Print debug info
+                print(f"Message debug: phone={phone}, body='{message_body}', sender='{sender_name}'")
+                print(f"Full message object keys: {list(msg.keys())}")
+                
+                if phone and phone not in conversations_dict:
                     conversations_dict[phone] = {
                         "id": msg.get("chatId", phone),
-                        "client": msg.get("senderName", f"Contact {phone}"),
+                        "client": sender_name,
                         "phone": phone,
-                        "lastMessage": msg.get("body", ""),
+                        "lastMessage": message_body,
                         "time": msg.get("createdAt", ""),
                         "status": "replied" if msg.get("fromMe") else "pending",
                         "unread": 0,
@@ -948,13 +987,17 @@ async def get_conversations():
                         "messages": []
                     }
                 
-                conversations_dict[phone]["messages"].append({
-                    "id": msg.get("id", ""),
-                    "sender": "ai" if msg.get("fromMe") else "client",
-                    "text": msg.get("body", ""),
-                    "time": msg.get("createdAt", ""),
-                    "phone": phone
-                })
+                if phone and message_body:  # Only add messages with content
+                    conversations_dict[phone]["messages"].append({
+                        "id": msg.get("id", ""),
+                        "sender": "ai" if msg.get("fromMe") else "client",
+                        "text": message_body,
+                        "time": msg.get("createdAt", ""),
+                        "phone": phone
+                    })
+                    
+                    # Update last message
+                    conversations_dict[phone]["lastMessage"] = message_body
                 
             return list(conversations_dict.values())
         
