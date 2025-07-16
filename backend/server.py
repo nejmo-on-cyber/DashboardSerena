@@ -861,8 +861,8 @@ async def get_analytics(range: str = "month"):
         avg_appointment_value = total_revenue / completed_appointments if completed_appointments > 0 else 0
         
         # Calculate REAL client metrics based on appointments
-        client_appointments = {}  # Track appointments per client
-        first_appointment_dates = {}  # Track first appointment date per client
+        client_appointments = {}  # Track appointments per client (client_name -> list of dates)
+        first_appointment_dates = {}  # Track first appointment date per client (client_name -> date)
         
         # Process ALL appointments to build client history
         all_appointments = airtable.get_all()  # Get all appointments for client analysis
