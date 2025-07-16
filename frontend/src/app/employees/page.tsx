@@ -192,6 +192,7 @@ export default function EmployeeManagementPage() {
       contact_number: "",
       availability_days: [],
       expertise: [],
+      services: [],  // NEW field
       profile_picture: "",
       start_date: "",
       status: "Active"
