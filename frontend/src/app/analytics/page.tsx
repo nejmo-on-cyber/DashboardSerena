@@ -192,12 +192,15 @@ export default function AnalyticsPage() {
               <div className="flex items-center space-x-2">
                 <select
                   value={timeRange}
-                  onChange={(e) => setTimeRange(e.target.value as 'week' | 'month' | 'quarter')}
+                  onChange={(e) => setTimeRange(e.target.value as 'today' | 'week' | 'month' | 'quarter' | 'half_year' | 'year')}
                   className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                 >
+                  <option value="today">Today</option>
                   <option value="week">Last 7 Days</option>
-                  <option value="month">Last 30 Days</option>
+                  <option value="month">Last Month</option>
                   <option value="quarter">Last 3 Months</option>
+                  <option value="half_year">Last 6 Months</option>
+                  <option value="year">Yearly</option>
                 </select>
                 <button
                   onClick={fetchAnalytics}
