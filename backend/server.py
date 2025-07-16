@@ -622,7 +622,13 @@ async def update_employee(employee_id: str, employee_data: dict):
             # Get all services to map names to IDs
             try:
                 all_services = airtable_services.get_all()
-                service_name_to_id = {service['fields'].get('Name', '').strip(): service['id'] for service in all_services}
+                service_name_to_id = {}
+                
+                # Build name to ID mapping with proper cleaning
+                for service in all_services:
+                    service_name = service['fields'].get('Name', '').strip()
+                    service_name_clean = service_name.replace('\n', '').strip()
+                    service_name_to_id[service_name_clean] = service['id']
                 
                 for service in services:
                     if isinstance(service, str):
@@ -631,14 +637,17 @@ async def update_employee(employee_id: str, employee_data: dict):
                             service_record_ids.append(service)
                         else:
                             # Service name - convert to record ID
-                            service_id = service_name_to_id.get(service.strip())
+                            service_clean = service.strip().replace('\n', '').strip()
+                            service_id = service_name_to_id.get(service_clean)
                             if service_id:
                                 service_record_ids.append(service_id)
                             else:
-                                print(f"Warning: Service '{service}' not found in Airtable")
+                                print(f"Warning: Service '{service_clean}' not found in Airtable")
+                                print(f"Available services: {list(service_name_to_id.keys())}")
                 
                 if service_record_ids:
                     airtable_fields["Services"] = service_record_ids
+                    print(f"Updated services: {service_record_ids}")
                     
             except Exception as e:
                 print(f"Error handling services: {e}")
