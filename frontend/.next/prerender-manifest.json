@@ -1,7 +1,7 @@
 {
   "version": 4,
   "routes": {
-    "/calendar": {
+    "/booking-admin": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -14,104 +14,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/calendar",
-      "dataRoute": "/calendar.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/revenue": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "Next-Action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/revenue",
-      "dataRoute": "/revenue.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/services": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "Next-Action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/services",
-      "dataRoute": "/services.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/conversations": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "Next-Action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/conversations",
-      "dataRoute": "/conversations.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/voice-calls": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "Next-Action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/voice-calls",
-      "dataRoute": "/voice-calls.rsc",
+      "srcRoute": "/booking-admin",
+      "dataRoute": "/booking-admin.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -145,30 +49,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/promotions": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "Next-Action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/promotions",
-      "dataRoute": "/promotions.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/employees": {
       "experimentalBypassFor": [
         {
@@ -193,7 +73,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/clients": {
+    "/revenue": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -206,8 +86,32 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/clients",
-      "dataRoute": "/clients.rsc",
+      "srcRoute": "/revenue",
+      "dataRoute": "/revenue.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/promotions": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "Next-Action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/promotions",
+      "dataRoute": "/promotions.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -241,7 +145,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/booking-admin": {
+    "/clients": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -254,8 +158,80 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/booking-admin",
-      "dataRoute": "/booking-admin.rsc",
+      "srcRoute": "/clients",
+      "dataRoute": "/clients.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/calendar": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "Next-Action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/calendar",
+      "dataRoute": "/calendar.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/voice-calls": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "Next-Action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/voice-calls",
+      "dataRoute": "/voice-calls.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/conversations": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "Next-Action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/conversations",
+      "dataRoute": "/conversations.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -293,13 +269,37 @@
         "x-next-revalidated-tags",
         "x-next-revalidate-tag-token"
       ]
+    },
+    "/services": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "Next-Action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/services",
+      "dataRoute": "/services.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
     }
   },
   "dynamicRoutes": {},
   "notFoundRoutes": [],
   "preview": {
-    "previewModeId": "713c5ba95134dd8947987eb5899be152",
-    "previewModeSigningKey": "0e1cab2bfe44928e6636e59e757b1470cae22e8cb8a489dd1eabfca8307d3923",
-    "previewModeEncryptionKey": "5683338cddd4cc0b2c43115e1b9fbe2f846311906114d735ba58f426c3b479c0"
+    "previewModeId": "7979ad01a43618d8cb95812e891e1fc4",
+    "previewModeSigningKey": "f5437c092cc37bb0fd3c009222cdf24adafdcfb737f32e06c223f88bd6afd6ae",
+    "previewModeEncryptionKey": "4b148373c16b56ba7cb83c4f86da96e1ba27a69fcd4d62b4d7a5e74d59ef0d63"
   }
 }
