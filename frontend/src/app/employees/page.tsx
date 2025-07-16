@@ -153,7 +153,12 @@ export default function EmployeeManagementPage() {
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error('Failed to update employee');
+      if (!response.ok) {
+        // Extract the detailed error message from the backend
+        const errorData = await response.json();
+        const errorMessage = errorData.detail || 'Failed to update employee';
+        throw new Error(errorMessage);
+      }
       
       await fetchEmployees();
       setShowEditForm(false);
@@ -161,7 +166,8 @@ export default function EmployeeManagementPage() {
       resetForm();
       setError(null);
     } catch (err) {
-      setError('Failed to update employee');
+      // Show the detailed error message from backend
+      setError(err.message || 'Failed to update employee');
     } finally {
       setLoading(false);
     }
