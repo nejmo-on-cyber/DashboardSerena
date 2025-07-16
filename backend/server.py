@@ -860,14 +860,88 @@ async def get_analytics(range: str = "month"):
         cancellation_rate = (cancelled_appointments / total_appointments * 100) if total_appointments > 0 else 0
         avg_appointment_value = total_revenue / completed_appointments if completed_appointments > 0 else 0
         
-        # Simple growth calculation (compare to previous period)
-        revenue_growth = 15.0 if total_revenue > 0 else 0
+        # Calculate REAL client metrics based on appointments
+        client_appointments = {}  # Track appointments per client
+        first_appointment_dates = {}  # Track first appointment date per client
         
-        # Calculate client metrics for the period
-        total_clients = len(clients)
-        new_clients_in_period = int(total_clients * 0.2)  # Estimate based on period
-        returning_clients = total_clients - new_clients_in_period
-        retention_rate = (returning_clients / total_clients * 100) if total_clients > 0 else 0
+        # Process ALL appointments to build client history
+        all_appointments = airtable.get_all()  # Get all appointments for client analysis
+        
+        for apt in all_appointments:
+            fields = apt.get('fields', {})
+            client_ids = fields.get('Client', [])
+            date_str = fields.get('Appointment Date', '')
+            
+            if isinstance(client_ids, list) and len(client_ids) > 0 and date_str:
+                client_id = client_ids[0]
+                try:
+                    appointment_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                except:
+                    try:
+                        appointment_date = datetime.strptime(date_str[:10], '%Y-%m-%d').date()
+                    except:
+                        continue
+                
+                # Track all appointments per client
+                if client_id not in client_appointments:
+                    client_appointments[client_id] = []
+                client_appointments[client_id].append(appointment_date)
+                
+                # Track first appointment date
+                if client_id not in first_appointment_dates:
+                    first_appointment_dates[client_id] = appointment_date
+                else:
+                    if appointment_date < first_appointment_dates[client_id]:
+                        first_appointment_dates[client_id] = appointment_date
+        
+        # Calculate new clients in the selected period
+        new_clients_in_period = 0
+        returning_clients_in_period = 0
+        
+        for client_id, first_date in first_appointment_dates.items():
+            if start_date <= first_date <= end_date:
+                new_clients_in_period += 1
+            elif first_date < start_date:
+                # Check if this existing client had appointments in the period
+                client_dates = client_appointments.get(client_id, [])
+                has_appointment_in_period = any(start_date <= date <= end_date for date in client_dates)
+                if has_appointment_in_period:
+                    returning_clients_in_period += 1
+        
+        # Calculate retention rate (returning clients / total clients with appointments in period)
+        total_clients_in_period = new_clients_in_period + returning_clients_in_period
+        retention_rate = (returning_clients_in_period / total_clients_in_period * 100) if total_clients_in_period > 0 else 0
+        
+        # Calculate REAL revenue growth by comparing with previous period
+        previous_period_start = start_date - (end_date - start_date + timedelta(days=1))
+        previous_period_end = start_date - timedelta(days=1)
+        
+        previous_revenue = 0
+        for apt in all_appointments:
+            fields = apt.get('fields', {})
+            date_str = fields.get('Appointment Date', '')
+            status = fields.get('Appointment Status', '')
+            
+            if status == 'Completed' and date_str:
+                try:
+                    appointment_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                except:
+                    try:
+                        appointment_date = datetime.strptime(date_str[:10], '%Y-%m-%d').date()
+                    except:
+                        continue
+                
+                if previous_period_start <= appointment_date <= previous_period_end:
+                    price = fields.get('Total Price', 0)
+                    if isinstance(price, (int, float)):
+                        previous_revenue += float(price)
+        
+        # Calculate real revenue growth
+        revenue_growth = 0
+        if previous_revenue > 0:
+            revenue_growth = ((total_revenue - previous_revenue) / previous_revenue * 100)
+        elif total_revenue > 0:
+            revenue_growth = 100  # 100% growth from 0
         
         # Format response with filtered data
         analytics_data = {
@@ -885,9 +959,9 @@ async def get_analytics(range: str = "month"):
                 "cancellation_rate": cancellation_rate
             },
             "clients": {
-                "total": total_clients,
+                "total": total_clients_in_period,
                 "new_in_period": new_clients_in_period,
-                "returning": returning_clients,
+                "returning": returning_clients_in_period,
                 "retention_rate": retention_rate
             },
             "services": sorted([
