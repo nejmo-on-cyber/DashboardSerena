@@ -635,22 +635,28 @@ async def update_employee(employee_id: str, employee_data: dict):
                 if isinstance(service, str):
                     if service.startswith("rec") and len(service) > 10:
                         # Already a record ID
-                        service_record_ids.append(service)
-                        print(f"Using service ID directly: {service}")
+                        if service not in service_record_ids:  # Avoid duplicates
+                            service_record_ids.append(service)
+                            print(f"Using service ID directly: {service}")
                     else:
                         # Service name - convert to record ID
                         service_clean = service.strip()
                         service_id = known_services.get(service_clean)
-                        if service_id:
+                        if service_id and service_id not in service_record_ids:  # Avoid duplicates
                             service_record_ids.append(service_id)
                             print(f"Mapped service '{service_clean}' to ID {service_id}")
+                        elif service_id in service_record_ids:
+                            print(f"Skipping duplicate service '{service_clean}' (ID: {service_id})")
                         else:
                             print(f"Warning: Service '{service_clean}' not found in known services")
                             print(f"Available services: {list(known_services.keys())}")
             
+            # Remove duplicates and ensure unique service IDs
+            service_record_ids = list(set(service_record_ids))
+            
             if service_record_ids:
                 airtable_fields["Services"] = service_record_ids
-                print(f"Final services to update: {service_record_ids}")
+                print(f"Final unique services to update: {service_record_ids}")
             else:
                 print("No valid service IDs found")
         if employee_data.get("profile_picture"):
