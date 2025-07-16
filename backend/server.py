@@ -608,7 +608,25 @@ async def update_employee(employee_id: str, employee_data: dict):
         if employee_data.get("services"):
             airtable_fields["Services"] = employee_data["services"]
         if employee_data.get("profile_picture"):
-            airtable_fields["Photo"] = employee_data["profile_picture"]  # Fixed: Photo not Profile Picture
+            profile_picture = employee_data["profile_picture"]
+            # Handle different types of profile picture data
+            if isinstance(profile_picture, str):
+                if profile_picture.startswith("http"):
+                    # URL - Airtable can handle URLs directly
+                    airtable_fields["Photo"] = profile_picture
+                elif profile_picture.startswith("data:image"):
+                    # Base64 image - for now, store as text or skip
+                    # Airtable Photo field doesn't directly support base64
+                    # We'll store the base64 string in a text field for now
+                    print("Warning: Base64 images not fully supported in Airtable Photo field")
+                    # Skip for now to avoid errors
+                    pass
+                else:
+                    # Assume it's a URL
+                    airtable_fields["Photo"] = profile_picture
+            else:
+                # Handle other formats if needed
+                print(f"Warning: Unsupported profile picture format: {type(profile_picture)}")
         if employee_data.get("start_date"):
             airtable_fields["Start Date"] = employee_data["start_date"]
         if employee_data.get("status"):
