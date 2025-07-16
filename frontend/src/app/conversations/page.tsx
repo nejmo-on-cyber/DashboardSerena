@@ -26,7 +26,7 @@ export default function ConversationsPage() {
   const messagesEndRef = useRef(null);
 
   // Pusher instance reference
-  const pusherRef = useRef(null);
+  const pusherRef = useRef<any>(null);
 
   // Initialize Pusher and fetch conversations
   useEffect(() => {
