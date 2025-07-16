@@ -534,8 +534,10 @@ export default function ConversationsPage() {
                           type="text"
                           value={message}
                           onChange={(e) => setMessage(e.target.value)}
+                          onKeyPress={handleKeyPress}
                           placeholder="Type a message..."
-                          className={`w-full px-4 py-2 pr-12 rounded-lg border focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                          disabled={sending || !selectedConv}
+                          className={`w-full px-4 py-2 pr-12 rounded-lg border focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed ${
                             darkMode
                               ? "border-gray-600 bg-gray-700 text-white placeholder-gray-400"
                               : "border-gray-200 bg-white text-gray-900 placeholder-gray-500"
@@ -556,10 +558,20 @@ export default function ConversationsPage() {
                         </button>
                       </div>
                       <button
-                        className="p-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors"
+                        onClick={sendMessage}
+                        disabled={!message.trim() || sending || !selectedConv}
+                        className={`p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                          sending
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-purple-500 hover:bg-purple-600"
+                        } text-white`}
                         data-oid="30tsi8:"
                       >
-                        <Send className="w-5 h-5" data-oid="8pd2f_3" />
+                        {sending ? (
+                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Send className="w-5 h-5" data-oid="8pd2f_3" />
+                        )}
                       </button>
                     </div>
                   </div>
