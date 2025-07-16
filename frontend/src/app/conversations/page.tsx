@@ -18,65 +18,192 @@ import Pusher from 'pusher-js';
 export default function ConversationsPage() {
   const router = useRouter();
   const [darkMode, setDarkMode] = useState(false);
-  const [selectedConversation, setSelectedConversation] = useState(1);
+  const [selectedConversation, setSelectedConversation] = useState(null);
   const [message, setMessage] = useState("");
+  const [conversations, setConversations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const messagesEndRef = useRef(null);
 
-  const conversations = [
-    {
-      id: 1,
-      client: "Sarah Johnson",
-      lastMessage: "Hi, I need to reschedule my appointment for tomorrow",
-      time: "2 min ago",
-      status: "pending",
-      unread: 2,
-      tag: "VIP",
-      messages: [
-        {
-          id: 1,
-          sender: "client",
-          text: "Hi, I need to reschedule my appointment for tomorrow",
-          time: "2:30 PM",
+  // Pusher instance reference
+  const pusherRef = useRef(null);
+
+  // Initialize Pusher and fetch conversations
+  useEffect(() => {
+    // Initialize Pusher
+    pusherRef.current = new Pusher('f1f929da8fd632930b80', {
+      cluster: 'ap2',
+      encrypted: true
+    });
+
+    // Subscribe to the conversations channel
+    const channel = pusherRef.current.subscribe('my-channel');
+    
+    // Listen for new messages
+    channel.bind('new-message', (data) => {
+      console.log('New message received:', data);
+      
+      // Update conversations with new message
+      setConversations(prev => {
+        const updatedConversations = [...prev];
+        
+        // Find conversation by phone number
+        const convIndex = updatedConversations.findIndex(conv => 
+          conv.phone === data.phone
+        );
+        
+        if (convIndex !== -1) {
+          // Update existing conversation
+          const newMessage = {
+            id: Date.now().toString(),
+            sender: data.sender,
+            text: data.message,
+            time: data.time,
+            phone: data.phone
+          };
+          
+          updatedConversations[convIndex] = {
+            ...updatedConversations[convIndex],
+            lastMessage: data.message,
+            time: data.time,
+            messages: [...updatedConversations[convIndex].messages, newMessage]
+          };
+          
+          // Move conversation to top
+          const updatedConv = updatedConversations.splice(convIndex, 1)[0];
+          updatedConversations.unshift(updatedConv);
+        } else {
+          // Create new conversation if doesn't exist
+          const newConversation = {
+            id: Date.now().toString(),
+            client: data.sender_name || `Contact ${data.phone}`,
+            phone: data.phone,
+            lastMessage: data.message,
+            time: data.time,
+            status: 'pending',
+            unread: data.sender === 'client' ? 1 : 0,
+            tag: 'Regular',
+            messages: [{
+              id: Date.now().toString(),
+              sender: data.sender,
+              text: data.message,
+              time: data.time,
+              phone: data.phone
+            }]
+          };
+          
+          updatedConversations.unshift(newConversation);
+        }
+        
+        return updatedConversations;
+      });
+    });
+
+    // Fetch initial conversations
+    fetchConversations();
+
+    // Cleanup
+    return () => {
+      if (pusherRef.current) {
+        pusherRef.current.unsubscribe('my-channel');
+        pusherRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  // Auto-scroll to bottom of messages
+  useEffect(() => {
+    scrollToBottom();
+  }, [conversations, selectedConversation]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const fetchConversations = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setConversations(data);
+        
+        // Set first conversation as selected if available
+        if (data.length > 0) {
+          setSelectedConversation(data[0].id);
+        }
+      } else {
+        console.error('Failed to fetch conversations');
+      }
+    } catch (error) {
+      console.error('Error fetching conversations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const sendMessage = async () => {
+    if (!message.trim() || sending) return;
+    
+    const selectedConv = conversations.find(c => c.id === selectedConversation);
+    if (!selectedConv) return;
+
+    try {
+      setSending(true);
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/send-message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        {
-          id: 2,
-          sender: "ai",
-          text: "Hi Sarah! Of course, I can help you reschedule. What time works better for you?",
-          time: "2:31 PM",
-        },
-        {
-          id: 3,
-          sender: "client",
-          text: "Can we move it to Friday afternoon?",
-          time: "2:32 PM",
-        },
-      ],
-    },
-    {
-      id: 2,
-      client: "Mike Chen",
-      lastMessage: "Thank you for the reminder! See you at 3pm",
-      time: "15 min ago",
-      status: "replied",
-      unread: 0,
-      tag: "Regular",
-      messages: [
-        {
-          id: 1,
-          sender: "ai",
-          text: "Hi Mike! This is a reminder for your appointment tomorrow at 3pm.",
-          time: "1:00 PM",
-        },
-        {
-          id: 2,
-          sender: "client",
-          text: "Thank you for the reminder! See you at 3pm",
-          time: "1:15 PM",
-        },
-      ],
-    },
-  ];
+        body: JSON.stringify({
+          phone: selectedConv.phone,
+          message: message.trim(),
+        }),
+      });
+
+      if (response.ok) {
+        // Message sent successfully
+        setMessage("");
+        
+        // The message will be updated via Pusher event
+        console.log('Message sent successfully');
+      } else {
+        const errorData = await response.json();
+        console.error('Failed to send message:', errorData);
+        alert('Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert('Error sending message. Please try again.');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
 
   const selectedConv = conversations.find((c) => c.id === selectedConversation);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
+        <Sidebar darkMode={darkMode} />
+        <div className="lg:ml-64 flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-500 mx-auto"></div>
+            <p className="mt-4 text-lg text-gray-600">Loading conversations...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
