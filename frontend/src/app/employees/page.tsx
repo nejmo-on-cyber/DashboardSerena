@@ -272,13 +272,20 @@ export default function EmployeeManagementPage() {
   };
 
   const toggleService = (serviceName: string) => {
-    const mappedExpertise = mapServiceToExpertise(serviceName);
-    
     setFormData(prev => ({
       ...prev,
-      expertise: prev.expertise.includes(mappedExpertise)
-        ? prev.expertise.filter(s => s !== mappedExpertise)
-        : [...prev.expertise, mappedExpertise]
+      services: prev.services.includes(serviceName)
+        ? prev.services.filter(s => s !== serviceName)
+        : [...prev.services, serviceName]
+    }));
+  };
+
+  const toggleExpertise = (expertiseCategory: string) => {
+    setFormData(prev => ({
+      ...prev,
+      expertise: prev.expertise.includes(expertiseCategory)
+        ? prev.expertise.filter(e => e !== expertiseCategory)
+        : [...prev.expertise, expertiseCategory]
     }));
   };
 
