@@ -256,13 +256,13 @@ export default function EmployeeManagementPage() {
   const getStatusGlowEffect = (status: string) => {
     switch (status) {
       case 'Active':
-        return 'relative before:absolute before:inset-0 before:rounded-3xl before:p-[2px] before:bg-gradient-to-r before:from-green-400 before:via-green-500 before:to-green-400 before:animate-pulse hover:before:animate-spin';
+        return 'glow-active';
       case 'Inactive':
-        return 'relative before:absolute before:inset-0 before:rounded-3xl before:p-[2px] before:bg-gradient-to-r before:from-red-400 before:via-red-500 before:to-red-400 before:animate-pulse hover:before:animate-spin';
+        return 'glow-inactive';
       case 'On Leave':
-        return 'relative before:absolute before:inset-0 before:rounded-3xl before:p-[2px] before:bg-gradient-to-r before:from-orange-400 before:via-orange-500 before:to-orange-400 before:animate-pulse hover:before:animate-spin';
+        return 'glow-on-leave';
       default:
-        return 'relative before:absolute before:inset-0 before:rounded-3xl before:p-[2px] before:bg-gradient-to-r before:from-gray-400 before:via-gray-500 before:to-gray-400 before:animate-pulse hover:before:animate-spin';
+        return 'glow-default';
     }
   };
 
