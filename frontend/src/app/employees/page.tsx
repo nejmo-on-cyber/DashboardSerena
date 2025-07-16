@@ -28,6 +28,7 @@ interface Employee {
   contact_number: string;
   availability_days: string[];
   expertise: string[];
+  services: string[];  // NEW field
   profile_picture: string;
   start_date: string;
   status: string;
