@@ -181,7 +181,24 @@ def get_service_name(service_id):
         print(f"Error fetching service {service_id}: {e}")
         return None
 
-def get_employee_name(employee_id):
+def get_service_name(service_id: str) -> str:
+    """Fetch real service name from Services table using service ID"""
+    try:
+        if service_id in service_name_cache:
+            return service_name_cache[service_id]
+        
+        if airtable_services:
+            service_record = airtable_services.get(service_id)
+            if service_record and 'fields' in service_record:
+                service_name = service_record['fields'].get('Service Name') or service_record['fields'].get('Name', 'Unknown Service')
+                service_name_cache[service_id] = service_name
+                return service_name
+    except Exception as e:
+        print(f"Error fetching service name for {service_id}: {e}")
+    
+    return f"Service {service_id[-4:]}"
+
+def get_employee_name(employee_id: str) -> str:
     """Fetch real employee name from Employees table"""
     if not airtable_employees or not employee_id:
         return None
