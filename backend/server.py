@@ -711,14 +711,14 @@ async def get_employee_availability():
             availability_data.append({
                 "id": emp['id'],
                 "full_name": fields.get('Full Name', ''),
-                "employee_number": fields.get('Employee Number', ''),
+                "employee_number": fields.get('Employee ID', ''),  # Fixed: Employee ID not Employee Number
                 "availability_days": availability_days,
                 "expertise": expertise,
                 "services": services,  # NEW field
                 "contact_number": fields.get('Contact Number', ''),
-                "email": fields.get('Email', ''),
-                "status": fields.get('Status', fields.get('Employee Status', 'Active')),  # Try both field names
-                "profile_picture": fields.get('Profile Picture', ''),
+                "email": fields.get('Email Address', ''),  # Fixed: Email Address not Email
+                "status": fields.get('Status', 'Active'),  # Use correct field name
+                "profile_picture": fields.get('Photo', ''),  # Fixed: Photo not Profile Picture
                 "start_date": fields.get('Start Date', '')
             })
         
