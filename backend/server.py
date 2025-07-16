@@ -872,8 +872,96 @@ async def get_employee_availability():
 async def get_conversations():
     """Get all conversations from Wassenger"""
     try:
-        # For now, return mock data. In production, you'd fetch from Wassenger API
-        # or your database where you store conversation history
+        if not WASSENGER_API_KEY:
+            raise HTTPException(status_code=500, detail="Wassenger API key not configured")
+        
+        # First, get the device ID (we'll need to get this from Wassenger)
+        devices_response = requests.get(
+            f"{WASSENGER_BASE_URL}/devices",
+            headers={
+                "Content-Type": "application/json",
+                "Token": WASSENGER_API_KEY
+            }
+        )
+        
+        if devices_response.status_code != 200:
+            raise HTTPException(status_code=500, detail=f"Failed to get devices: {devices_response.text}")
+        
+        devices = devices_response.json()
+        print(f"Available devices: {devices}")
+        
+        if not devices:
+            raise HTTPException(status_code=500, detail="No devices found in Wassenger account")
+        
+        # Use the first device (assuming single WhatsApp number)
+        device_id = devices[0]["id"] if isinstance(devices, list) else devices["id"]
+        
+        # Get chats for the device
+        chats_response = requests.get(
+            f"{WASSENGER_BASE_URL}/devices/{device_id}/chats",
+            headers={
+                "Content-Type": "application/json",
+                "Token": WASSENGER_API_KEY
+            }
+        )
+        
+        if chats_response.status_code != 200:
+            raise HTTPException(status_code=500, detail=f"Failed to get chats: {chats_response.text}")
+        
+        chats = chats_response.json()
+        
+        conversations = []
+        for chat in chats:
+            # Get recent messages for each chat
+            messages_response = requests.get(
+                f"{WASSENGER_BASE_URL}/devices/{device_id}/chats/{chat['id']}/messages",
+                headers={
+                    "Content-Type": "application/json",
+                    "Token": WASSENGER_API_KEY
+                },
+                params={"limit": 10}  # Get last 10 messages
+            )
+            
+            messages = []
+            last_message = ""
+            if messages_response.status_code == 200:
+                msg_data = messages_response.json()
+                for msg in msg_data:
+                    messages.append({
+                        "id": msg.get("id", ""),
+                        "sender": "client" if msg.get("fromMe") == False else "ai",
+                        "text": msg.get("body", ""),
+                        "time": msg.get("timestamp", ""),
+                        "phone": chat.get("id", "").replace("@c.us", "")
+                    })
+                
+                # Get last message for preview
+                if msg_data:
+                    last_message = msg_data[-1].get("body", "")
+            
+            # Extract phone number from chat ID (format: phone@c.us)
+            phone = chat.get("id", "").replace("@c.us", "").replace("@g.us", "")
+            if phone.startswith("971"):
+                phone = "+" + phone
+            
+            conversation = {
+                "id": chat.get("id", ""),
+                "client": chat.get("name", f"Contact {phone}"),
+                "phone": phone,
+                "lastMessage": last_message,
+                "time": chat.get("timestamp", ""),
+                "status": "replied" if chat.get("unreadCount", 0) == 0 else "pending",
+                "unread": chat.get("unreadCount", 0),
+                "tag": "Group" if "@g.us" in chat.get("id", "") else "Regular",
+                "messages": messages
+            }
+            conversations.append(conversation)
+        
+        return conversations
+        
+    except Exception as e:
+        print(f"Error fetching conversations: {str(e)}")
+        # Fallback to mock data if API fails
         mock_conversations = [
             {
                 "id": "1",
@@ -899,36 +987,9 @@ async def get_conversations():
                         "time": "2:31 PM"
                     }
                 ]
-            },
-            {
-                "id": "2",
-                "client": "Mike Chen",
-                "phone": "+971502810802",
-                "lastMessage": "Thank you for the reminder! See you at 3pm",
-                "time": "15 min ago",
-                "status": "replied",
-                "unread": 0,
-                "tag": "Regular",
-                "messages": [
-                    {
-                        "id": "1",
-                        "sender": "ai",
-                        "text": "Hi Mike! This is a reminder for your appointment tomorrow at 3pm.",
-                        "time": "1:00 PM"
-                    },
-                    {
-                        "id": "2",
-                        "sender": "client",
-                        "text": "Thank you for the reminder! See you at 3pm",
-                        "time": "1:15 PM",
-                        "phone": "+971502810802"
-                    }
-                ]
             }
         ]
         return mock_conversations
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching conversations: {str(e)}")
 
 @app.post("/api/send-message")
 async def send_message(request: SendMessageRequest):
