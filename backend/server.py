@@ -615,7 +615,15 @@ async def update_employee(employee_id: str, employee_data: dict):
             
             airtable_fields["Expertise"] = mapped_expertise
         if employee_data.get("services"):
-            airtable_fields["Services"] = employee_data["services"]
+            services = employee_data["services"]
+            # Filter out invalid services - only include valid record IDs
+            valid_services = []
+            for service in services:
+                if isinstance(service, str) and service.startswith("rec") and len(service) > 10:
+                    valid_services.append(service)
+            
+            if valid_services:
+                airtable_fields["Services"] = valid_services
         if employee_data.get("profile_picture"):
             profile_picture = employee_data["profile_picture"]
             # Handle different types of profile picture data
