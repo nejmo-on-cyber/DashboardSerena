@@ -697,13 +697,14 @@ async def get_employee_availability():
                 elif isinstance(fields['Expertise'], str):
                     expertise = [fields['Expertise']]
             
-            # Extract services (NEW field)
+            # Extract services (NEW field) and convert IDs to names
             services = []
             if fields.get('Services'):
-                if isinstance(fields['Services'], list):
-                    services = fields['Services']
-                elif isinstance(fields['Services'], str):
-                    services = [fields['Services']]
+                service_ids = fields['Services'] if isinstance(fields['Services'], list) else [fields['Services']]
+                for service_id in service_ids:
+                    service_name = get_service_name(service_id)
+                    if service_name:
+                        services.append(service_name)
             
             availability_data.append({
                 "id": emp['id'],
