@@ -616,52 +616,43 @@ async def update_employee(employee_id: str, employee_data: dict):
             airtable_fields["Expertise"] = mapped_expertise
         if employee_data.get("services"):
             services = employee_data["services"]
+            print(f"Services received from frontend: {services}")
+            
             # Handle services - convert names to record IDs if needed
             service_record_ids = []
             
-            # Get all services to map names to IDs
-            try:
-                all_services = airtable_services.get_all()
-                service_name_to_id = {}
-                
-                # Build name to ID mapping with proper cleaning
-                for service in all_services:
-                    service_name = service['fields'].get('Name', '')
-                    # Clean service name - remove newlines and extra whitespace
-                    service_name_clean = service_name.strip().replace('\n', '').replace('\r', '')
-                    if service_name_clean:  # Only add non-empty names
-                        service_name_to_id[service_name_clean] = service['id']
-                
-                print(f"Available services mapping: {service_name_to_id}")
-                
-                for service in services:
-                    if isinstance(service, str):
-                        if service.startswith("rec") and len(service) > 10:
-                            # Already a record ID
-                            service_record_ids.append(service)
+            # Direct test with known service names and IDs
+            known_services = {
+                "FACE CAMP (BLUE/RED LIGHT THERAPY)": "rec28tEwSMeL1ROBK",
+                "INFRARED SAUNA BLANKET THERAPY": "rec2osGFa8ZY4ur55",
+                "RENATA FRANCA METHOD": "rec2tlQFCAry7BM4W",
+                "SHIATSU MASSAGE": "rec5fmhmlvUA6eoQE",
+                "SIGNATURE MASSAGE": "rec6DPw7AjavYAvso",
+                "NEUROACOUSTIC THERAPY": "rec8VApYl1okCwzUc"
+            }
+            
+            for service in services:
+                if isinstance(service, str):
+                    if service.startswith("rec") and len(service) > 10:
+                        # Already a record ID
+                        service_record_ids.append(service)
+                        print(f"Using service ID directly: {service}")
+                    else:
+                        # Service name - convert to record ID
+                        service_clean = service.strip()
+                        service_id = known_services.get(service_clean)
+                        if service_id:
+                            service_record_ids.append(service_id)
+                            print(f"Mapped service '{service_clean}' to ID {service_id}")
                         else:
-                            # Service name - convert to record ID
-                            service_clean = service.strip().replace('\n', '').replace('\r', '')
-                            service_id = service_name_to_id.get(service_clean)
-                            if service_id:
-                                service_record_ids.append(service_id)
-                                print(f"Mapped service '{service_clean}' to ID {service_id}")
-                            else:
-                                print(f"Warning: Service '{service_clean}' not found in Airtable")
-                                print(f"Available services: {list(service_name_to_id.keys())}")
-                
-                if service_record_ids:
-                    airtable_fields["Services"] = service_record_ids
-                    print(f"Updated services with IDs: {service_record_ids}")
-                else:
-                    print("No valid service IDs found")
-                    
-            except Exception as e:
-                print(f"Error handling services: {e}")
-                import traceback
-                traceback.print_exc()
-                # Skip services if there's an error to avoid blocking other updates
-                pass
+                            print(f"Warning: Service '{service_clean}' not found in known services")
+                            print(f"Available services: {list(known_services.keys())}")
+            
+            if service_record_ids:
+                airtable_fields["Services"] = service_record_ids
+                print(f"Final services to update: {service_record_ids}")
+            else:
+                print("No valid service IDs found")
         if employee_data.get("profile_picture"):
             profile_picture = employee_data["profile_picture"]
             # Handle different types of profile picture data
