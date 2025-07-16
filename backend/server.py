@@ -7,10 +7,24 @@ from dotenv import load_dotenv
 import requests
 from airtable import Airtable
 import json
+import pusher
 from datetime import datetime, timedelta
 
 # Load environment variables
 load_dotenv()
+
+# Initialize Wassenger and Pusher
+WASSENGER_API_KEY = os.getenv("WASSENGER_API_KEY")
+WASSENGER_BASE_URL = os.getenv("WASSENGER_BASE_URL", "https://api.wassenger.com/v1")
+
+# Initialize Pusher
+pusher_client = pusher.Pusher(
+    app_id="1897734",  # You'll need to get this from Pusher dashboard
+    key=os.getenv("PUSHER_APP_KEY", "f1f929da8fd632930b80"),
+    secret="", # You'll need to get this from Pusher dashboard
+    cluster=os.getenv("PUSHER_CLUSTER", "ap2"),
+    ssl=True
+)
 
 app = FastAPI(title="Airtable Dashboard API", version="1.0.0")
 
