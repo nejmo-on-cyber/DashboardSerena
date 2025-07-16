@@ -123,10 +123,12 @@ export default function ConversationsPage() {
   const fetchConversations = async () => {
     try {
       setLoading(true);
+      console.log('Fetching conversations from /api/conversations...');
       const response = await fetch(`/api/conversations`);
       
       if (response.ok) {
         const data = await response.json();
+        console.log('Conversations fetched:', data);
         setConversations(data);
         
         // Set first conversation as selected if available
@@ -134,7 +136,7 @@ export default function ConversationsPage() {
           setSelectedConversation(data[0].id);
         }
       } else {
-        console.error('Failed to fetch conversations');
+        console.error('Failed to fetch conversations:', response.status);
       }
     } catch (error) {
       console.error('Error fetching conversations:', error);
