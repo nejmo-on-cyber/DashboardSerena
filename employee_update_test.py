@@ -7,7 +7,7 @@ import sys
 def test_employee_update_specific():
     """Test the specific employee update scenario from the review request"""
     
-    base_url = "https://c48ce902-ba6c-445a-9dbb-4df3b8272b13.preview.emergentagent.com"
+    base_url = "https://7d11e702-86d9-457f-a1e2-fe04f69c1896.preview.emergentagent.com"
     
     print("🔍 Testing Employee Update with Review Request Data")
     print("=" * 60)
@@ -85,7 +85,7 @@ def test_employee_update_specific():
 def test_employee_update_minimal():
     """Test with only the fields that should definitely work"""
     
-    base_url = "https://c48ce902-ba6c-445a-9dbb-4df3b8272b13.preview.emergentagent.com"
+    base_url = "https://7d11e702-86d9-457f-a1e2-fe04f69c1896.preview.emergentagent.com"
     
     print("\n🔍 Testing Employee Update with Minimal Safe Fields")
     print("=" * 60)

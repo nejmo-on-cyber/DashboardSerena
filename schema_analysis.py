@@ -6,7 +6,7 @@ import json
 def analyze_airtable_schema():
     """Analyze the actual Airtable schema to understand available fields"""
     
-    base_url = "https://c48ce902-ba6c-445a-9dbb-4df3b8272b13.preview.emergentagent.com"
+    base_url = "https://7d11e702-86d9-457f-a1e2-fe04f69c1896.preview.emergentagent.com"
     
     print("🔍 Analyzing Airtable Employee Schema")
     print("=" * 60)
@@ -49,7 +49,7 @@ def analyze_airtable_schema():
 def test_field_by_field():
     """Test updating each field individually to identify which ones work"""
     
-    base_url = "https://c48ce902-ba6c-445a-9dbb-4df3b8272b13.preview.emergentagent.com"
+    base_url = "https://7d11e702-86d9-457f-a1e2-fe04f69c1896.preview.emergentagent.com"
     
     print("\n🔍 Testing Each Field Individually")
     print("=" * 60)
