@@ -144,6 +144,7 @@ export default function ConversationsPage() {
     } catch (error) {
       console.error('Error fetching conversations:', error);
     } finally {
+      console.log('Setting loading to false...');
       setLoading(false);
     }
   };
