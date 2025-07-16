@@ -618,24 +618,58 @@ async def update_employee(employee_id: str, employee_data: dict):
             services = employee_data["services"]
             print(f"Services received from frontend: {services}")
             
-            # Handle services - send service names directly to Airtable
-            service_names = []
+            # Handle services - convert names to record IDs for Airtable
+            service_record_ids = []
+            
+            # Extended mapping of service names to record IDs
+            known_services = {
+                "FACE CAMP (BLUE/RED LIGHT THERAPY)": "rec28tEwSMeL1ROBK",
+                "INFRARED SAUNA BLANKET THERAPY": "rec2osGFa8ZY4ur55",
+                "RENATA FRANCA METHOD": "rec2tlQFCAry7BM4W",
+                "SHIATSU MASSAGE": "rec5fmhmlvUA6eoQE",
+                "SIGNATURE MASSAGE": "rec6DPw7AjavYAvso",
+                "NEUROACOUSTIC THERAPY": "rec8VApYl1okCwzUc",
+                "COMPRESSION BOOT THERAPY": "recLZ9tZN2wFmOhAA",
+                "LYMPHATIC MASSAGE": "recySXNcKQRHlpeHV",
+                "LYMPHATIC SLIMMING": "recQNq059EbedQMrE",
+                "DEEP TISSUE MASSAGE": "recFL1qrxvobWyjlX",
+                "RELAXATION MASSAGE": "recO1ScDosXjV4Cpw",
+                "HOT LAVA SHELL MASSAGE": "recEziObQElRw8eqf",
+                "COUPLES MASSAGE": "recYAknaHiLKVtyVo",
+                "MADEROTHERAPY": "recFx6pjD8FQEoOhn",
+                "PRE/POST NATAL": "receTjPoVq2zCGpPG",
+                "CYAN SLIMMING": "recErvr8iYpfpNFLh",
+                "Face Camp (Microcurrent)": "rectsBGqBzxjNJYnB"
+            }
             
             for service in services:
                 if isinstance(service, str):
-                    service_clean = service.strip()
-                    if service_clean:
-                        service_names.append(service_clean)
-                        print(f"Added service: {service_clean}")
+                    if service.startswith("rec") and len(service) > 10:
+                        # Already a record ID
+                        if service not in service_record_ids:  # Avoid duplicates
+                            service_record_ids.append(service)
+                            print(f"Using service ID directly: {service}")
+                    else:
+                        # Service name - convert to record ID
+                        service_clean = service.strip()
+                        service_id = known_services.get(service_clean)
+                        if service_id and service_id not in service_record_ids:  # Avoid duplicates
+                            service_record_ids.append(service_id)
+                            print(f"Mapped service '{service_clean}' to ID {service_id}")
+                        elif service_id in service_record_ids:
+                            print(f"Skipping duplicate service '{service_clean}' (ID: {service_id})")
+                        else:
+                            print(f"Warning: Service '{service_clean}' not found in known services")
+                            print(f"Available services: {list(known_services.keys())}")
             
-            # Remove duplicates and ensure unique service names
-            service_names = list(set(service_names))
+            # Remove duplicates and ensure unique service IDs
+            service_record_ids = list(set(service_record_ids))
             
-            if service_names:
-                airtable_fields["Services"] = service_names
-                print(f"Final services to update: {service_names}")
+            if service_record_ids:
+                airtable_fields["Services"] = service_record_ids
+                print(f"Final unique services to update: {service_record_ids}")
             else:
-                print("No valid services found")
+                print("No valid service IDs found")
         if employee_data.get("profile_picture"):
             profile_picture = employee_data["profile_picture"]
             # Handle different types of profile picture data
