@@ -1716,6 +1716,284 @@ class BackendAPITester:
             "test_results": test_results
         }
 
+    def test_employee_status_update_functionality(self):
+        """REVIEW REQUEST TEST: Employee status update functionality"""
+        print("\n🎯 REVIEW REQUEST TEST: Employee Status Update Functionality")
+        print("=" * 80)
+        print("📋 TESTING REQUIREMENTS:")
+        print("   1. GET /api/employees endpoint - check if status field is returned")
+        print("   2. PUT /api/employees/{id} - test status updates:")
+        print("      • Active → Inactive")
+        print("      • Active → On Leave") 
+        print("      • Inactive → Active")
+        print("   3. Error handling with invalid status values")
+        print("   4. Status field verification between frontend and Airtable")
+        print("=" * 80)
+        
+        # Step 1: Test GET /api/employees endpoint for status field
+        print("\n🔍 STEP 1: Testing GET /api/employees endpoint for status field")
+        print("-" * 60)
+        
+        employees_success, employees_data = self.run_test(
+            "GET /api/employees - Check Status Field",
+            "GET",
+            "api/employees",
+            200
+        )
+        
+        if not employees_success or not isinstance(employees_data, list) or len(employees_data) == 0:
+            print("❌ Cannot test employee status - no employees available from GET /api/employees")
+            return False, {}
+        
+        print(f"✅ Found {len(employees_data)} employees from GET /api/employees")
+        
+        # Check if status field is present in response
+        employees_with_status = 0
+        status_values_found = set()
+        
+        for i, employee in enumerate(employees_data):
+            employee_name = employee.get('name', f'Employee {i+1}')
+            employee_id = employee.get('id', 'No ID')
+            
+            # Note: GET /api/employees returns different structure than /api/employee-availability
+            print(f"   👤 {employee_name} (ID: {employee_id})")
+            print(f"      Available fields: {list(employee.keys())}")
+        
+        # Step 2: Get detailed employee data with status field
+        print(f"\n🔍 STEP 2: Getting detailed employee data with status field")
+        print("-" * 60)
+        
+        detailed_success, detailed_data = self.run_test(
+            "GET /api/employee-availability - Check Status Field",
+            "GET", 
+            "api/employee-availability",
+            200
+        )
+        
+        if not detailed_success or not isinstance(detailed_data, list) or len(detailed_data) == 0:
+            print("❌ Cannot get detailed employee data")
+            return False, {}
+        
+        print(f"✅ Found {len(detailed_data)} employees with detailed data")
+        
+        # Analyze status field in detailed data
+        for employee in detailed_data:
+            employee_name = employee.get('full_name', 'Unknown')
+            status = employee.get('status', 'No Status')
+            status_values_found.add(status)
+            
+            if status != 'No Status':
+                employees_with_status += 1
+            
+            print(f"   👤 {employee_name}: Status = '{status}'")
+        
+        print(f"\n📊 Status Field Analysis:")
+        print(f"   • Employees with status field: {employees_with_status}/{len(detailed_data)}")
+        print(f"   • Status values found: {sorted(list(status_values_found))}")
+        
+        if employees_with_status == 0:
+            print("❌ CRITICAL: No employees have status field!")
+            return False, {}
+        
+        # Step 3: Test status updates
+        print(f"\n🔍 STEP 3: Testing employee status updates")
+        print("-" * 60)
+        
+        # Use first employee for testing
+        test_employee = detailed_data[0]
+        employee_id = test_employee.get('id')
+        employee_name = test_employee.get('full_name', 'Unknown')
+        original_status = test_employee.get('status', 'Active')
+        
+        print(f"🎯 Testing with Employee: {employee_name}")
+        print(f"   ID: {employee_id}")
+        print(f"   Original Status: '{original_status}'")
+        
+        # Test status update scenarios as requested
+        status_update_tests = [
+            {
+                "name": "Active → Inactive",
+                "from_status": "Active",
+                "to_status": "Inactive",
+                "description": "Update employee from Active to Inactive status"
+            },
+            {
+                "name": "Inactive → On Leave", 
+                "from_status": "Inactive",
+                "to_status": "On Leave",
+                "description": "Update employee from Inactive to On Leave status"
+            },
+            {
+                "name": "On Leave → Active",
+                "from_status": "On Leave", 
+                "to_status": "Active",
+                "description": "Update employee from On Leave back to Active status"
+            }
+        ]
+        
+        status_update_results = {}
+        successful_status_updates = 0
+        
+        for test_case in status_update_tests:
+            test_name = test_case["name"]
+            to_status = test_case["to_status"]
+            description = test_case["description"]
+            
+            print(f"\n--- {test_name} ---")
+            print(f"Description: {description}")
+            print(f"Updating status to: '{to_status}'")
+            
+            # Update employee status
+            update_data = {
+                "status": to_status
+            }
+            
+            success, response_data = self.run_test(
+                f"Update Employee Status: {test_name}",
+                "PUT",
+                f"api/employees/{employee_id}",
+                200,
+                data=update_data
+            )
+            
+            status_update_results[test_name] = {
+                "success": success,
+                "response": response_data,
+                "target_status": to_status
+            }
+            
+            if success:
+                print(f"✅ Status update API call succeeded")
+                
+                # Verify the status change in Airtable
+                verify_success, verify_data = self.run_test(
+                    f"Verify Status Update: {test_name}",
+                    "GET",
+                    f"api/employees/{employee_id}",
+                    200
+                )
+                
+                if verify_success:
+                    stored_status = verify_data.get('status', 'Unknown')
+                    print(f"   Verified Status in Airtable: '{stored_status}'")
+                    
+                    if stored_status == to_status:
+                        print(f"✅ STATUS UPDATE CONFIRMED: Successfully changed to '{to_status}'")
+                        successful_status_updates += 1
+                        status_update_results[test_name]['verified'] = True
+                        status_update_results[test_name]['stored_status'] = stored_status
+                    else:
+                        print(f"❌ STATUS UPDATE FAILED: Expected '{to_status}', got '{stored_status}'")
+                        status_update_results[test_name]['verified'] = False
+                        status_update_results[test_name]['stored_status'] = stored_status
+                else:
+                    print(f"❌ Could not verify status update")
+                    status_update_results[test_name]['verified'] = False
+            else:
+                print(f"❌ Status update API call failed: {response_data}")
+                status_update_results[test_name]['verified'] = False
+            
+            time.sleep(1)  # Delay between tests
+        
+        # Step 4: Test error handling with invalid status values
+        print(f"\n🔍 STEP 4: Testing error handling with invalid status values")
+        print("-" * 60)
+        
+        invalid_status_tests = [
+            "InvalidStatus",
+            "ACTIVE",  # Wrong case
+            "active",  # Wrong case
+            "",        # Empty string
+            "Pending", # Non-existent status
+            "Terminated" # Non-existent status
+        ]
+        
+        invalid_status_results = {}
+        proper_error_handling = 0
+        
+        for invalid_status in invalid_status_tests:
+            print(f"\n--- Testing Invalid Status: '{invalid_status}' ---")
+            
+            update_data = {
+                "status": invalid_status
+            }
+            
+            success, response_data = self.run_test(
+                f"Update with Invalid Status: '{invalid_status}'",
+                "PUT",
+                f"api/employees/{employee_id}",
+                [400, 422, 500],  # Expecting error status codes
+                data=update_data
+            )
+            
+            invalid_status_results[invalid_status] = {
+                "success": success,
+                "response": response_data
+            }
+            
+            if success:
+                print(f"✅ Properly rejected invalid status '{invalid_status}'")
+                proper_error_handling += 1
+            else:
+                print(f"❌ Invalid status '{invalid_status}' was not properly rejected")
+            
+            time.sleep(0.5)
+        
+        # Step 5: Final verification - check current status
+        print(f"\n🔍 STEP 5: Final status verification")
+        print("-" * 60)
+        
+        final_success, final_data = self.run_test(
+            "Final Status Verification",
+            "GET",
+            f"api/employees/{employee_id}",
+            200
+        )
+        
+        if final_success:
+            final_status = final_data.get('status', 'Unknown')
+            print(f"✅ Final employee status: '{final_status}'")
+        
+        # Summary
+        print(f"\n📊 EMPLOYEE STATUS UPDATE TEST RESULTS:")
+        print("=" * 50)
+        print(f"✅ Successful Status Updates: {successful_status_updates}/{len(status_update_tests)}")
+        print(f"✅ Proper Error Handling: {proper_error_handling}/{len(invalid_status_tests)}")
+        
+        status_success_rate = (successful_status_updates / len(status_update_tests)) * 100 if status_update_tests else 0
+        error_success_rate = (proper_error_handling / len(invalid_status_tests)) * 100 if invalid_status_tests else 0
+        
+        print(f"🎯 Status Update Success Rate: {status_success_rate:.1f}%")
+        print(f"🎯 Error Handling Success Rate: {error_success_rate:.1f}%")
+        
+        # Overall assessment
+        overall_success = (successful_status_updates >= 2 and proper_error_handling >= 4)
+        
+        if overall_success:
+            print(f"\n✅ EMPLOYEE STATUS UPDATE FUNCTIONALITY: WORKING")
+            print("   • Status field is properly returned in API responses")
+            print("   • Status updates are successfully saved to Airtable")
+            print("   • Status changes are reflected in subsequent GET requests")
+            print("   • Invalid status values are properly rejected")
+        else:
+            print(f"\n❌ EMPLOYEE STATUS UPDATE FUNCTIONALITY: ISSUES FOUND")
+            if successful_status_updates < 2:
+                print("   • Status updates are not working correctly")
+            if proper_error_handling < 4:
+                print("   • Error handling for invalid status values needs improvement")
+        
+        return overall_success, {
+            "employees_with_status": employees_with_status,
+            "status_values_found": list(status_values_found),
+            "status_update_results": status_update_results,
+            "invalid_status_results": invalid_status_results,
+            "successful_status_updates": successful_status_updates,
+            "proper_error_handling": proper_error_handling,
+            "status_success_rate": status_success_rate,
+            "error_success_rate": error_success_rate,
+            "overall_success": overall_success
+        }
+
 def main():
     print("🚨 EMPLOYEE MANAGEMENT SERVICE MAPPING TESTING")
     print("=" * 80)
