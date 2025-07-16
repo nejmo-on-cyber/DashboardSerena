@@ -1,10 +1,10 @@
 {
   "/_not-found/page": "/_not-found",
   "/favicon.ico/route": "/favicon.ico",
-  "/booking-admin/page": "/booking-admin",
   "/analytics/page": "/analytics",
-  "/clients/page": "/clients",
+  "/booking-admin/page": "/booking-admin",
   "/calendar/page": "/calendar",
+  "/clients/page": "/clients",
   "/conversations/page": "/conversations",
   "/employees/page": "/employees",
   "/page": "/",
