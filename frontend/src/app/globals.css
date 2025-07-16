@@ -148,62 +148,94 @@ body {
     }
 }
 
-/* Animated glow effects for employee cards - SUBTLE VERSION */
-@keyframes subtle-border-travel {
+/* Animated glow effects for employee cards - SUBTLE TRAVELING LIGHT */
+@keyframes travel-light {
     0% {
-        border-image: linear-gradient(90deg, rgba(var(--glow-color), 0.3) 0%, rgba(var(--glow-color), 0.6) 10%, rgba(var(--glow-color), 0.3) 20%, transparent 50%, transparent 100%) 1;
-    }
-    25% {
-        border-image: linear-gradient(180deg, transparent 0%, rgba(var(--glow-color), 0.3) 30%, rgba(var(--glow-color), 0.6) 40%, rgba(var(--glow-color), 0.3) 50%, transparent 100%) 1;
+        background-position: 0% 50%;
     }
     50% {
-        border-image: linear-gradient(270deg, transparent 0%, transparent 50%, rgba(var(--glow-color), 0.3) 70%, rgba(var(--glow-color), 0.6) 80%, rgba(var(--glow-color), 0.3) 90%, transparent 100%) 1;
-    }
-    75% {
-        border-image: linear-gradient(360deg, transparent 0%, rgba(var(--glow-color), 0.3) 50%, rgba(var(--glow-color), 0.6) 60%, rgba(var(--glow-color), 0.3) 70%, transparent 100%) 1;
+        background-position: 100% 50%;
     }
     100% {
-        border-image: linear-gradient(90deg, rgba(var(--glow-color), 0.3) 0%, rgba(var(--glow-color), 0.6) 10%, rgba(var(--glow-color), 0.3) 20%, transparent 50%, transparent 100%) 1;
-    }
-}
-
-@keyframes subtle-glow-pulse {
-    0%, 100% {
-        box-shadow: 0 0 0 1px rgba(var(--glow-color), 0.1);
-    }
-    50% {
-        box-shadow: 0 0 0 1px rgba(var(--glow-color), 0.2);
+        background-position: 0% 50%;
     }
 }
 
 .glow-active {
     --glow-color: 34, 197, 94; /* Green */
-    border: 2px solid transparent;
+    position: relative;
     border-radius: 1rem;
-    background: linear-gradient(white, white) padding-box, linear-gradient(90deg, rgba(34, 197, 94, 0.2), transparent) border-box;
-    animation: subtle-border-travel 8s linear infinite, subtle-glow-pulse 3s ease-in-out infinite;
+    background: linear-gradient(45deg, 
+        transparent 30%, 
+        rgba(var(--glow-color), 0.1) 50%, 
+        transparent 70%
+    );
+    background-size: 300% 300%;
+    animation: travel-light 6s ease-in-out infinite;
+}
+
+.glow-active::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    background: white;
+    z-index: -1;
 }
 
 .glow-inactive {
     --glow-color: 239, 68, 68; /* Red */
-    border: 2px solid transparent;
+    position: relative;
     border-radius: 1rem;
-    background: linear-gradient(white, white) padding-box, linear-gradient(90deg, rgba(239, 68, 68, 0.2), transparent) border-box;
-    animation: subtle-border-travel 8s linear infinite, subtle-glow-pulse 3s ease-in-out infinite;
+    background: linear-gradient(45deg, 
+        transparent 30%, 
+        rgba(var(--glow-color), 0.1) 50%, 
+        transparent 70%
+    );
+    background-size: 300% 300%;
+    animation: travel-light 6s ease-in-out infinite;
+}
+
+.glow-inactive::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    background: white;
+    z-index: -1;
 }
 
 .glow-on-leave {
     --glow-color: 245, 158, 11; /* Amber */
-    border: 2px solid transparent;
+    position: relative;
     border-radius: 1rem;
-    background: linear-gradient(white, white) padding-box, linear-gradient(90deg, rgba(245, 158, 11, 0.2), transparent) border-box;
-    animation: subtle-border-travel 8s linear infinite, subtle-glow-pulse 3s ease-in-out infinite;
+    background: linear-gradient(45deg, 
+        transparent 30%, 
+        rgba(var(--glow-color), 0.1) 50%, 
+        transparent 70%
+    );
+    background-size: 300% 300%;
+    animation: travel-light 6s ease-in-out infinite;
+}
+
+.glow-on-leave::before {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    background: white;
+    z-index: -1;
 }
 
 .glow-default {
     --glow-color: 156, 163, 175; /* Gray */
-    border: 2px solid transparent;
+    position: relative;
     border-radius: 1rem;
-    background: linear-gradient(white, white) padding-box, linear-gradient(90deg, rgba(156, 163, 175, 0.2), transparent) border-box;
-    animation: subtle-border-travel 8s linear infinite, subtle-glow-pulse 3s ease-in-out infinite;
+    background: linear-gradient(45deg, 
+        transparent 30%, 
+        rgba(var(--glow-color), 0.1) 50%, 
+        transparent 70%
+    );
+    background-size: 300% 300%;
+    animation: travel-light 6s ease-in-out infinite;
 }
