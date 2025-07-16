@@ -374,7 +374,8 @@ export default function ConversationsPage() {
                         </div>
                       </div>
                     </div>
-                  ))
+                  )
+                  })
                 ) : (
                   <div className="p-8 text-center">
                     <p className={`text-gray-500 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
