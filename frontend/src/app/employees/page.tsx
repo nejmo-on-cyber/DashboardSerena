@@ -145,12 +145,19 @@ export default function EmployeeManagementPage() {
 
     setLoading(true);
     try {
+      // Ensure services array has unique values before sending
+      const uniqueServices = [...new Set(formData.services)];
+      const dataToSend = {
+        ...formData,
+        services: uniqueServices
+      };
+
       const response = await fetch(`/api/employees/${editingEmployee.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
 
       if (!response.ok) {
