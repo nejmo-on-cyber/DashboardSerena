@@ -7,8 +7,8 @@
   "/clients/page": "/clients",
   "/conversations/page": "/conversations",
   "/employees/page": "/employees",
-  "/page": "/",
   "/promotions/page": "/promotions",
+  "/page": "/",
   "/revenue/page": "/revenue",
   "/services/page": "/services",
   "/voice-calls/page": "/voice-calls"
