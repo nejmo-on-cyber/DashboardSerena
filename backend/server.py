@@ -19,9 +19,9 @@ WASSENGER_BASE_URL = os.getenv("WASSENGER_BASE_URL", "https://api.wassenger.com/
 
 # Initialize Pusher
 pusher_client = pusher.Pusher(
-    app_id="1897734",  # You'll need to get this from Pusher dashboard
+    app_id=os.getenv("PUSHER_APP_ID", "2017288"),
     key=os.getenv("PUSHER_APP_KEY", "f1f929da8fd632930b80"),
-    secret="", # You'll need to get this from Pusher dashboard
+    secret=os.getenv("PUSHER_SECRET", "6f33f8791db91b6568df"),
     cluster=os.getenv("PUSHER_CLUSTER", "ap2"),
     ssl=True
 )
