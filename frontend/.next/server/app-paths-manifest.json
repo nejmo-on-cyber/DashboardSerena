@@ -5,11 +5,11 @@
   "/booking-admin/page": "app/booking-admin/page.js",
   "/calendar/page": "app/calendar/page.js",
   "/clients/page": "app/clients/page.js",
-  "/employees/page": "app/employees/page.js",
   "/conversations/page": "app/conversations/page.js",
+  "/employees/page": "app/employees/page.js",
   "/page": "app/page.js",
-  "/promotions/page": "app/promotions/page.js",
   "/revenue/page": "app/revenue/page.js",
+  "/promotions/page": "app/promotions/page.js",
   "/services/page": "app/services/page.js",
   "/voice-calls/page": "app/voice-calls/page.js"
 }
