@@ -1,4 +1,4 @@
-// File: /app/frontend/src/app/conversations/page.tsx
+// File: /app/frontend/src/app/conversations/page.jsx
 import * as entry from '../../../../src/app/conversations/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
