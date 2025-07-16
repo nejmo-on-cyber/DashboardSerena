@@ -513,19 +513,37 @@ export default function EmployeeManagementPage() {
                     </div>
                     
                     <div className="text-center">
-                      <p className="text-sm font-semibold text-gray-900 mb-3">Expertise</p>
-                      <div className="flex flex-wrap gap-2 justify-center">
-                        {employee.expertise.slice(0, 2).map((skill) => (
-                          <span key={skill} className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full border border-blue-200">
-                            {skill}
+                      <p className="text-sm font-semibold text-gray-900 mb-3">Services</p>
+                      <div className="flex flex-wrap gap-2 justify-center mb-4">
+                        {employee.services && employee.services.slice(0, 2).map((service) => (
+                          <span key={service} className="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full border border-green-200">
+                            {service}
                           </span>
                         ))}
-                        {employee.expertise.length > 2 && (
+                        {employee.services && employee.services.length > 2 && (
                           <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full border border-gray-200">
-                            +{employee.expertise.length - 2} more
+                            +{employee.services.length - 2} more services
                           </span>
                         )}
                       </div>
+                      
+                      {employee.expertise && employee.expertise.length > 0 && (
+                        <div>
+                          <p className="text-xs text-gray-500 mb-2">Expertise</p>
+                          <div className="flex flex-wrap gap-1 justify-center">
+                            {employee.expertise.slice(0, 2).map((skill) => (
+                              <span key={skill} className="px-2 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full border border-blue-200">
+                                {skill}
+                              </span>
+                            ))}
+                            {employee.expertise.length > 2 && (
+                              <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full border border-gray-200">
+                                +{employee.expertise.length - 2}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                     
                     <div className="mt-6 pt-4 border-t border-gray-100">
