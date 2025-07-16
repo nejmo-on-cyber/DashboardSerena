@@ -577,30 +577,29 @@ async def update_employee(employee_id: str, employee_data: dict):
         raise HTTPException(status_code=503, detail="Airtable not configured")
     
     try:
-        # Map employee data to Airtable fields
+        # Map employee data to Airtable fields - FIXED FIELD MAPPING
         airtable_fields = {}
         
-        # Basic fields
+        # Basic fields - using correct Airtable field names
         if employee_data.get("full_name"):
             airtable_fields["Full Name"] = employee_data["full_name"]
         if employee_data.get("employee_number"):
-            airtable_fields["Employee Number"] = employee_data["employee_number"]
+            airtable_fields["Employee ID"] = employee_data["employee_number"]  # Fixed: Employee ID not Employee Number
         if employee_data.get("email"):
-            airtable_fields["Email"] = employee_data["email"]
+            airtable_fields["Email Address"] = employee_data["email"]  # Fixed: Email Address not Email
         if employee_data.get("contact_number"):
             airtable_fields["Contact Number"] = employee_data["contact_number"]
         if employee_data.get("availability_days"):
             airtable_fields["Availability"] = employee_data["availability_days"]
         if employee_data.get("expertise"):
             airtable_fields["Expertise"] = employee_data["expertise"]
-        if employee_data.get("services"):  # NEW field
+        if employee_data.get("services"):
             airtable_fields["Services"] = employee_data["services"]
         if employee_data.get("profile_picture"):
-            airtable_fields["Profile Picture"] = employee_data["profile_picture"]
+            airtable_fields["Photo"] = employee_data["profile_picture"]  # Fixed: Photo not Profile Picture
         if employee_data.get("start_date"):
             airtable_fields["Start Date"] = employee_data["start_date"]
         if employee_data.get("status"):
-            # Status field - now properly handles Airtable Status field
             airtable_fields["Status"] = employee_data["status"]
         
         # Only update if we have fields to update
