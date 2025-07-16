@@ -185,7 +185,115 @@ export default function AnalyticsPage() {
             </div>
           </div>
 
-          {/* Key Metrics Cards */}
+          {/* Revenue Time Period Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+            {/* Daily Revenue */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs text-gray-600">Daily Revenue</p>
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Clock className="w-4 h-4 text-blue-600" />
+                </div>
+              </div>
+              <p className="text-lg font-bold text-gray-900">{formatCurrency(analytics.revenue.daily.today)}</p>
+              <div className="flex items-center mt-1">
+                {analytics.revenue.daily.growth >= 0 ? (
+                  <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
+                ) : (
+                  <TrendingDown className="w-3 h-3 text-red-500 mr-1" />
+                )}
+                <span className={`text-xs font-medium ${analytics.revenue.daily.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatPercentage(analytics.revenue.daily.growth)}
+                </span>
+              </div>
+            </div>
+
+            {/* Weekly Revenue */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs text-gray-600">Weekly Revenue</p>
+                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <Calendar className="w-4 h-4 text-green-600" />
+                </div>
+              </div>
+              <p className="text-lg font-bold text-gray-900">{formatCurrency(analytics.revenue.weekly.this_week)}</p>
+              <div className="flex items-center mt-1">
+                {analytics.revenue.weekly.growth >= 0 ? (
+                  <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
+                ) : (
+                  <TrendingDown className="w-3 h-3 text-red-500 mr-1" />
+                )}
+                <span className={`text-xs font-medium ${analytics.revenue.weekly.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatPercentage(analytics.revenue.weekly.growth)}
+                </span>
+              </div>
+            </div>
+
+            {/* Monthly Revenue */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs text-gray-600">Monthly Revenue</p>
+                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                  <BarChart3 className="w-4 h-4 text-purple-600" />
+                </div>
+              </div>
+              <p className="text-lg font-bold text-gray-900">{formatCurrency(analytics.revenue.monthly.this_month)}</p>
+              <div className="flex items-center mt-1">
+                {analytics.revenue.monthly.growth >= 0 ? (
+                  <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
+                ) : (
+                  <TrendingDown className="w-3 h-3 text-red-500 mr-1" />
+                )}
+                <span className={`text-xs font-medium ${analytics.revenue.monthly.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatPercentage(analytics.revenue.monthly.growth)}
+                </span>
+              </div>
+            </div>
+
+            {/* Quarterly Revenue */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs text-gray-600">Quarterly Revenue</p>
+                <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                  <PieChart className="w-4 h-4 text-orange-600" />
+                </div>
+              </div>
+              <p className="text-lg font-bold text-gray-900">{formatCurrency(analytics.revenue.quarterly.this_quarter)}</p>
+              <div className="flex items-center mt-1">
+                {analytics.revenue.quarterly.growth >= 0 ? (
+                  <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
+                ) : (
+                  <TrendingDown className="w-3 h-3 text-red-500 mr-1" />
+                )}
+                <span className={`text-xs font-medium ${analytics.revenue.quarterly.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatPercentage(analytics.revenue.quarterly.growth)}
+                </span>
+              </div>
+            </div>
+
+            {/* Yearly Revenue */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs text-gray-600">Yearly Revenue</p>
+                <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                  <TrendingUp className="w-4 h-4 text-red-600" />
+                </div>
+              </div>
+              <p className="text-lg font-bold text-gray-900">{formatCurrency(analytics.revenue.yearly.this_year)}</p>
+              <div className="flex items-center mt-1">
+                {analytics.revenue.yearly.growth >= 0 ? (
+                  <TrendingUp className="w-3 h-3 text-green-500 mr-1" />
+                ) : (
+                  <TrendingDown className="w-3 h-3 text-red-500 mr-1" />
+                )}
+                <span className={`text-xs font-medium ${analytics.revenue.yearly.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatPercentage(analytics.revenue.yearly.growth)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Enhanced Key Metrics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {/* Revenue Card */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
