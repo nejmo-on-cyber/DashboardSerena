@@ -374,7 +374,7 @@ export default function ConversationsPage() {
                         </div>
                       </div>
                     </div>
-                  )
+                    );
                   })
                 ) : (
                   <div className="p-8 text-center">
