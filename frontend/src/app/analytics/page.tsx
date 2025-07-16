@@ -22,31 +22,7 @@ import {
 interface AnalyticsData {
   revenue: {
     total: number;
-    daily: {
-      today: number;
-      yesterday: number;
-      growth: number;
-    };
-    weekly: {
-      this_week: number;
-      last_week: number;
-      growth: number;
-    };
-    monthly: {
-      this_month: number;
-      last_month: number;
-      growth: number;
-    };
-    quarterly: {
-      this_quarter: number;
-      last_quarter: number;
-      growth: number;
-    };
-    yearly: {
-      this_year: number;
-      last_year: number;
-      growth: number;
-    };
+    growth: number;
     avg_appointment_value: number;
   };
   appointments: {
@@ -59,7 +35,7 @@ interface AnalyticsData {
   };
   clients: {
     total: number;
-    new_this_month: number;
+    new_in_period: number;
     returning: number;
     retention_rate: number;
   };
