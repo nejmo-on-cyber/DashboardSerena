@@ -41,7 +41,7 @@ export default function ConversationsPage() {
     const channel = pusherRef.current.subscribe('my-channel');
     
     // Listen for new messages
-    channel.bind('new-message', (data) => {
+    channel.bind('new-message', (data: any) => {
       console.log('New message received:', data);
       
       // Update conversations with new message
