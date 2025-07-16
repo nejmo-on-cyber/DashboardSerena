@@ -458,6 +458,7 @@ export default function EmployeeManagementPage() {
                         contact_number: employee.contact_number || "",
                         availability_days: employee.availability_days || [],
                         expertise: employee.expertise || [],
+                        services: employee.services || [],  // NEW field
                         profile_picture: employee.profile_picture || "",
                         start_date: employee.start_date || "",
                         status: employee.status || "Active"
