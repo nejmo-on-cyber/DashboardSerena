@@ -416,24 +416,27 @@ export default function EmployeeManagementPage() {
                 {filteredEmployees.map((employee) => (
                   <div 
                     key={employee.id} 
-                    onClick={() => {
-                      setEditingEmployee(employee);
-                      setFormData({
-                        full_name: employee.full_name || "",
-                        employee_number: employee.employee_number || "",
-                        email: employee.email || "",
-                        contact_number: employee.contact_number || "",
-                        availability_days: employee.availability_days || [],
-                        expertise: employee.expertise || [],
-                        services: employee.services || [],  // NEW field
-                        profile_picture: employee.profile_picture || "",
-                        start_date: employee.start_date || "",
-                        status: employee.status || "Active"
-                      });
-                      setShowEditForm(true);
-                    }}
-                    className="bg-white rounded-3xl shadow-sm border border-gray-200/50 p-8 hover:shadow-lg transition-all duration-300 cursor-pointer group hover:scale-[1.02] active:scale-[0.98]"
+                    className={`${getStatusGlowEffect(employee.status)}`}
                   >
+                    <div
+                      onClick={() => {
+                        setEditingEmployee(employee);
+                        setFormData({
+                          full_name: employee.full_name || "",
+                          employee_number: employee.employee_number || "",
+                          email: employee.email || "",
+                          contact_number: employee.contact_number || "",
+                          availability_days: employee.availability_days || [],
+                          expertise: employee.expertise || [],
+                          services: employee.services || [],  // NEW field
+                          profile_picture: employee.profile_picture || "",
+                          start_date: employee.start_date || "",
+                          status: employee.status || "Active"
+                        });
+                        setShowEditForm(true);
+                      }}
+                      className="bg-white rounded-3xl shadow-sm border border-gray-200/50 p-8 hover:shadow-lg transition-all duration-300 cursor-pointer group hover:scale-[1.02] active:scale-[0.98] relative z-10"
+                    >
                     <div className="flex flex-col items-center text-center mb-6">
                       <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center overflow-hidden shadow-inner mb-4 group-hover:shadow-md transition-shadow duration-300">
                         {employee.profile_picture ? (
