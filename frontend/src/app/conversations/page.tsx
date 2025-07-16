@@ -30,6 +30,8 @@ export default function ConversationsPage() {
 
   // Initialize Pusher and fetch conversations
   useEffect(() => {
+    console.log('ConversationsPage useEffect running...');
+    
     // Initialize Pusher
     pusherRef.current = new Pusher('f1f929da8fd632930b80', {
       cluster: 'ap2',
