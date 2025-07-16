@@ -2536,6 +2536,10 @@ class BackendAPITester:
         print("-" * 50)
         
         import os
+        from dotenv import load_dotenv
+        
+        # Load environment variables from backend/.env
+        load_dotenv('/app/backend/.env')
         
         # Check all environment variables mentioned in review request
         env_vars = {
