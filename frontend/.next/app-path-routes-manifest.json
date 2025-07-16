@@ -8,8 +8,8 @@
   "/conversations/page": "/conversations",
   "/employees/page": "/employees",
   "/page": "/",
-  "/revenue/page": "/revenue",
   "/promotions/page": "/promotions",
+  "/revenue/page": "/revenue",
   "/services/page": "/services",
   "/voice-calls/page": "/voice-calls"
 }
