@@ -296,7 +296,9 @@ export default function ConversationsPage() {
 
               <div className="overflow-y-auto h-full" data-oid="4r2l6y0">
                 {conversations.length > 0 ? (
-                  conversations.map((conv) => (
+                  conversations.map((conv) => {
+                    console.log('Rendering conversation:', conv);
+                    return (
                     <div
                       key={conv.id}
                       onClick={() => setSelectedConversation(conv.id)}
