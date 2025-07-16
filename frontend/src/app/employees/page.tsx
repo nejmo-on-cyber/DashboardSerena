@@ -167,7 +167,8 @@ export default function EmployeeManagementPage() {
       setError(null);
     } catch (err) {
       // Show the detailed error message from backend
-      setError(err.message || 'Failed to update employee');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update employee';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
