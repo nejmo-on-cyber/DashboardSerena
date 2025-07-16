@@ -626,31 +626,40 @@ async def update_employee(employee_id: str, employee_data: dict):
                 
                 # Build name to ID mapping with proper cleaning
                 for service in all_services:
-                    service_name = service['fields'].get('Name', '').strip()
-                    service_name_clean = service_name.replace('\n', '').strip()
-                    service_name_to_id[service_name_clean] = service['id']
+                    service_name = service['fields'].get('Name', '')
+                    # Clean service name - remove newlines and extra whitespace
+                    service_name_clean = service_name.strip().replace('\n', '').replace('\r', '')
+                    if service_name_clean:  # Only add non-empty names
+                        service_name_to_id[service_name_clean] = service['id']
+                
+                print(f"Available services mapping: {service_name_to_id}")
                 
                 for service in services:
                     if isinstance(service, str):
-                        if service.startswith("rec"):
+                        if service.startswith("rec") and len(service) > 10:
                             # Already a record ID
                             service_record_ids.append(service)
                         else:
                             # Service name - convert to record ID
-                            service_clean = service.strip().replace('\n', '').strip()
+                            service_clean = service.strip().replace('\n', '').replace('\r', '')
                             service_id = service_name_to_id.get(service_clean)
                             if service_id:
                                 service_record_ids.append(service_id)
+                                print(f"Mapped service '{service_clean}' to ID {service_id}")
                             else:
                                 print(f"Warning: Service '{service_clean}' not found in Airtable")
                                 print(f"Available services: {list(service_name_to_id.keys())}")
                 
                 if service_record_ids:
                     airtable_fields["Services"] = service_record_ids
-                    print(f"Updated services: {service_record_ids}")
+                    print(f"Updated services with IDs: {service_record_ids}")
+                else:
+                    print("No valid service IDs found")
                     
             except Exception as e:
                 print(f"Error handling services: {e}")
+                import traceback
+                traceback.print_exc()
                 # Skip services if there's an error to avoid blocking other updates
                 pass
         if employee_data.get("profile_picture"):
