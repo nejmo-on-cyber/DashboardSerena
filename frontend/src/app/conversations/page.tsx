@@ -465,7 +465,7 @@ export default function ConversationsPage() {
                     className="flex-1 overflow-y-auto p-4 space-y-4"
                     data-oid="pz.6x0x"
                   >
-                    {selectedConv.messages.map((msg) => (
+                    {selectedConv?.messages?.map((msg) => (
                       <div
                         key={msg.id}
                         className={`flex ${msg.sender === "client" ? "justify-start" : "justify-end"}`}
@@ -499,6 +499,14 @@ export default function ConversationsPage() {
                         </div>
                       </div>
                     ))}
+                    {selectedConv?.messages?.length === 0 && (
+                      <div className="text-center py-8">
+                        <p className={`text-gray-500 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                          No messages yet. Start the conversation!
+                        </p>
+                      </div>
+                    )}
+                    <div ref={messagesEndRef} />
                   </div>
 
                   {/* Message Input */}
