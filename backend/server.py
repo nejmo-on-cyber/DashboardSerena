@@ -782,6 +782,35 @@ async def get_employee_availability():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching employee availability: {str(e)}")
 
+@app.get("/api/debug-services-field")
+async def debug_services_field():
+    """Debug endpoint to check the exact Services field structure"""
+    if not airtable_employees:
+        return {"error": "Airtable not configured"}
+    
+    try:
+        employees = airtable_employees.get_all(max_records=3)
+        if not employees:
+            return {"error": "No employees found"}
+        
+        field_analysis = []
+        for emp in employees:
+            fields = emp.get('fields', {})
+            services_field = fields.get('Services', 'NOT_FOUND')
+            services_from_appointments = fields.get('Services (from Appointments)', 'NOT_FOUND')
+            
+            field_analysis.append({
+                "employee_name": fields.get('Full Name', 'Unknown'),
+                "services_field_type": str(type(services_field)),
+                "services_field_value": services_field,
+                "services_from_appointments_type": str(type(services_from_appointments)),
+                "services_from_appointments_value": services_from_appointments
+            })
+        
+        return {"field_analysis": field_analysis}
+    except Exception as e:
+        return {"error": f"Error analyzing Services field: {str(e)}"}
+
 @app.get("/api/debug-employee-fields")
 async def debug_employee_fields():
     """Debug endpoint to check actual field names in Airtable employee records"""
