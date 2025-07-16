@@ -2501,6 +2501,10 @@ class BackendAPITester:
         print("-" * 50)
         
         import os
+        from dotenv import load_dotenv
+        
+        # Load environment variables from backend/.env
+        load_dotenv('/app/backend/.env')
         
         # Check environment variables
         pusher_app_key = os.getenv("PUSHER_APP_KEY")
