@@ -544,16 +544,16 @@ async def create_employee(employee_data: dict):
         raise HTTPException(status_code=503, detail="Airtable not configured")
     
     try:
-        # Map employee data to Airtable fields
+        # Map employee data to Airtable fields - FIXED FIELD MAPPING
         airtable_fields = {
             "Full Name": employee_data.get("full_name", ""),
-            "Employee Number": employee_data.get("employee_number", ""),
-            "Email": employee_data.get("email", ""),
+            "Employee ID": employee_data.get("employee_number", ""),  # Fixed: Employee ID not Employee Number
+            "Email Address": employee_data.get("email", ""),  # Fixed: Email Address not Email
             "Contact Number": employee_data.get("contact_number", ""),
             "Availability": employee_data.get("availability_days", []),
             "Expertise": employee_data.get("expertise", []),
             "Services": employee_data.get("services", []),  # NEW field
-            "Profile Picture": employee_data.get("profile_picture", ""),
+            "Photo": employee_data.get("profile_picture", ""),  # Fixed: Photo not Profile Picture
             "Start Date": employee_data.get("start_date", ""),
             "Status": employee_data.get("status", "Active")
         }
