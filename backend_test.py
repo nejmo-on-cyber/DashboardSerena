@@ -2637,16 +2637,406 @@ class BackendAPITester:
             "total_tests": total_tests
         }
 
+    def test_wassenger_conversations_real_api(self):
+        """Test GET /api/conversations endpoint for real Wassenger API integration"""
+        print("\n🔍 TESTING: Wassenger Conversations Real API Integration")
+        print("=" * 80)
+        print("🎯 GOAL: Test real Wassenger API integration to fetch conversations")
+        print("📋 EXPECTED: Either real conversations from Wassenger or fallback to mock data")
+        print("=" * 80)
+        
+        success, response_data = self.run_test(
+            "GET /api/conversations (Real Wassenger API)",
+            "GET",
+            "api/conversations",
+            200
+        )
+        
+        if success and isinstance(response_data, list):
+            print(f"✅ Conversations endpoint returned {len(response_data)} conversations")
+            
+            # Analyze the response to determine if it's real or mock data
+            real_data_indicators = 0
+            mock_data_indicators = 0
+            
+            for i, conversation in enumerate(response_data[:3]):  # Check first 3 conversations
+                print(f"\n📞 Conversation {i+1} Analysis:")
+                print(f"   ID: {conversation.get('id', 'Missing')}")
+                print(f"   Client: {conversation.get('client', 'Missing')}")
+                print(f"   Phone: {conversation.get('phone', 'Missing')}")
+                print(f"   Last Message: {conversation.get('lastMessage', 'Missing')[:50]}...")
+                print(f"   Status: {conversation.get('status', 'Missing')}")
+                print(f"   Unread: {conversation.get('unread', 'Missing')}")
+                print(f"   Tag: {conversation.get('tag', 'Missing')}")
+                
+                # Check for real data indicators
+                conv_id = conversation.get('id', '')
+                client_name = conversation.get('client', '')
+                phone = conversation.get('phone', '')
+                
+                # Real data indicators
+                if phone == "+971502810801":
+                    print(f"   📱 REAL INDICATOR: User's actual WhatsApp number")
+                    real_data_indicators += 1
+                
+                if "@c.us" in conv_id or "@g.us" in conv_id:
+                    print(f"   📱 REAL INDICATOR: WhatsApp chat ID format")
+                    real_data_indicators += 1
+                
+                if len(conv_id) > 10 and not conv_id.isdigit():
+                    print(f"   📱 REAL INDICATOR: Complex conversation ID")
+                    real_data_indicators += 1
+                
+                # Mock data indicators
+                if client_name == "Sarah Johnson":
+                    print(f"   🎭 MOCK INDICATOR: Known mock client name")
+                    mock_data_indicators += 1
+                
+                if conv_id in ["1", "2", "3"]:
+                    print(f"   🎭 MOCK INDICATOR: Simple numeric ID")
+                    mock_data_indicators += 1
+                
+                # Check messages structure
+                messages = conversation.get('messages', [])
+                print(f"   Messages: {len(messages)} found")
+                
+                if messages and isinstance(messages, list):
+                    for j, message in enumerate(messages[:2]):  # Check first 2 messages
+                        print(f"     Message {j+1}:")
+                        print(f"       Sender: {message.get('sender', 'Missing')}")
+                        print(f"       Text: {message.get('text', 'Missing')[:30]}...")
+                        print(f"       Time: {message.get('time', 'Missing')}")
+                        
+                        # Check for real message indicators
+                        msg_id = message.get('id', '')
+                        if len(msg_id) > 10 and not msg_id.isdigit():
+                            print(f"       📱 REAL INDICATOR: Complex message ID")
+                            real_data_indicators += 1
+            
+            # Determine API status
+            print(f"\n📊 API CONNECTIVITY ANALYSIS:")
+            print(f"   📱 Real Data Indicators: {real_data_indicators}")
+            print(f"   🎭 Mock Data Indicators: {mock_data_indicators}")
+            
+            if real_data_indicators > mock_data_indicators:
+                print(f"✅ CONCLUSION: Wassenger API appears to be WORKING")
+                print(f"   Real data indicators outweigh mock indicators")
+                api_working = True
+            elif mock_data_indicators > 0:
+                print(f"❌ CONCLUSION: Wassenger API appears to be FAILING")
+                print(f"   Falling back to mock data")
+                api_working = False
+            else:
+                print(f"⚠️  CONCLUSION: Wassenger API status UNCLEAR")
+                api_working = False
+            
+            # Validate required fields are present
+            required_fields = ['id', 'client', 'phone', 'lastMessage', 'time', 'status', 'unread', 'tag', 'messages']
+            all_valid = True
+            
+            for conversation in response_data:
+                missing_fields = [field for field in required_fields if field not in conversation]
+                if missing_fields:
+                    print(f"⚠️  Conversation missing fields: {missing_fields}")
+                    all_valid = False
+            
+            if all_valid:
+                print(f"✅ All conversations have required fields")
+            
+            return success, {
+                "conversation_count": len(response_data),
+                "api_appears_working": api_working,
+                "real_data_indicators": real_data_indicators,
+                "mock_data_indicators": mock_data_indicators,
+                "has_user_phone": any(conv.get('phone') == "+971502810801" for conv in response_data),
+                "all_fields_valid": all_valid
+            }
+        else:
+            print(f"❌ Conversations endpoint failed or returned invalid data")
+            return False, {}
+
+    def test_wassenger_device_access(self):
+        """Test if Wassenger API can access devices"""
+        print("\n🔍 TESTING: Wassenger Device Access")
+        print("=" * 80)
+        print("🎯 GOAL: Test if Wassenger API key can access devices")
+        print("📋 METHOD: Analyze conversation response for device-related patterns")
+        print("=" * 80)
+        
+        # Get conversations and analyze for device access patterns
+        success, response_data = self.run_test(
+            "Test Device Access via Conversations",
+            "GET",
+            "api/conversations",
+            200
+        )
+        
+        if not success:
+            print(f"❌ Cannot test device access - conversations endpoint failed")
+            return False, {}
+        
+        if not isinstance(response_data, list):
+            print(f"❌ Invalid response format for device access test")
+            return False, {}
+        
+        print(f"📊 Analyzing {len(response_data)} conversations for device access...")
+        
+        device_access_indicators = {
+            "has_conversations": len(response_data) > 0,
+            "has_real_phone_numbers": False,
+            "has_whatsapp_format_ids": False,
+            "has_group_chats": False,
+            "appears_to_have_device_access": False
+        }
+        
+        for conversation in response_data:
+            conv_id = conversation.get('id', '')
+            phone = conversation.get('phone', '')
+            tag = conversation.get('tag', '')
+            
+            # Check for real phone number patterns
+            if phone.startswith('+971') or phone.startswith('971'):
+                device_access_indicators["has_real_phone_numbers"] = True
+                print(f"✅ Found real phone number: {phone}")
+            
+            # Check for WhatsApp ID format (indicates device access)
+            if "@c.us" in conv_id:
+                device_access_indicators["has_whatsapp_format_ids"] = True
+                print(f"✅ Found WhatsApp individual chat ID: {conv_id}")
+            
+            if "@g.us" in conv_id or tag == "Group":
+                device_access_indicators["has_group_chats"] = True
+                print(f"✅ Found WhatsApp group chat: {conv_id}")
+        
+        # Determine device access status
+        access_score = sum([
+            device_access_indicators["has_conversations"],
+            device_access_indicators["has_real_phone_numbers"],
+            device_access_indicators["has_whatsapp_format_ids"]
+        ])
+        
+        device_access_indicators["appears_to_have_device_access"] = access_score >= 2
+        
+        print(f"\n📊 DEVICE ACCESS ANALYSIS:")
+        print(f"   ✅ Has Conversations: {device_access_indicators['has_conversations']}")
+        print(f"   ✅ Has Real Phone Numbers: {device_access_indicators['has_real_phone_numbers']}")
+        print(f"   ✅ Has WhatsApp Format IDs: {device_access_indicators['has_whatsapp_format_ids']}")
+        print(f"   ✅ Has Group Chats: {device_access_indicators['has_group_chats']}")
+        print(f"   📊 Access Score: {access_score}/3")
+        
+        if device_access_indicators["appears_to_have_device_access"]:
+            print(f"✅ CONCLUSION: Wassenger API appears to have DEVICE ACCESS")
+        else:
+            print(f"❌ CONCLUSION: Wassenger API appears to LACK device access or is using fallback")
+        
+        return device_access_indicators["appears_to_have_device_access"], device_access_indicators
+
+    def test_wassenger_chat_and_message_retrieval(self):
+        """Test if real chats and messages can be retrieved from Wassenger"""
+        print("\n🔍 TESTING: Wassenger Chat and Message Retrieval")
+        print("=" * 80)
+        print("🎯 GOAL: Test if real chats and messages are retrieved from Wassenger account")
+        print("📋 METHOD: Analyze message content and structure for real data patterns")
+        print("=" * 80)
+        
+        success, response_data = self.run_test(
+            "Test Chat and Message Retrieval",
+            "GET",
+            "api/conversations",
+            200
+        )
+        
+        if not success or not isinstance(response_data, list):
+            print(f"❌ Cannot test chat retrieval - invalid response")
+            return False, {}
+        
+        print(f"📊 Analyzing {len(response_data)} conversations for real chat data...")
+        
+        chat_analysis = {
+            "total_conversations": len(response_data),
+            "total_messages": 0,
+            "conversations_with_messages": 0,
+            "real_message_indicators": 0,
+            "mock_message_indicators": 0,
+            "appears_to_be_real_chats": False
+        }
+        
+        for i, conversation in enumerate(response_data):
+            client = conversation.get('client', 'Unknown')
+            phone = conversation.get('phone', '')
+            messages = conversation.get('messages', [])
+            
+            print(f"\n📞 Chat {i+1}: {client} ({phone})")
+            print(f"   Messages: {len(messages)}")
+            
+            if messages and isinstance(messages, list):
+                chat_analysis["conversations_with_messages"] += 1
+                chat_analysis["total_messages"] += len(messages)
+                
+                for j, message in enumerate(messages[:3]):  # Analyze first 3 messages
+                    sender = message.get('sender', 'unknown')
+                    text = message.get('text', '')
+                    time = message.get('time', '')
+                    msg_id = message.get('id', '')
+                    
+                    print(f"     Msg {j+1}: [{sender}] {text[:40]}...")
+                    print(f"            Time: {time}, ID: {msg_id}")
+                    
+                    # Check for real message indicators
+                    if len(msg_id) > 10 and not msg_id.isdigit():
+                        chat_analysis["real_message_indicators"] += 1
+                        print(f"            📱 REAL: Complex message ID")
+                    
+                    if sender in ['client', 'ai'] and len(text) > 10:
+                        chat_analysis["real_message_indicators"] += 1
+                        print(f"            📱 REAL: Proper sender and content")
+                    
+                    # Check for mock message indicators
+                    if "reschedule my appointment" in text.lower():
+                        chat_analysis["mock_message_indicators"] += 1
+                        print(f"            🎭 MOCK: Generic appointment message")
+                    
+                    if msg_id in ["1", "2", "3", "4", "5"]:
+                        chat_analysis["mock_message_indicators"] += 1
+                        print(f"            🎭 MOCK: Simple numeric message ID")
+        
+        # Determine if chats appear to be real
+        real_score = chat_analysis["real_message_indicators"]
+        mock_score = chat_analysis["mock_message_indicators"]
+        
+        chat_analysis["appears_to_be_real_chats"] = real_score > mock_score
+        
+        print(f"\n📊 CHAT AND MESSAGE ANALYSIS:")
+        print(f"   📞 Total Conversations: {chat_analysis['total_conversations']}")
+        print(f"   💬 Total Messages: {chat_analysis['total_messages']}")
+        print(f"   📞 Conversations with Messages: {chat_analysis['conversations_with_messages']}")
+        print(f"   📱 Real Message Indicators: {chat_analysis['real_message_indicators']}")
+        print(f"   🎭 Mock Message Indicators: {chat_analysis['mock_message_indicators']}")
+        
+        if chat_analysis["appears_to_be_real_chats"]:
+            print(f"✅ CONCLUSION: Appears to be retrieving REAL CHATS from Wassenger")
+        else:
+            print(f"❌ CONCLUSION: Appears to be using MOCK/FALLBACK chat data")
+        
+        return chat_analysis["appears_to_be_real_chats"], chat_analysis
+
+    def test_wassenger_comprehensive_real_api(self):
+        """Comprehensive test of Wassenger real API integration"""
+        print("\n🔍 COMPREHENSIVE WASSENGER REAL API INTEGRATION TEST")
+        print("=" * 80)
+        print("🎯 GOAL: Complete testing of Wassenger API integration for real conversations")
+        print("📋 COMPONENTS: API connectivity, device access, chat retrieval, message retrieval, fallback")
+        print("=" * 80)
+        
+        test_results = {
+            "conversations_endpoint": False,
+            "device_access": False,
+            "chat_retrieval": False,
+            "send_message_structure": False,
+            "webhook_structure": False,
+            "fallback_mechanism": False,
+            "overall_success": False
+        }
+        
+        # Test 1: Conversations Endpoint
+        print(f"\n1️⃣ Testing Conversations Endpoint...")
+        conv_success, conv_data = self.test_wassenger_conversations_real_api()
+        test_results["conversations_endpoint"] = conv_success
+        
+        # Test 2: Device Access
+        print(f"\n2️⃣ Testing Device Access...")
+        device_success, device_data = self.test_wassenger_device_access()
+        test_results["device_access"] = device_success
+        
+        # Test 3: Chat and Message Retrieval
+        print(f"\n3️⃣ Testing Chat and Message Retrieval...")
+        chat_success, chat_data = self.test_wassenger_chat_and_message_retrieval()
+        test_results["chat_retrieval"] = chat_success
+        
+        # Test 4: Send Message Endpoint Structure
+        print(f"\n4️⃣ Testing Send Message Endpoint...")
+        send_success, send_data = self.test_wassenger_send_message_endpoint()
+        test_results["send_message_structure"] = send_success
+        
+        # Test 5: Webhook Endpoint Structure
+        print(f"\n5️⃣ Testing Webhook Endpoint...")
+        webhook_success, webhook_data = self.test_wassenger_webhook_endpoint()
+        test_results["webhook_structure"] = webhook_success
+        
+        # Test 6: Fallback Mechanism (check if mock data is properly structured)
+        print(f"\n6️⃣ Testing Fallback Mechanism...")
+        if conv_data and not conv_data.get('api_appears_working', False):
+            # API appears to be failing, so test fallback
+            fallback_working = (
+                conv_data.get('has_user_phone', False) and
+                conv_data.get('all_fields_valid', False) and
+                conv_data.get('conversation_count', 0) > 0
+            )
+            test_results["fallback_mechanism"] = fallback_working
+            if fallback_working:
+                print(f"✅ Fallback mechanism working - mock data properly structured")
+            else:
+                print(f"❌ Fallback mechanism issues - mock data problems")
+        else:
+            # API appears to be working, so fallback test is not applicable
+            test_results["fallback_mechanism"] = True
+            print(f"✅ Fallback test not needed - API appears to be working")
+        
+        # Calculate overall success
+        passed_tests = sum(1 for result in test_results.values() if result)
+        total_tests = len(test_results) - 1  # Exclude overall_success from count
+        success_rate = (passed_tests / total_tests) * 100
+        
+        test_results["overall_success"] = success_rate >= 70  # 70% pass rate required
+        
+        print(f"\n🏁 COMPREHENSIVE WASSENGER REAL API RESULTS:")
+        print("=" * 60)
+        print(f"✅ Conversations Endpoint: {'PASS' if test_results['conversations_endpoint'] else 'FAIL'}")
+        print(f"✅ Device Access: {'PASS' if test_results['device_access'] else 'FAIL'}")
+        print(f"✅ Chat Retrieval: {'PASS' if test_results['chat_retrieval'] else 'FAIL'}")
+        print(f"✅ Send Message Structure: {'PASS' if test_results['send_message_structure'] else 'FAIL'}")
+        print(f"✅ Webhook Structure: {'PASS' if test_results['webhook_structure'] else 'FAIL'}")
+        print(f"✅ Fallback Mechanism: {'PASS' if test_results['fallback_mechanism'] else 'FAIL'}")
+        print(f"📊 Success Rate: {success_rate:.1f}% ({passed_tests}/{total_tests})")
+        print(f"🎯 Overall Result: {'✅ PASS' if test_results['overall_success'] else '❌ FAIL'}")
+        
+        # Detailed analysis
+        print(f"\n📊 DETAILED ANALYSIS:")
+        if conv_data:
+            if conv_data.get('api_appears_working'):
+                print(f"📡 API STATUS: Wassenger API appears to be working with real data")
+                print(f"   • Real data indicators: {conv_data.get('real_data_indicators', 0)}")
+                print(f"   • Mock data indicators: {conv_data.get('mock_data_indicators', 0)}")
+            else:
+                print(f"📡 API STATUS: Wassenger API appears to be failing, using fallback")
+                print(f"   • Fallback data properly structured: {test_results['fallback_mechanism']}")
+        
+        if device_data:
+            print(f"📱 DEVICE ACCESS: {'Working' if device_data.get('appears_to_have_device_access') else 'Limited/Failed'}")
+            if device_data.get('has_real_phone_numbers'):
+                print(f"   • Real phone numbers detected")
+            if device_data.get('has_whatsapp_format_ids'):
+                print(f"   • WhatsApp format IDs detected")
+        
+        if chat_data:
+            print(f"💬 CHAT DATA: {'Real chats' if chat_data.get('appears_to_be_real_chats') else 'Mock/Fallback data'}")
+            print(f"   • Total conversations: {chat_data.get('total_conversations', 0)}")
+            print(f"   • Total messages: {chat_data.get('total_messages', 0)}")
+        
+        return test_results["overall_success"], test_results
+
 def main():
-    print("🚨 WASSENGER/PUSHER INTEGRATION TESTING")
+    print("🚨 WASSENGER API INTEGRATION TESTING - REAL CONVERSATIONS")
     print("=" * 80)
-    print("🎯 FOCUS: Testing Wassenger/Pusher integration backend endpoints")
+    print("🎯 FOCUS: Testing updated Wassenger API integration to fetch real conversations")
     print("📋 TESTING SCENARIOS:")
-    print("   1. GET /api/conversations - Check mock conversation data")
-    print("   2. POST /api/send-message - Verify message sending via Wassenger API")
-    print("   3. POST /api/webhook/wassenger - Verify webhook data reception")
-    print("   4. Pusher client initialization and configuration")
-    print("   5. Environment variables loading (WASSENGER_API_KEY, PUSHER_APP_KEY, etc.)")
+    print("   1. GET /api/conversations - Test real Wassenger API connectivity")
+    print("   2. Device Access - Check if Wassenger API key can access devices")
+    print("   3. Chat Retrieval - Verify real chats and messages from Wassenger account")
+    print("   4. Message Retrieval - Test message structure and content")
+    print("   5. Fallback Mechanism - Verify fallback to mock data if API fails")
+    print("   6. Send Message Endpoint - Test message sending structure")
+    print("   7. Webhook Endpoint - Test webhook processing structure")
     print("=" * 80)
     
     # Setup
