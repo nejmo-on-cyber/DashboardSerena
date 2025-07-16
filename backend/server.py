@@ -535,6 +535,7 @@ async def create_employee(employee_data: dict):
             "Contact Number": employee_data.get("contact_number", ""),
             "Availability": employee_data.get("availability_days", []),
             "Expertise": employee_data.get("expertise", []),
+            "Services": employee_data.get("services", []),  # NEW field
             "Profile Picture": employee_data.get("profile_picture", ""),
             "Start Date": employee_data.get("start_date", ""),
             "Status": employee_data.get("status", "Active")
@@ -559,28 +560,30 @@ async def update_employee(employee_id: str, employee_data: dict):
         raise HTTPException(status_code=503, detail="Airtable not configured")
     
     try:
-        # Map employee data to Airtable fields based on investigation
+        # Map employee data to Airtable fields
         airtable_fields = {}
         
-        # Fields that are confirmed to work
+        # Basic fields
+        if employee_data.get("full_name"):
+            airtable_fields["Full Name"] = employee_data["full_name"]
+        if employee_data.get("employee_number"):
+            airtable_fields["Employee Number"] = employee_data["employee_number"]
+        if employee_data.get("email"):
+            airtable_fields["Email"] = employee_data["email"]
         if employee_data.get("contact_number"):
             airtable_fields["Contact Number"] = employee_data["contact_number"]
         if employee_data.get("availability_days"):
             airtable_fields["Availability"] = employee_data["availability_days"]
         if employee_data.get("expertise"):
-            # Map service names to valid Airtable expertise categories
-            mapped_expertise = []
-            for service_name in employee_data["expertise"]:
-                mapped_category = map_service_to_expertise(service_name)
-                if mapped_category not in mapped_expertise:
-                    mapped_expertise.append(mapped_category)
-            airtable_fields["Expertise"] = mapped_expertise
-        
-        # Fields that may exist but are optional
+            airtable_fields["Expertise"] = employee_data["expertise"]
+        if employee_data.get("services"):  # NEW field
+            airtable_fields["Services"] = employee_data["services"]
         if employee_data.get("profile_picture"):
             airtable_fields["Profile Picture"] = employee_data["profile_picture"]
         if employee_data.get("start_date"):
             airtable_fields["Start Date"] = employee_data["start_date"]
+        if employee_data.get("status"):
+            airtable_fields["Status"] = employee_data["status"]
         
         # Only update if we have fields to update
         if not airtable_fields:
