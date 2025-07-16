@@ -437,7 +437,7 @@ export default function AnalyticsPage() {
           {/* Appointment Status Distribution */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">Appointment Status Distribution</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Clock className="w-8 h-8 text-green-600" />
@@ -445,7 +445,7 @@ export default function AnalyticsPage() {
                 <p className="text-2xl font-bold text-gray-900">{analytics.appointments.completed}</p>
                 <p className="text-sm text-gray-600">Completed</p>
                 <p className="text-xs text-green-600 mt-1">
-                  {((analytics.appointments.completed / analytics.appointments.total) * 100).toFixed(1)}%
+                  {analytics.appointments.completion_rate.toFixed(1)}%
                 </p>
               </div>
               
@@ -467,7 +467,18 @@ export default function AnalyticsPage() {
                 <p className="text-2xl font-bold text-gray-900">{analytics.appointments.cancelled}</p>
                 <p className="text-sm text-gray-600">Cancelled</p>
                 <p className="text-xs text-red-600 mt-1">
-                  {((analytics.appointments.cancelled / analytics.appointments.total) * 100).toFixed(1)}%
+                  {analytics.appointments.cancellation_rate.toFixed(1)}%
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <BarChart3 className="w-8 h-8 text-gray-600" />
+                </div>
+                <p className="text-2xl font-bold text-gray-900">{analytics.appointments.total}</p>
+                <p className="text-sm text-gray-600">Total</p>
+                <p className="text-xs text-gray-600 mt-1">
+                  All appointments
                 </p>
               </div>
             </div>
