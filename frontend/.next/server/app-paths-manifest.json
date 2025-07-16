@@ -7,9 +7,9 @@
   "/clients/page": "app/clients/page.js",
   "/conversations/page": "app/conversations/page.js",
   "/employees/page": "app/employees/page.js",
-  "/promotions/page": "app/promotions/page.js",
   "/page": "app/page.js",
-  "/revenue/page": "app/revenue/page.js",
+  "/promotions/page": "app/promotions/page.js",
   "/services/page": "app/services/page.js",
+  "/revenue/page": "app/revenue/page.js",
   "/voice-calls/page": "app/voice-calls/page.js"
 }

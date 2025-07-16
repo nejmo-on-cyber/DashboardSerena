@@ -7,9 +7,9 @@
   "/clients/page": "/clients",
   "/conversations/page": "/conversations",
   "/employees/page": "/employees",
-  "/promotions/page": "/promotions",
   "/page": "/",
-  "/revenue/page": "/revenue",
+  "/promotions/page": "/promotions",
   "/services/page": "/services",
+  "/revenue/page": "/revenue",
   "/voice-calls/page": "/voice-calls"
 }
