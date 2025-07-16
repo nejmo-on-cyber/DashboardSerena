@@ -152,7 +152,7 @@ export default function ConversationsPage() {
     try {
       setSending(true);
       
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/send-message`, {
+      const response = await fetch(`/api/send-message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
