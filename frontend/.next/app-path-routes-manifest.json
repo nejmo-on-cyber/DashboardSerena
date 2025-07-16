@@ -3,13 +3,13 @@
   "/favicon.ico/route": "/favicon.ico",
   "/booking-admin/page": "/booking-admin",
   "/analytics/page": "/analytics",
-  "/calendar/page": "/calendar",
   "/clients/page": "/clients",
+  "/calendar/page": "/calendar",
   "/conversations/page": "/conversations",
   "/employees/page": "/employees",
   "/page": "/",
   "/promotions/page": "/promotions",
   "/revenue/page": "/revenue",
-  "/voice-calls/page": "/voice-calls",
-  "/services/page": "/services"
+  "/services/page": "/services",
+  "/voice-calls/page": "/voice-calls"
 }
