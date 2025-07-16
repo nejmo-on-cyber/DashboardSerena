@@ -351,6 +351,18 @@ test_plan:
         agent: "testing"
         comment: "✅ SERVICE MAPPING IMPLEMENTATION CONFIRMED WORKING! Conducted comprehensive testing of main agent's service mapping claims with excellent results. ✅ 90.9% SUCCESS RATE: 10 out of 11 service mapping tests passed successfully. ✅ SPECIFIC MAPPINGS VERIFIED: All key mappings work correctly - 'COMPRESSION BOOT THERAPY'→'Massage', 'SHIATSU MASSAGE'→'Massage', 'LYMPHATIC DRAINAGE'→'Massage', 'FACIAL TREATMENT'→'Facials', 'MICROCURRENT FACIAL'→'Facials', 'HAIR CUT'→'Haircut', 'COLOR TREATMENT'→'Coloring', 'HIGHLIGHT SERVICE'→'Coloring', 'MANICURE SERVICE'→'Manicure', 'PEDICURE TREATMENT'→'Pedicure'. ✅ BACKEND CODE CONFIRMED: map_service_to_expertise function is implemented (lines 25-61) and integrated into PUT /api/employees/{id} endpoint (lines 568-575). ✅ REAL-TIME VERIFICATION: All mapped values are correctly stored in Airtable and verified through GET requests. ⚠️ MINOR ISSUE: 'HAIR STYLING' maps to 'Haircut' instead of 'Styling' (mapping rule needs refinement). 🎯 CONCLUSION: Main agent's service mapping implementation is working correctly and resolves the 'Failed to update employee' error for service names. The 54.8% mismatch rate issue is now resolved."
 
+  - task: "Employee status update functionality testing"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE IDENTIFIED: Employee status update functionality is NOT working as expected. 🔍 ROOT CAUSE ANALYSIS: 1) GET endpoints return status field with default value 'Active' for all employees (lines 666, 720 in server.py). 2) PUT /api/employees/{id} endpoint attempts to update 'Status' field in Airtable (line 603) but field doesn't exist in actual Airtable schema. 3) All status update attempts fail with 422 UNKNOWN_FIELD_NAME error from Airtable API. ✅ CONFIRMED WORKING: GET /api/employees and GET /api/employees/{id} return status field. ❌ CONFIRMED FAILING: All PUT requests with status field fail - tested 'Active', 'Inactive', 'On Leave' status updates. ❌ IMPACT: User cannot switch employee status as requested. This will prevent animated glow effect colors on frontend from working correctly. 💡 SOLUTION NEEDED: Either create 'Status' field in Airtable Employee table OR modify backend to use existing field OR implement status as computed/virtual field."
+
 agent_communication:
   - agent: "testing"
     message: "✅ BACKEND TESTING COMPLETE: All critical deletion functionality working correctly. Both DELETE and UPDATE with cancel action successfully remove appointments completely from Airtable. Verified through actual API testing that deleted appointments no longer appear in GET /api/records. Error handling for invalid IDs working properly. All existing CRUD operations remain functional. Ready for frontend testing with user permission."
