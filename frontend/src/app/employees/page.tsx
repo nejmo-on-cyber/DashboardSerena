@@ -89,12 +89,26 @@ export default function EmployeeManagementPage() {
   const fetchEmployees = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/employee-availability');
-      if (!response.ok) throw new Error('Failed to fetch employees');
+      const response = await fetch("/api/employee-availability");
+      if (!response.ok) throw new Error("Failed to fetch employees");
       const data = await response.json();
-      setEmployees(data);
+      
+      // TEMPORARY: Add demo status values to show glow effect
+      const employeesWithDemoStatus = data.map((employee: Employee, index: number) => {
+        let demoStatus = "Active";
+        if (index === 1) demoStatus = "Inactive";
+        if (index === 2) demoStatus = "On Leave";
+        if (index === 4) demoStatus = "Inactive";
+        
+        return {
+          ...employee,
+          status: demoStatus  // Override status for demo
+        };
+      });
+      
+      setEmployees(employeesWithDemoStatus);
     } catch (err) {
-      setError('Failed to load employees');
+      setError("Failed to fetch employees");
     } finally {
       setLoading(false);
     }
