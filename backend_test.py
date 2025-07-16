@@ -1995,11 +1995,17 @@ class BackendAPITester:
         }
 
 def main():
-    print("🚨 EMPLOYEE MANAGEMENT SERVICE MAPPING TESTING")
+    print("🚨 EMPLOYEE STATUS UPDATE FUNCTIONALITY TESTING")
     print("=" * 80)
-    print("🎯 FOCUS: Testing main agent's claimed fix for service mapping issue")
-    print("📋 MAIN AGENT CLAIM: Service names now map to valid expertise categories")
-    print("📋 EXPECTED: 'COMPRESSION BOOT THERAPY' → 'Massage', etc.")
+    print("🎯 FOCUS: Testing employee status update functionality as per review request")
+    print("📋 REQUIREMENTS:")
+    print("   1. GET /api/employees endpoint - check if status field is returned")
+    print("   2. PUT /api/employees/{id} - test status updates:")
+    print("      • Active → Inactive")
+    print("      • Active → On Leave") 
+    print("      • Inactive → Active")
+    print("   3. Error handling with invalid status values")
+    print("   4. Status field verification between frontend and Airtable")
     print("=" * 80)
     
     # Setup
@@ -2010,71 +2016,50 @@ def main():
     tester.test_root_endpoint()
     tester.test_health_check()
     
-    # Test basic employee update functionality first
-    print("\n🔍 BASELINE TEST: Basic Employee Update")
+    # Test basic employee endpoints
+    print("\n🔍 BASELINE TEST: Basic Employee Endpoints")
     print("=" * 80)
     
-    basic_success, basic_results = tester.test_employee_update_endpoint()
+    tester.test_get_employees()
+    tester.test_employee_availability()
     
-    # Test with valid expertise values
-    print("\n🔍 VALIDATION TEST: Valid Expertise Updates")
+    # MAIN TEST: Employee Status Update Functionality
+    print("\n🔍 MAIN TEST: EMPLOYEE STATUS UPDATE FUNCTIONALITY")
     print("=" * 80)
     
-    valid_success, valid_results = tester.test_valid_expertise_updates()
-    
-    print("\n🔍 MAIN TEST: SERVICE MAPPING FUNCTIONALITY")
-    print("=" * 80)
-    
-    # Test the claimed service mapping functionality
-    mapping_success, mapping_results = tester.test_service_mapping_functionality()
-    
-    print("\n🔍 ADDITIONAL TEST: REAL SERVICE NAMES FROM API")
-    print("=" * 80)
-    
-    # Test with actual service names from the API
-    real_service_success, real_service_results = tester.test_employee_update_with_real_service_names()
+    status_success, status_results = tester.test_employee_status_update_functionality()
     
     # Print final results
     print("\n" + "=" * 80)
     print(f"📊 Testing Results: {tester.tests_passed}/{tester.tests_run} tests completed")
     
-    # Final verdict on main agent's claims
-    print("\n🎯 MAIN AGENT'S SERVICE MAPPING CLAIM VERIFICATION:")
+    # Final verdict on employee status update functionality
+    print("\n🎯 EMPLOYEE STATUS UPDATE FUNCTIONALITY ASSESSMENT:")
     print("=" * 80)
     
-    if basic_success:
-        print("✅ BASIC UPDATES: Employee update endpoint working")
-    else:
-        print("❌ BASIC UPDATES: Employee update endpoint failing")
-    
-    if valid_success:
-        print("✅ VALID EXPERTISE: Can update employees with valid Airtable expertise values")
-    else:
-        print("❌ VALID EXPERTISE: Cannot update employees with valid expertise values")
-    
-    if mapping_success:
-        print("✅ SERVICE MAPPING: Working as claimed")
-    else:
-        print("❌ SERVICE MAPPING: NOT working as claimed")
-    
-    if real_service_success:
-        print("✅ REAL SERVICES: Can update employees with some real service names")
-    else:
-        print("❌ REAL SERVICES: Cannot update employees with real service names")
-    
-    # Overall assessment
-    if mapping_success and basic_success and valid_success:
-        print("\n✅ OVERALL: Main agent's fix appears to be working completely")
+    if status_success:
+        print("✅ EMPLOYEE STATUS UPDATES: Working correctly")
+        print("   • Status field properly returned in API responses")
+        print("   • Status updates successfully saved to Airtable")
+        print("   • Status changes reflected in subsequent GET requests")
+        print("   • Invalid status values properly rejected")
+        print("\n✅ CONCLUSION: Employee status update functionality is working as expected")
+        print("   The user can switch employee status and see it reflected in Airtable")
+        print("   This will properly drive the animated glow effect colors on the frontend")
         return 0
-    elif basic_success and valid_success:
-        print("\n⚠️  OVERALL: Basic functionality works but service mapping is not implemented")
-        return 1
-    elif basic_success:
-        print("\n⚠️  OVERALL: Basic functionality works but expertise updates have issues")
-        return 2
     else:
-        print("\n❌ OVERALL: Employee update functionality has critical issues")
-        return 3
+        print("❌ EMPLOYEE STATUS UPDATES: Issues found")
+        
+        if status_results:
+            if status_results.get('successful_status_updates', 0) < 2:
+                print("   • Status updates are not working correctly")
+            if status_results.get('proper_error_handling', 0) < 4:
+                print("   • Error handling for invalid status values needs improvement")
+        
+        print("\n❌ CONCLUSION: Employee status update functionality has issues")
+        print("   The user may not be able to properly switch employee status")
+        print("   This could affect the animated glow effect colors on the frontend")
+        return 1
 
 if __name__ == "__main__":
     sys.exit(main())
