@@ -1,21 +1,100 @@
 {
   "pages": {
+    "/_not-found/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-54db2952d2314c01.js",
+      "static/chunks/684-1d05c9821d6d30bf.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/_not-found/page-bd4dbfa023817076.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-54db2952d2314c01.js",
+      "static/chunks/684-1d05c9821d6d30bf.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/css/19bf74aadeffe9d9.css",
+      "static/chunks/app/layout-29bef20c0f86bb92.js"
+    ],
+    "/analytics/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-54db2952d2314c01.js",
+      "static/chunks/684-1d05c9821d6d30bf.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/710-8b76d79fcfad1de7.js",
+      "static/chunks/app/analytics/page-4ebac7256e80d218.js"
+    ],
+    "/booking-admin/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-54db2952d2314c01.js",
+      "static/chunks/684-1d05c9821d6d30bf.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/booking-admin/page-9ba92a13d7a1527b.js"
+    ],
+    "/calendar/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-54db2952d2314c01.js",
+      "static/chunks/684-1d05c9821d6d30bf.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/calendar/page-2471a35ebc5b33a2.js"
+    ],
+    "/clients/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-54db2952d2314c01.js",
+      "static/chunks/684-1d05c9821d6d30bf.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/clients/page-52c70cd02abd8a66.js"
+    ],
     "/conversations/page": [
-      "static/chunks/node_modules_next_dist_1a6ee436._.js",
-      "static/chunks/src_app_favicon_ico_mjs_756fb309._.js",
-      "static/chunks/src_app_globals_b805903d.css",
-      "static/chunks/node_modules_next_dist_client_17dd4d38._.js",
-      "static/chunks/src_app_layout_tsx_007ca514._.js",
-      "static/chunks/node_modules_a774a45e._.js",
-      "static/chunks/src_4db99a70._.js",
-      "static/chunks/src_app_conversations_page_tsx_d617e48f._.js",
-      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_17e42fcf._.js",
-      "static/chunks/node_modules_next_dist_compiled_2ce9398a._.js",
-      "static/chunks/node_modules_next_dist_client_8f19e6fb._.js",
-      "static/chunks/node_modules_next_dist_0eb1e458._.js",
-      "static/chunks/node_modules_@swc_helpers_cjs_00636ac3._.js",
-      "static/chunks/_e69f0d32._.js",
-      "static/chunks/_a894171a._.js"
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-54db2952d2314c01.js",
+      "static/chunks/684-1d05c9821d6d30bf.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/768-7324d7e1985e2291.js",
+      "static/chunks/app/conversations/page-5ba53b78ec9c62df.js"
+    ],
+    "/employees/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-54db2952d2314c01.js",
+      "static/chunks/684-1d05c9821d6d30bf.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/employees/page-9c2e08c6c86cd37d.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-54db2952d2314c01.js",
+      "static/chunks/684-1d05c9821d6d30bf.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/980-01d8ade3d75b11db.js",
+      "static/chunks/app/page-b9b724446ffbfa8d.js"
+    ],
+    "/promotions/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-54db2952d2314c01.js",
+      "static/chunks/684-1d05c9821d6d30bf.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/promotions/page-f175c1ac55ad49c3.js"
+    ],
+    "/revenue/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-54db2952d2314c01.js",
+      "static/chunks/684-1d05c9821d6d30bf.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/revenue/page-197e977caf933c0c.js"
+    ],
+    "/services/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-54db2952d2314c01.js",
+      "static/chunks/684-1d05c9821d6d30bf.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/980-01d8ade3d75b11db.js",
+      "static/chunks/app/services/page-d3f667b79deea3d3.js"
+    ],
+    "/voice-calls/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-54db2952d2314c01.js",
+      "static/chunks/684-1d05c9821d6d30bf.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/voice-calls/page-476b2c9f51000912.js"
     ]
   }
 }
