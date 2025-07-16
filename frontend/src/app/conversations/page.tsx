@@ -123,7 +123,7 @@ export default function ConversationsPage() {
   const fetchConversations = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/conversations`);
+      const response = await fetch(`/api/conversations`);
       
       if (response.ok) {
         const data = await response.json();
