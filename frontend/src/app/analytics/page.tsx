@@ -197,8 +197,13 @@ export default function AnalyticsPage() {
                   <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
                   <p className="text-2xl font-bold text-gray-900">{formatCurrency(analytics.revenue.total)}</p>
                   <div className="flex items-center mt-2">
-                    <span className="text-sm text-gray-600">
-                      Avg: {formatCurrency(analytics.revenue.avg_appointment_value)}/appointment
+                    {analytics.revenue.growth >= 0 ? (
+                      <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                    ) : (
+                      <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
+                    )}
+                    <span className={`text-sm font-medium ${analytics.revenue.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {formatPercentage(analytics.revenue.growth)}
                     </span>
                   </div>
                 </div>
@@ -236,7 +241,7 @@ export default function AnalyticsPage() {
                   <div className="flex items-center mt-2">
                     <Users className="w-4 h-4 text-purple-500 mr-1" />
                     <span className="text-sm text-gray-600">
-                      {analytics.clients.new_this_month} new this month
+                      {analytics.clients.new_in_period} new in period
                     </span>
                   </div>
                 </div>
@@ -246,16 +251,16 @@ export default function AnalyticsPage() {
               </div>
             </div>
 
-            {/* Retention Card */}
+            {/* Average Value Card */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 mb-1">Client Retention</p>
-                  <p className="text-2xl font-bold text-gray-900">{analytics.clients.retention_rate.toFixed(1)}%</p>
+                  <p className="text-sm text-gray-600 mb-1">Avg per Appointment</p>
+                  <p className="text-2xl font-bold text-gray-900">{formatCurrency(analytics.revenue.avg_appointment_value)}</p>
                   <div className="flex items-center mt-2">
                     <Target className="w-4 h-4 text-orange-500 mr-1" />
                     <span className="text-sm text-gray-600">
-                      {analytics.clients.returning} returning clients
+                      {analytics.clients.retention_rate.toFixed(1)}% retention
                     </span>
                   </div>
                 </div>
