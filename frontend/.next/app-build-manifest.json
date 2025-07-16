@@ -30,19 +30,19 @@
       "static/chunks/main-app-adc21f9bd355c9ea.js",
       "static/chunks/app/booking-admin/page-12cb73c6b4bb9ea6.js"
     ],
-    "/clients/page": [
-      "static/chunks/webpack-9edee2920554d0a5.js",
-      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
-      "static/chunks/684-806c093013864de1.js",
-      "static/chunks/main-app-adc21f9bd355c9ea.js",
-      "static/chunks/app/clients/page-b5c576202e329d71.js"
-    ],
     "/calendar/page": [
       "static/chunks/webpack-9edee2920554d0a5.js",
       "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
       "static/chunks/684-806c093013864de1.js",
       "static/chunks/main-app-adc21f9bd355c9ea.js",
       "static/chunks/app/calendar/page-85cb4efa23fee75d.js"
+    ],
+    "/clients/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
+      "static/chunks/684-806c093013864de1.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/clients/page-b5c576202e329d71.js"
     ],
     "/conversations/page": [
       "static/chunks/webpack-9edee2920554d0a5.js",
