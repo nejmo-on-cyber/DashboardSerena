@@ -1,7 +1,7 @@
 {
   "version": 4,
   "routes": {
-    "/booking-admin": {
+    "/calendar": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -14,8 +14,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/booking-admin",
-      "dataRoute": "/booking-admin.rsc",
+      "srcRoute": "/calendar",
+      "dataRoute": "/calendar.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -49,7 +49,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/analytics": {
+    "/services": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -62,8 +62,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/analytics",
-      "dataRoute": "/analytics.rsc",
+      "srcRoute": "/services",
+      "dataRoute": "/services.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -97,7 +97,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/calendar": {
+    "/voice-calls": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -110,8 +110,32 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/calendar",
-      "dataRoute": "/calendar.rsc",
+      "srcRoute": "/voice-calls",
+      "dataRoute": "/voice-calls.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/analytics": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "Next-Action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/analytics",
+      "dataRoute": "/analytics.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -169,83 +193,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/services": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "Next-Action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/services",
-      "dataRoute": "/services.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/favicon.ico": {
-      "initialHeaders": {
-        "cache-control": "public, max-age=0, must-revalidate",
-        "content-type": "image/x-icon",
-        "x-next-cache-tags": "_N_T_/layout,_N_T_/favicon.ico/layout,_N_T_/favicon.ico/route,_N_T_/favicon.ico"
-      },
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "Next-Action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/favicon.ico",
-      "dataRoute": null,
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/voice-calls": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "Next-Action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/voice-calls",
-      "dataRoute": "/voice-calls.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/clients": {
       "experimentalBypassFor": [
         {
@@ -293,13 +240,66 @@
         "x-next-revalidated-tags",
         "x-next-revalidate-tag-token"
       ]
+    },
+    "/booking-admin": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "Next-Action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/booking-admin",
+      "dataRoute": "/booking-admin.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/favicon.ico": {
+      "initialHeaders": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "image/x-icon",
+        "x-next-cache-tags": "_N_T_/layout,_N_T_/favicon.ico/layout,_N_T_/favicon.ico/route,_N_T_/favicon.ico"
+      },
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "Next-Action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/favicon.ico",
+      "dataRoute": null,
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
     }
   },
   "dynamicRoutes": {},
   "notFoundRoutes": [],
   "preview": {
-    "previewModeId": "b190058b496bac9d973454ab59321a4c",
-    "previewModeSigningKey": "456e26c6fb553ca0fcaea75fab6023774ca07c41f8a816a680ad42e9942933e1",
-    "previewModeEncryptionKey": "ddde56052def4830995f4a8ec51d1d28083d863951e75fb83eb016bdc425c645"
+    "previewModeId": "713c5ba95134dd8947987eb5899be152",
+    "previewModeSigningKey": "0e1cab2bfe44928e6636e59e757b1470cae22e8cb8a489dd1eabfca8307d3923",
+    "previewModeEncryptionKey": "5683338cddd4cc0b2c43115e1b9fbe2f846311906114d735ba58f426c3b479c0"
   }
 }
