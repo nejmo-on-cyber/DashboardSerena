@@ -592,7 +592,19 @@ async def update_employee(employee_id: str, employee_data: dict):
         if employee_data.get("availability_days"):
             airtable_fields["Availability"] = employee_data["availability_days"]
         if employee_data.get("expertise"):
-            airtable_fields["Expertise"] = employee_data["expertise"]
+            # Map service names to expertise categories if needed
+            expertise_list = employee_data["expertise"]
+            mapped_expertise = []
+            
+            for expertise in expertise_list:
+                # If it's already a valid expertise category, use it directly
+                if expertise in ['Haircut', 'Coloring', 'Styling', 'Massage', 'Facials', 'Manicure', 'Pedicure']:
+                    mapped_expertise.append(expertise)
+                else:
+                    # Otherwise, map service name to expertise category
+                    mapped_expertise.append(map_service_to_expertise(expertise))
+            
+            airtable_fields["Expertise"] = mapped_expertise
         if employee_data.get("services"):
             airtable_fields["Services"] = employee_data["services"]
         if employee_data.get("profile_picture"):
