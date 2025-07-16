@@ -717,7 +717,7 @@ async def get_employee_availability():
                 "services": services,  # NEW field
                 "contact_number": fields.get('Contact Number', ''),
                 "email": fields.get('Email', ''),
-                "status": fields.get('Status', 'Active'),
+                "status": fields.get('Status', fields.get('Employee Status', 'Active')),  # Try both field names
                 "profile_picture": fields.get('Profile Picture', ''),
                 "start_date": fields.get('Start Date', '')
             })
