@@ -2649,46 +2649,55 @@ def main():
     tester.test_root_endpoint()
     tester.test_health_check()
     
-    # MAIN TEST: Comprehensive Review Request Testing
-    print("\n🔍 MAIN TEST: COMPREHENSIVE REVIEW REQUEST TESTING")
+    # MAIN TEST: Wassenger/Pusher Integration Testing
+    print("\n🔍 MAIN TEST: WASSENGER/PUSHER INTEGRATION TESTING")
     print("=" * 80)
     
-    comprehensive_success, comprehensive_results = tester.test_comprehensive_review_request()
+    integration_success, integration_results = tester.test_wassenger_integration_flow()
     
     # Print final results
     print("\n" + "=" * 80)
     print(f"📊 Testing Results: {tester.tests_passed}/{tester.tests_run} tests completed")
     
-    # Final verdict on comprehensive review
-    print("\n🎯 COMPREHENSIVE REVIEW REQUEST ASSESSMENT:")
+    # Final verdict on Wassenger/Pusher integration
+    print("\n🎯 WASSENGER/PUSHER INTEGRATION ASSESSMENT:")
     print("=" * 80)
     
-    if comprehensive_success:
-        print("✅ COMPREHENSIVE REVIEW: All fixes working correctly")
-        print("   • Status updates working (Active ↔ Inactive ↔ On Leave)")
-        print("   • Contact information updates working")
-        print("   • Availability updates working")
-        print("   • Expertise updates with valid categories working")
-        print("   • Service mapping functionality working")
-        print("   • Profile picture updates working")
-        print("   • Error handling working properly")
-        print("\n✅ CONCLUSION: 'Failed to update employee' issue has been RESOLVED")
-        print("   All employee update functionality is working as expected")
+    if integration_success:
+        print("✅ WASSENGER/PUSHER INTEGRATION: Working correctly")
+        print("   • GET /api/conversations returns mock conversation data")
+        print("   • POST /api/send-message endpoint structure is correct")
+        print("   • POST /api/webhook/wassenger can receive webhook data")
+        print("   • Pusher client is properly configured")
+        print("   • Environment variables are loaded correctly")
+        print("\n✅ CONCLUSION: Wassenger/Pusher integration is ready for frontend integration")
         return 0
     else:
-        print("❌ COMPREHENSIVE REVIEW: Issues found in employee update functionality")
+        print("❌ WASSENGER/PUSHER INTEGRATION: Issues found")
         
-        if comprehensive_results:
-            category_results = comprehensive_results.get('category_results', {})
-            for category, results in category_results.items():
-                if results['total'] > 0:
-                    success_rate = (results['passed'] / results['total']) * 100
-                    if success_rate < 80:
-                        print(f"   • {category.replace('_', ' ').title()}: {success_rate:.1f}% success rate")
+        if integration_results:
+            individual_results = integration_results.get('individual_results', {})
+            for test_name, result in individual_results.items():
+                if not result or (isinstance(result, dict) and not result.get('success', True)):
+                    print(f"   • {test_name.replace('_', ' ').title()}: Issues detected")
         
-        print("\n❌ CONCLUSION: 'Failed to update employee' issue persists")
-        print("   Some employee update functionality is not working correctly")
+        print("\n❌ CONCLUSION: Wassenger/Pusher integration has issues")
+        print("   Some endpoints or configuration may not be working correctly")
         return 1
+
+def main_comprehensive():
+    print("🚨 COMPREHENSIVE REVIEW REQUEST TESTING")
+    print("=" * 80)
+    print("🎯 FOCUS: Final comprehensive test to verify all fixes for 'Failed to update employee' issue")
+    print("📋 TESTING SCENARIOS:")
+    print("   1. Status Updates - Active to Inactive and back")
+    print("   2. Contact Information - Update contact number and email")
+    print("   3. Availability Updates - Update availability days")
+    print("   4. Expertise Updates - Valid categories AND service name mapping")
+    print("   5. Profile Picture - URL format updates")
+    print("   6. Service Mapping - Verify mapping functionality")
+    print("   7. Error Handling - Invalid data responses")
+    print("=" * 80)
 
 def main_original():
     print("🚨 EMPLOYEE STATUS UPDATE FUNCTIONALITY TESTING")
