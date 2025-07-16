@@ -388,7 +388,7 @@ export default function ConversationsPage() {
               }`}
               data-oid="77::mgw"
             >
-              {selectedConv && (
+              {selectedConv ? (
                 <>
                   {/* Chat Header */}
                   <div
