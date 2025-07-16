@@ -123,6 +123,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ Pusher client initialization working correctly. All required environment variables loaded successfully: PUSHER_APP_KEY (f1f929da8fd632930b80), PUSHER_CLUSTER (ap2), PUSHER_CHANNEL (my-channel). Pusher client is properly initialized in server.py with correct app_id, key, cluster, and SSL configuration. Ready for real-time event triggering."
+      - working: true
+        agent: "testing"
+        comment: "✅ COMPREHENSIVE PUSHER VERIFICATION COMPLETE: Pusher client initialization with new credentials working perfectly. Confirmed proper configuration with App ID: 2017288, Secret: 6f33f8791db91b6568df, Key: f1f929da8fd632930b80, Cluster: ap2, Channel: my-channel, SSL: True. All environment variables loaded successfully (100% success rate). Pusher client is properly initialized in server.py and ready for real-time event triggering in both send-message and webhook endpoints."
 
   - task: "Environment variables loading verification"
     implemented: true
