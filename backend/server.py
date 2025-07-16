@@ -79,8 +79,8 @@ if AIRTABLE_API_KEY and AIRTABLE_BASE_ID and AIRTABLE_API_KEY != "your_airtable_
     # Also connect to related tables
     try:
         airtable_clients = Airtable(AIRTABLE_BASE_ID, "Clients", api_key=AIRTABLE_API_KEY)
-        airtable_services = Airtable(AIRTABLE_BASE_ID, "tbloZHCP8cTVDBFmK", api_key=AIRTABLE_API_KEY)  # Use table ID from URL
-        airtable_employees = Airtable(AIRTABLE_BASE_ID, "Employees", api_key=AIRTABLE_API_KEY)
+        airtable_services = Airtable(AIRTABLE_BASE_ID, "Services", api_key=AIRTABLE_API_KEY)  # Back to Services table
+        airtable_employees = Airtable(AIRTABLE_BASE_ID, "tbloZHCP8cTVDBFmK", api_key=AIRTABLE_API_KEY)  # Use table ID from URL for Employees
     except Exception as e:
         print(f"Warning: Could not connect to related tables: {e}")
 
