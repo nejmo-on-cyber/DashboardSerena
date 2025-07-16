@@ -35,7 +35,7 @@ export default function ConversationsPage() {
     // Initialize Pusher
     pusherRef.current = new Pusher('f1f929da8fd632930b80', {
       cluster: 'ap2',
-      encrypted: true
+      useTLS: true
     });
 
     // Subscribe to the conversations channel
