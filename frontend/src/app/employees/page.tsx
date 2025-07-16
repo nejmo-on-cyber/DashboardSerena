@@ -169,10 +169,14 @@ export default function EmployeeManagementPage() {
         throw new Error(errorMessage);
       }
       
-      // Wait a bit for Airtable to sync the changes
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait longer for Airtable to sync the changes
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Refresh the employee data
+      // Force refresh the employee data multiple times if needed
+      await fetchEmployees();
+      
+      // Wait a bit more and try again to ensure data is updated
+      await new Promise(resolve => setTimeout(resolve, 1000));
       await fetchEmployees();
       
       setShowEditForm(false);
