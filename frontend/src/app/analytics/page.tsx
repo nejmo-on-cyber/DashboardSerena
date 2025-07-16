@@ -86,7 +86,7 @@ export default function AnalyticsPage() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [timeRange, setTimeRange] = useState<'week' | 'month' | 'quarter'>('month');
+  const [timeRange, setTimeRange] = useState<'today' | 'week' | 'month' | 'quarter' | 'half_year' | 'year'>('month');
 
   useEffect(() => {
     fetchAnalytics();
