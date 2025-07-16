@@ -89,7 +89,9 @@ export default function EmployeeManagementPage() {
   const fetchEmployees = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/employee-availability");
+      // Add cache-busting timestamp to prevent caching issues
+      const timestamp = Date.now();
+      const response = await fetch(`/api/employee-availability?t=${timestamp}`);
       if (!response.ok) throw new Error("Failed to fetch employees");
       const data = await response.json();
       setEmployees(data);
