@@ -41,6 +41,8 @@ interface Service {
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
+const expertiseCategories = ["Haircut", "Coloring", "Styling", "Massage", "Facials", "Manicure", "Pedicure"];
+
 const placeholderImages = [
   "https://images.unsplash.com/photo-1494790108755-2616b5e7c8b0?w=300&h=300&fit=crop&crop=face",
   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face",
@@ -221,54 +223,6 @@ export default function EmployeeManagementPage() {
         ? prev.availability_days.filter(d => d !== day)
         : [...prev.availability_days, day]
     }));
-  };
-
-  // Map service names to expertise field values that work in Airtable
-  const mapServiceToExpertise = (serviceName: string): string => {
-    const serviceUpper = serviceName.toUpperCase();
-    
-    // Massage-related services
-    if (serviceUpper.includes('MASSAGE') || serviceUpper.includes('LYMPHATIC') || serviceUpper.includes('COMPRESSION')) {
-      return 'Massage';
-    }
-    
-    // Facial/skincare services
-    if (serviceUpper.includes('FACIAL') || serviceUpper.includes('FACE') || serviceUpper.includes('SKIN') || 
-        serviceUpper.includes('MICROCURRENT') || serviceUpper.includes('LIGHT THERAPY')) {
-      return 'Facials';
-    }
-    
-    // Hair services
-    if (serviceUpper.includes('HAIR') || serviceUpper.includes('CUT') || serviceUpper.includes('STYLE')) {
-      return 'Haircut';
-    }
-    
-    // Coloring services
-    if (serviceUpper.includes('COLOR') || serviceUpper.includes('DYE') || serviceUpper.includes('HIGHLIGHT')) {
-      return 'Coloring';
-    }
-    
-    // Nail services
-    if (serviceUpper.includes('MANI') || serviceUpper.includes('NAIL')) {
-      return 'Manicure';
-    }
-    
-    if (serviceUpper.includes('PEDI') || serviceUpper.includes('FOOT')) {
-      return 'Pedicure';
-    }
-    
-    // Styling services
-    if (serviceUpper.includes('STYLE') || serviceUpper.includes('STYLING')) {
-      return 'Styling';
-    }
-    
-    // Default to Massage for spa/therapy services
-    if (serviceUpper.includes('THERAPY') || serviceUpper.includes('TREATMENT') || serviceUpper.includes('SPA')) {
-      return 'Massage';
-    }
-    
-    // If no mapping found, return original (will likely fail, but at least we try)
-    return serviceName;
   };
 
   const toggleService = (serviceName: string) => {
@@ -680,20 +634,39 @@ export default function EmployeeManagementPage() {
                   
                   <div>
                     <label className="block text-sm font-semibold text-gray-900 mb-3">
-                      Services & Expertise
+                      Services
                     </label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-40 overflow-y-auto">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-40 overflow-y-auto mb-6">
                       {services.map((service) => (
                         <button
                           key={service.id}
                           onClick={() => toggleService(service.name)}
                           className={`px-4 py-3 text-sm rounded-xl border transition-all duration-200 text-left ${
-                            formData.expertise.includes(mapServiceToExpertise(service.name))
-                              ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                            formData.services.includes(service.name)
+                              ? 'bg-green-600 text-white border-green-600 shadow-sm'
                               : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                           }`}
                         >
                           {service.name}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    <label className="block text-xs font-medium text-gray-600 mb-2">
+                      Expertise Categories (Optional)
+                    </label>
+                    <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                      {expertiseCategories.map((category) => (
+                        <button
+                          key={category}
+                          onClick={() => toggleExpertise(category)}
+                          className={`px-3 py-2 text-xs rounded-lg border transition-all duration-200 text-left ${
+                            formData.expertise.includes(category)
+                              ? 'bg-blue-500 text-white border-blue-500 shadow-sm'
+                              : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                          }`}
+                        >
+                          {category}
                         </button>
                       ))}
                     </div>
@@ -943,20 +916,39 @@ export default function EmployeeManagementPage() {
                   
                   <div>
                     <label className="block text-sm font-semibold text-gray-900 mb-3">
-                      Services & Expertise
+                      Services
                     </label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-40 overflow-y-auto">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-40 overflow-y-auto mb-6">
                       {services.map((service) => (
                         <button
                           key={service.id}
                           onClick={() => toggleService(service.name)}
                           className={`px-4 py-3 text-sm rounded-xl border transition-all duration-200 text-left ${
-                            formData.expertise.includes(mapServiceToExpertise(service.name))
-                              ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                            formData.services.includes(service.name)
+                              ? 'bg-green-600 text-white border-green-600 shadow-sm'
                               : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                           }`}
                         >
                           {service.name}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    <label className="block text-xs font-medium text-gray-600 mb-2">
+                      Expertise Categories (Optional)
+                    </label>
+                    <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                      {expertiseCategories.map((category) => (
+                        <button
+                          key={category}
+                          onClick={() => toggleExpertise(category)}
+                          className={`px-3 py-2 text-xs rounded-lg border transition-all duration-200 text-left ${
+                            formData.expertise.includes(category)
+                              ? 'bg-blue-500 text-white border-blue-500 shadow-sm'
+                              : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                          }`}
+                        >
+                          {category}
                         </button>
                       ))}
                     </div>
