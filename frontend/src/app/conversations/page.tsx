@@ -291,78 +291,91 @@ export default function ConversationsPage() {
               </div>
 
               <div className="overflow-y-auto h-full" data-oid="4r2l6y0">
-                {conversations.map((conv) => (
-                  <div
-                    key={conv.id}
-                    onClick={() => setSelectedConversation(conv.id)}
-                    className={`p-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
-                      selectedConversation === conv.id
-                        ? "bg-purple-50 dark:bg-purple-900/20 border-l-4 border-l-purple-500"
-                        : ""
-                    }`}
-                    data-oid="r:.ywu."
-                  >
+                {conversations.length > 0 ? (
+                  conversations.map((conv) => (
                     <div
-                      className="flex items-start space-x-3"
-                      data-oid="d7vdgev"
+                      key={conv.id}
+                      onClick={() => setSelectedConversation(conv.id)}
+                      className={`p-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
+                        selectedConversation === conv.id
+                          ? "bg-purple-50 dark:bg-purple-900/20 border-l-4 border-l-purple-500"
+                          : ""
+                      }`}
+                      data-oid="r:.ywu."
                     >
                       <div
-                        className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-medium"
-                        data-oid="cvce3n8"
+                        className="flex items-start space-x-3"
+                        data-oid="d7vdgev"
                       >
-                        {conv.client.charAt(0)}
-                      </div>
-                      <div className="flex-1 min-w-0" data-oid="-j7x82o">
                         <div
-                          className="flex items-center justify-between"
-                          data-oid="mf57-vv"
+                          className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-medium"
+                          data-oid="cvce3n8"
                         >
-                          <h3
-                            className={`font-medium truncate ${darkMode ? "text-white" : "text-gray-900"}`}
-                            data-oid="ij.ee_k"
-                          >
-                            {conv.client}
-                          </h3>
-                          <span
-                            className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}
-                            data-oid="w972q6o"
-                          >
-                            {conv.time}
-                          </span>
+                          {conv.client.charAt(0).toUpperCase()}
                         </div>
-                        <p
-                          className={`text-sm truncate mt-1 ${darkMode ? "text-gray-400" : "text-gray-600"}`}
-                          data-oid="xexm4hw"
-                        >
-                          {conv.lastMessage}
-                        </p>
-                        <div
-                          className="flex items-center justify-between mt-2"
-                          data-oid="uk-20zr"
-                        >
-                          <span
-                            className={`px-2 py-1 text-xs rounded-full ${
-                              conv.tag === "VIP"
-                                ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-                                : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
-                            }`}
-                            data-oid="4px.h:s"
+                        <div className="flex-1 min-w-0" data-oid="-j7x82o">
+                          <div
+                            className="flex items-center justify-between"
+                            data-oid="mf57-vv"
                           >
-                            {conv.tag}
-                          </span>
-                          {conv.unread > 0 && (
-                            <span
-                              className="w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
-                              data-oid="uwgn51e"
+                            <h3
+                              className={`font-medium truncate ${darkMode ? "text-white" : "text-gray-900"}`}
+                              data-oid="ij.ee_k"
                             >
-                              {conv.unread}
+                              {conv.client}
+                            </h3>
+                            <span
+                              className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}
+                              data-oid="w972q6o"
+                            >
+                              {conv.time}
                             </span>
-                          )}
+                          </div>
+                          <p
+                            className={`text-sm truncate mt-1 ${darkMode ? "text-gray-400" : "text-gray-600"}`}
+                            data-oid="xexm4hw"
+                          >
+                            {conv.lastMessage}
+                          </p>
+                          <div
+                            className="flex items-center justify-between mt-2"
+                            data-oid="uk-20zr"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <span
+                                className={`px-2 py-1 text-xs rounded-full ${
+                                  conv.tag === "VIP"
+                                    ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+                                    : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                                }`}
+                                data-oid="4px.h:s"
+                              >
+                                {conv.tag}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                {conv.phone}
+                              </span>
+                            </div>
+                            {conv.unread > 0 && (
+                              <span
+                                className="w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
+                                data-oid="uwgn51e"
+                              >
+                                {conv.unread}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="p-8 text-center">
+                    <p className={`text-gray-500 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                      No conversations yet. Start a new conversation or wait for incoming messages.
+                    </p>
                   </div>
-                ))}
+                )}
               </div>
             </div>
 
