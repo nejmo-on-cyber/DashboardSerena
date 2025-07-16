@@ -416,7 +416,7 @@ export default function EmployeeManagementPage() {
                 {filteredEmployees.map((employee) => (
                   <div 
                     key={employee.id} 
-                    className={`${getStatusGlowEffect(employee.status)}`}
+                    className={`${getStatusGlowEffect(employee.status)} p-1`}
                   >
                     <div
                       onClick={() => {
@@ -435,7 +435,7 @@ export default function EmployeeManagementPage() {
                         });
                         setShowEditForm(true);
                       }}
-                      className="bg-white rounded-3xl shadow-sm border border-gray-200/50 p-8 hover:shadow-lg transition-all duration-300 cursor-pointer group hover:scale-[1.02] active:scale-[0.98] relative z-10"
+                      className="bg-white rounded-2xl shadow-sm border border-gray-200/50 p-8 hover:shadow-lg transition-all duration-300 cursor-pointer group hover:scale-[1.02] active:scale-[0.98] relative z-10"
                     >
                     <div className="flex flex-col items-center text-center mb-6">
                       <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center overflow-hidden shadow-inner mb-4 group-hover:shadow-md transition-shadow duration-300">
