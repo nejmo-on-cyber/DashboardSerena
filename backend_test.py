@@ -3047,40 +3047,44 @@ def main():
     tester.test_root_endpoint()
     tester.test_health_check()
     
-    # MAIN TEST: Wassenger/Pusher Integration Testing
-    print("\n🔍 MAIN TEST: WASSENGER/PUSHER INTEGRATION TESTING")
+    # MAIN TEST: Wassenger Real API Integration Testing
+    print("\n🔍 MAIN TEST: WASSENGER REAL API INTEGRATION TESTING")
     print("=" * 80)
     
-    integration_success, integration_results = tester.test_wassenger_integration_flow()
+    integration_success, integration_results = tester.test_wassenger_comprehensive_real_api()
     
     # Print final results
     print("\n" + "=" * 80)
     print(f"📊 Testing Results: {tester.tests_passed}/{tester.tests_run} tests completed")
     
-    # Final verdict on Wassenger/Pusher integration
-    print("\n🎯 WASSENGER/PUSHER INTEGRATION ASSESSMENT:")
+    # Final verdict on Wassenger real API integration
+    print("\n🎯 WASSENGER REAL API INTEGRATION ASSESSMENT:")
     print("=" * 80)
     
     if integration_success:
-        print("✅ WASSENGER/PUSHER INTEGRATION: Working correctly")
-        print("   • GET /api/conversations returns mock conversation data")
-        print("   • POST /api/send-message endpoint structure is correct")
-        print("   • POST /api/webhook/wassenger can receive webhook data")
-        print("   • Pusher client is properly configured")
-        print("   • Environment variables are loaded correctly")
-        print("\n✅ CONCLUSION: Wassenger/Pusher integration is ready for frontend integration")
+        print("✅ WASSENGER REAL API INTEGRATION: Working correctly")
+        print("   • GET /api/conversations can fetch real conversations from Wassenger")
+        print("   • Wassenger API key is working and can access devices")
+        print("   • Real chats and messages are retrieved from Wassenger account")
+        print("   • Fallback mechanism works when API fails")
+        print("   • Send message and webhook endpoints are properly structured")
+        print("\n✅ CONCLUSION: Wassenger API integration is working and can fetch real conversations")
         return 0
     else:
-        print("❌ WASSENGER/PUSHER INTEGRATION: Issues found")
+        print("❌ WASSENGER REAL API INTEGRATION: Issues found")
         
         if integration_results:
-            individual_results = integration_results.get('individual_results', {})
-            for test_name, result in individual_results.items():
-                if not result or (isinstance(result, dict) and not result.get('success', True)):
-                    print(f"   • {test_name.replace('_', ' ').title()}: Issues detected")
+            if not integration_results.get('device_access', False):
+                print("   • Wassenger API key may not have proper device access")
+            if not integration_results.get('chat_retrieval', False):
+                print("   • Real chats and messages are not being retrieved")
+            if not integration_results.get('conversations_endpoint', False):
+                print("   • Conversations endpoint has issues")
+            if not integration_results.get('fallback_mechanism', False):
+                print("   • Fallback mechanism is not working properly")
         
-        print("\n❌ CONCLUSION: Wassenger/Pusher integration has issues")
-        print("   Some endpoints or configuration may not be working correctly")
+        print("\n❌ CONCLUSION: Wassenger API integration has issues with real conversation fetching")
+        print("   The system may be falling back to mock data instead of real conversations")
         return 1
 
 def main_comprehensive():
