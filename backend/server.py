@@ -589,11 +589,11 @@ async def update_employee(employee_id: str, employee_data: dict):
     
     try:
         # Map employee data to Airtable fields - FIXED FIELD MAPPING
+        # Skip computed fields and problematic fields
         airtable_fields = {}
         
         # Basic fields - using correct Airtable field names
-        if employee_data.get("full_name"):
-            airtable_fields["Full Name"] = employee_data["full_name"]
+        # Note: Skip "Full Name" as it's computed in Airtable
         if employee_data.get("employee_number"):
             airtable_fields["Employee ID"] = employee_data["employee_number"]  # Fixed: Employee ID not Employee Number
         if employee_data.get("email"):
