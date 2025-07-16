@@ -677,15 +677,24 @@ async def get_employee_availability():
                 elif isinstance(fields['Expertise'], str):
                     expertise = [fields['Expertise']]
             
+            # Extract services (NEW field)
+            services = []
+            if fields.get('Services'):
+                if isinstance(fields['Services'], list):
+                    services = fields['Services']
+                elif isinstance(fields['Services'], str):
+                    services = [fields['Services']]
+            
             availability_data.append({
                 "id": emp['id'],
                 "full_name": fields.get('Full Name', ''),
                 "employee_number": fields.get('Employee Number', ''),
                 "availability_days": availability_days,
                 "expertise": expertise,
+                "services": services,  # NEW field
                 "contact_number": fields.get('Contact Number', ''),
                 "email": fields.get('Email', ''),
-                "status": fields.get('Status', 'Active'),  # Add status field with default Active
+                "status": fields.get('Status', 'Active'),
                 "profile_picture": fields.get('Profile Picture', ''),
                 "start_date": fields.get('Start Date', '')
             })
