@@ -868,6 +868,142 @@ async def get_employee_availability():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching employee availability: {str(e)}")
 
+@app.get("/api/conversations")
+async def get_conversations():
+    """Get all conversations from Wassenger"""
+    try:
+        # For now, return mock data. In production, you'd fetch from Wassenger API
+        # or your database where you store conversation history
+        mock_conversations = [
+            {
+                "id": "1",
+                "client": "Sarah Johnson",
+                "phone": "+971502810801",
+                "lastMessage": "Hi, I need to reschedule my appointment for tomorrow",
+                "time": "2 min ago",
+                "status": "pending",
+                "unread": 2,
+                "tag": "VIP",
+                "messages": [
+                    {
+                        "id": "1",
+                        "sender": "client",
+                        "text": "Hi, I need to reschedule my appointment for tomorrow",
+                        "time": "2:30 PM",
+                        "phone": "+971502810801"
+                    },
+                    {
+                        "id": "2",
+                        "sender": "ai",
+                        "text": "Hi Sarah! Of course, I can help you reschedule. What time works better for you?",
+                        "time": "2:31 PM"
+                    }
+                ]
+            },
+            {
+                "id": "2",
+                "client": "Mike Chen",
+                "phone": "+971502810802",
+                "lastMessage": "Thank you for the reminder! See you at 3pm",
+                "time": "15 min ago",
+                "status": "replied",
+                "unread": 0,
+                "tag": "Regular",
+                "messages": [
+                    {
+                        "id": "1",
+                        "sender": "ai",
+                        "text": "Hi Mike! This is a reminder for your appointment tomorrow at 3pm.",
+                        "time": "1:00 PM"
+                    },
+                    {
+                        "id": "2",
+                        "sender": "client",
+                        "text": "Thank you for the reminder! See you at 3pm",
+                        "time": "1:15 PM",
+                        "phone": "+971502810802"
+                    }
+                ]
+            }
+        ]
+        return mock_conversations
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching conversations: {str(e)}")
+
+@app.post("/api/send-message")
+async def send_message(request: SendMessageRequest):
+    """Send a message via Wassenger API"""
+    try:
+        if not WASSENGER_API_KEY:
+            raise HTTPException(status_code=500, detail="Wassenger API key not configured")
+        
+        # Send message via Wassenger API
+        headers = {
+            "Content-Type": "application/json",
+            "Token": WASSENGER_API_KEY
+        }
+        
+        payload = {
+            "phone": request.phone,
+            "message": request.message
+        }
+        
+        response = requests.post(
+            f"{WASSENGER_BASE_URL}/messages",
+            headers=headers,
+            json=payload
+        )
+        
+        if response.status_code != 200:
+            raise HTTPException(status_code=response.status_code, detail=f"Wassenger API error: {response.text}")
+        
+        # Trigger Pusher event for real-time updates
+        pusher_client.trigger(
+            os.getenv("PUSHER_CHANNEL", "my-channel"),
+            "new-message",
+            {
+                "phone": request.phone,
+                "message": request.message,
+                "sender": "ai",
+                "time": datetime.now().strftime("%I:%M %p")
+            }
+        )
+        
+        return {"success": True, "message": "Message sent successfully"}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error sending message: {str(e)}")
+
+@app.post("/api/webhook/wassenger")
+async def wassenger_webhook(request: dict):
+    """Webhook endpoint for receiving messages from Wassenger"""
+    try:
+        # Process incoming message from Wassenger
+        # This would be called when someone sends a message to your WhatsApp number
+        
+        # Extract message data (structure depends on Wassenger webhook format)
+        phone = request.get("phone", "")
+        message = request.get("message", "")
+        sender_name = request.get("sender_name", "Unknown")
+        
+        # Trigger Pusher event for real-time updates
+        pusher_client.trigger(
+            os.getenv("PUSHER_CHANNEL", "my-channel"),
+            "new-message",
+            {
+                "phone": phone,
+                "message": message,
+                "sender": "client",
+                "sender_name": sender_name,
+                "time": datetime.now().strftime("%I:%M %p")
+            }
+        )
+        
+        return {"success": True}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing webhook: {str(e)}")
+
 @app.get("/api/debug-services-field")
 async def debug_services_field():
     """Debug endpoint to check the exact Services field structure"""
