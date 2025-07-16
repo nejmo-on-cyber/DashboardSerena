@@ -576,6 +576,20 @@ export default function ConversationsPage() {
                     </div>
                   </div>
                 </>
+              ) : (
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Send className="w-8 h-8 text-purple-500" />
+                    </div>
+                    <h3 className={`text-lg font-medium mb-2 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                      Select a conversation
+                    </h3>
+                    <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                      Choose a conversation from the list to start chatting
+                    </p>
+                  </div>
+                </div>
               )}
             </div>
           </div>
