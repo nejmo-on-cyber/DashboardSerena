@@ -295,20 +295,15 @@ export default function AnalyticsPage() {
 
           {/* Enhanced Key Metrics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {/* Revenue Card */}
+            {/* Total Revenue Card */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
                   <p className="text-2xl font-bold text-gray-900">{formatCurrency(analytics.revenue.total)}</p>
                   <div className="flex items-center mt-2">
-                    {analytics.revenue.growth >= 0 ? (
-                      <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-                    ) : (
-                      <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
-                    )}
-                    <span className={`text-sm font-medium ${analytics.revenue.growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {formatPercentage(analytics.revenue.growth)}
+                    <span className="text-sm text-gray-600">
+                      Avg: {formatCurrency(analytics.revenue.avg_appointment_value)}/appointment
                     </span>
                   </div>
                 </div>
@@ -327,7 +322,7 @@ export default function AnalyticsPage() {
                   <div className="flex items-center mt-2">
                     <Calendar className="w-4 h-4 text-blue-500 mr-1" />
                     <span className="text-sm text-gray-600">
-                      {analytics.appointments.completed} completed
+                      {analytics.appointments.completion_rate.toFixed(1)}% completion rate
                     </span>
                   </div>
                 </div>
@@ -346,7 +341,7 @@ export default function AnalyticsPage() {
                   <div className="flex items-center mt-2">
                     <Users className="w-4 h-4 text-purple-500 mr-1" />
                     <span className="text-sm text-gray-600">
-                      {analytics.clients.newThisMonth} new this month
+                      {analytics.clients.new_this_month} new this month
                     </span>
                   </div>
                 </div>
@@ -361,11 +356,11 @@ export default function AnalyticsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Client Retention</p>
-                  <p className="text-2xl font-bold text-gray-900">{analytics.clients.retention.toFixed(1)}%</p>
+                  <p className="text-2xl font-bold text-gray-900">{analytics.clients.retention_rate.toFixed(1)}%</p>
                   <div className="flex items-center mt-2">
                     <Target className="w-4 h-4 text-orange-500 mr-1" />
                     <span className="text-sm text-gray-600">
-                      {analytics.clients.returning} returning
+                      {analytics.clients.returning} returning clients
                     </span>
                   </div>
                 </div>
