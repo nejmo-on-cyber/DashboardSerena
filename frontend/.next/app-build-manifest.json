@@ -1,0 +1,100 @@
+{
+  "pages": {
+    "/_not-found/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
+      "static/chunks/684-806c093013864de1.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/_not-found/page-e9981ade8acf2af4.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
+      "static/chunks/684-806c093013864de1.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/css/9148d7a61efd18bf.css",
+      "static/chunks/app/layout-fb9afc05a5c7346e.js"
+    ],
+    "/analytics/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
+      "static/chunks/684-806c093013864de1.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/710-4b07db23957ed364.js",
+      "static/chunks/app/analytics/page-b22006cd508034bd.js"
+    ],
+    "/booking-admin/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
+      "static/chunks/684-806c093013864de1.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/booking-admin/page-12cb73c6b4bb9ea6.js"
+    ],
+    "/calendar/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
+      "static/chunks/684-806c093013864de1.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/calendar/page-85cb4efa23fee75d.js"
+    ],
+    "/clients/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
+      "static/chunks/684-806c093013864de1.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/clients/page-b5c576202e329d71.js"
+    ],
+    "/conversations/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
+      "static/chunks/684-806c093013864de1.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/27-6c4f33041f0618f9.js",
+      "static/chunks/app/conversations/page-ece5df7a7239b739.js"
+    ],
+    "/employees/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
+      "static/chunks/684-806c093013864de1.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/employees/page-0d7892c309248207.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
+      "static/chunks/684-806c093013864de1.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/980-572df0de7ee309c0.js",
+      "static/chunks/app/page-7ac5e26d3727aaa1.js"
+    ],
+    "/revenue/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
+      "static/chunks/684-806c093013864de1.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/revenue/page-156d5637084a3641.js"
+    ],
+    "/promotions/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
+      "static/chunks/684-806c093013864de1.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/promotions/page-3fa1cf7e8b84f55f.js"
+    ],
+    "/services/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
+      "static/chunks/684-806c093013864de1.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/980-572df0de7ee309c0.js",
+      "static/chunks/app/services/page-4d418e4d7d79958c.js"
+    ],
+    "/voice-calls/page": [
+      "static/chunks/webpack-9edee2920554d0a5.js",
+      "static/chunks/4bd1b696-6aa9d1cf4bd61bfd.js",
+      "static/chunks/684-806c093013864de1.js",
+      "static/chunks/main-app-adc21f9bd355c9ea.js",
+      "static/chunks/app/voice-calls/page-d4df99c4616af204.js"
+    ]
+  }
+}
