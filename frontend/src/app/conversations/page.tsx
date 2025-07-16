@@ -356,8 +356,8 @@ export default function ConversationsPage() {
                               >
                                 {conv.tag}
                               </span>
-                              <span className="text-xs text-gray-500">
-                                {conv.phone}
+                              <span className="text-xs text-blue-600 font-medium">
+                                {conv.phone || 'No phone'}
                               </span>
                             </div>
                             {conv.unread > 0 && (
