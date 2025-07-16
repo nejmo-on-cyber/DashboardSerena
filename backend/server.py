@@ -704,7 +704,9 @@ async def get_employee_availability():
                 for service_id in service_ids:
                     service_name = get_service_name(service_id)
                     if service_name:
-                        services.append(service_name)
+                        # Clean up the service name (remove line breaks)
+                        cleaned_name = service_name.strip().replace('\n', ' ').replace('  ', ' ')
+                        services.append(cleaned_name)
             
             availability_data.append({
                 "id": emp['id'],
