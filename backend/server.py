@@ -869,10 +869,11 @@ async def get_analytics(range: str = "month"):
         
         for apt in all_appointments:
             fields = apt.get('fields', {})
-            client_name = fields.get('Client Name', '')
+            client_ids = fields.get('Client Name', [])
             date_str = fields.get('Appointment Date', '')
             
-            if client_name and date_str:
+            if isinstance(client_ids, list) and len(client_ids) > 0 and date_str:
+                client_id = client_ids[0]  # Use first client ID
                 try:
                     appointment_date = datetime.strptime(date_str, '%Y-%m-%d').date()
                 except:
@@ -882,27 +883,27 @@ async def get_analytics(range: str = "month"):
                         continue
                 
                 # Track all appointments per client
-                if client_name not in client_appointments:
-                    client_appointments[client_name] = []
-                client_appointments[client_name].append(appointment_date)
+                if client_id not in client_appointments:
+                    client_appointments[client_id] = []
+                client_appointments[client_id].append(appointment_date)
                 
                 # Track first appointment date
-                if client_name not in first_appointment_dates:
-                    first_appointment_dates[client_name] = appointment_date
+                if client_id not in first_appointment_dates:
+                    first_appointment_dates[client_id] = appointment_date
                 else:
-                    if appointment_date < first_appointment_dates[client_name]:
-                        first_appointment_dates[client_name] = appointment_date
+                    if appointment_date < first_appointment_dates[client_id]:
+                        first_appointment_dates[client_id] = appointment_date
         
         # Calculate new clients in the selected period
         new_clients_in_period = 0
         returning_clients_in_period = 0
         
-        for client_name, first_date in first_appointment_dates.items():
+        for client_id, first_date in first_appointment_dates.items():
             if start_date <= first_date <= end_date:
                 new_clients_in_period += 1
             elif first_date < start_date:
                 # Check if this existing client had appointments in the period
-                client_dates = client_appointments.get(client_name, [])
+                client_dates = client_appointments.get(client_id, [])
                 has_appointment_in_period = any(start_date <= date <= end_date for date in client_dates)
                 if has_appointment_in_period:
                     returning_clients_in_period += 1
