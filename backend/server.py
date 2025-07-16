@@ -545,13 +545,24 @@ async def create_employee(employee_data: dict):
     
     try:
         # Map employee data to Airtable fields - FIXED FIELD MAPPING
+        expertise_data = employee_data.get("expertise", [])
+        mapped_expertise = []
+        
+        for expertise in expertise_data:
+            # If it's already a valid expertise category, use it directly
+            if expertise in ['Haircut', 'Coloring', 'Styling', 'Massage', 'Facials', 'Manicure', 'Pedicure']:
+                mapped_expertise.append(expertise)
+            else:
+                # Otherwise, map service name to expertise category
+                mapped_expertise.append(map_service_to_expertise(expertise))
+        
         airtable_fields = {
             "Full Name": employee_data.get("full_name", ""),
             "Employee ID": employee_data.get("employee_number", ""),  # Fixed: Employee ID not Employee Number
             "Email Address": employee_data.get("email", ""),  # Fixed: Email Address not Email
             "Contact Number": employee_data.get("contact_number", ""),
             "Availability": employee_data.get("availability_days", []),
-            "Expertise": employee_data.get("expertise", []),
+            "Expertise": mapped_expertise,  # Use mapped expertise
             "Services": employee_data.get("services", []),  # NEW field
             "Photo": employee_data.get("profile_picture", ""),  # Fixed: Photo not Profile Picture
             "Start Date": employee_data.get("start_date", ""),
