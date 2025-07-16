@@ -22,22 +22,46 @@ import {
 interface AnalyticsData {
   revenue: {
     total: number;
-    thisMonth: number;
-    lastMonth: number;
-    growth: number;
+    daily: {
+      today: number;
+      yesterday: number;
+      growth: number;
+    };
+    weekly: {
+      this_week: number;
+      last_week: number;
+      growth: number;
+    };
+    monthly: {
+      this_month: number;
+      last_month: number;
+      growth: number;
+    };
+    quarterly: {
+      this_quarter: number;
+      last_quarter: number;
+      growth: number;
+    };
+    yearly: {
+      this_year: number;
+      last_year: number;
+      growth: number;
+    };
+    avg_appointment_value: number;
   };
   appointments: {
     total: number;
-    thisMonth: number;
     completed: number;
     cancelled: number;
     scheduled: number;
+    completion_rate: number;
+    cancellation_rate: number;
   };
   clients: {
     total: number;
-    newThisMonth: number;
+    new_this_month: number;
     returning: number;
-    retention: number;
+    retention_rate: number;
   };
   services: {
     name: string;
