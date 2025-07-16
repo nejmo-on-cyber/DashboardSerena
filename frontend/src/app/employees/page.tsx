@@ -537,6 +537,7 @@ export default function EmployeeManagementPage() {
                       </div>
                     </div>
                   </div>
+                  </div>
                 ))}
               </div>
             )}
