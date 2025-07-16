@@ -615,9 +615,35 @@ async def update_employee(employee_id: str, employee_data: dict):
             
             airtable_fields["Expertise"] = mapped_expertise
         if employee_data.get("services"):
-            # Skip Services field for now - linked records are complex to update
-            # This field is read-only for updates to avoid validation issues
-            pass
+            services = employee_data["services"]
+            # Handle services - convert names to record IDs if needed
+            service_record_ids = []
+            
+            # Get all services to map names to IDs
+            try:
+                all_services = airtable_services.get_all()
+                service_name_to_id = {service['fields'].get('Name', '').strip(): service['id'] for service in all_services}
+                
+                for service in services:
+                    if isinstance(service, str):
+                        if service.startswith("rec"):
+                            # Already a record ID
+                            service_record_ids.append(service)
+                        else:
+                            # Service name - convert to record ID
+                            service_id = service_name_to_id.get(service.strip())
+                            if service_id:
+                                service_record_ids.append(service_id)
+                            else:
+                                print(f"Warning: Service '{service}' not found in Airtable")
+                
+                if service_record_ids:
+                    airtable_fields["Services"] = service_record_ids
+                    
+            except Exception as e:
+                print(f"Error handling services: {e}")
+                # Skip services if there's an error to avoid blocking other updates
+                pass
         if employee_data.get("profile_picture"):
             profile_picture = employee_data["profile_picture"]
             # Handle different types of profile picture data
