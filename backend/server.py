@@ -593,9 +593,7 @@ async def update_employee(employee_id: str, employee_data: dict):
         airtable_fields = {}
         
         # Basic fields - using correct Airtable field names
-        # Note: Skip "Full Name" as it's computed in Airtable
-        if employee_data.get("employee_number"):
-            airtable_fields["Employee ID"] = employee_data["employee_number"]  # Fixed: Employee ID not Employee Number
+        # Note: Skip "Full Name" and "Employee ID" as they're computed in Airtable
         if employee_data.get("email"):
             airtable_fields["Email Address"] = employee_data["email"]  # Fixed: Email Address not Email
         if employee_data.get("contact_number"):
