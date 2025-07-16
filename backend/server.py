@@ -142,6 +142,41 @@ class RecordUpdate(BaseModel):
     tags: Optional[List[str]] = None
     notes: Optional[str] = None
 
+
+class UpdateEmployeeRequest(BaseModel):
+    full_name: Optional[str] = None
+    employee_number: Optional[str] = None
+    email: Optional[str] = None
+    contact_number: Optional[str] = None
+    availability_days: Optional[List[str]] = None
+    expertise: Optional[List[str]] = None
+    services: Optional[List[str]] = None
+    profile_picture: Optional[str] = None
+    start_date: Optional[str] = None
+    status: Optional[str] = None
+
+# Wassenger/Conversation Models
+class SendMessageRequest(BaseModel):
+    phone: str
+    message: str
+
+class ConversationMessage(BaseModel):
+    id: str
+    sender: str  # 'client' or 'ai'
+    text: str
+    time: str
+    phone: Optional[str] = None
+
+class Conversation(BaseModel):
+    id: str
+    client: str
+    phone: str
+    lastMessage: str
+    time: str
+    status: str
+    unread: int
+    tag: str
+    messages: List[ConversationMessage]
 @app.get("/")
 async def root():
     return {"message": "Airtable Dashboard API is running!"}
