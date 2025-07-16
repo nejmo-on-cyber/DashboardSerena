@@ -600,14 +600,9 @@ async def update_employee(employee_id: str, employee_data: dict):
         if employee_data.get("start_date"):
             airtable_fields["Start Date"] = employee_data["start_date"]
         if employee_data.get("status"):
-            # Try multiple possible field names for Status
-            possible_status_fields = ["Status", "Employee Status", "Current Status"]
-            for field_name in possible_status_fields:
-                try:
-                    airtable_fields[field_name] = employee_data["status"]
-                    break
-                except:
-                    continue
+            # Status field - only update if field exists in Airtable
+            # For now, skip status updates until field is added to Airtable
+            pass  # TODO: Add Status field to Airtable Employee table
         
         # Only update if we have fields to update
         if not airtable_fields:
