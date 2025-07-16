@@ -130,11 +130,13 @@ export default function ConversationsPage() {
       if (response.ok) {
         const data = await response.json();
         console.log('Conversations fetched:', data);
+        console.log('Setting conversations state...');
         setConversations(data);
         
         // Set first conversation as selected if available
         if (data.length > 0) {
           setSelectedConversation(data[0].id);
+          console.log('Selected conversation:', data[0].id);
         }
       } else {
         console.error('Failed to fetch conversations:', response.status);
