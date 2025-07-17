@@ -911,24 +911,92 @@ async def get_conversations():
         
         if chats_response.status_code != 200:
             print(f"Failed to get chats - trying alternative endpoint")
-            # Try alternative endpoint
-            chats_response = requests.get(
+            # Try to get all messages from all chats
+            messages_response = requests.get(
                 f"https://api.wassenger.com/v1/messages",
                 headers={
                     "Content-Type": "application/json",
                     "Token": WASSENGER_API_KEY
                 },
-                params={"devices": device_id, "limit": 50}
+                params={"devices": device_id, "limit": 1000}  # Get more messages
             )
             
-            if chats_response.status_code != 200:
-                raise Exception(f"Failed to get messages: {chats_response.text}")
+            if messages_response.status_code != 200:
+                print(f"Messages endpoint failed, trying contacts endpoint")
+                # Try contacts endpoint
+                contacts_response = requests.get(
+                    f"https://api.wassenger.com/v1/contacts",
+                    headers={
+                        "Content-Type": "application/json",
+                        "Token": WASSENGER_API_KEY
+                    },
+                    params={"devices": device_id, "limit": 100}
+                )
+                
+                if contacts_response.status_code == 200:
+                    contacts = contacts_response.json()
+                    print(f"Got {len(contacts)} contacts")
+                    
+                    conversations = []
+                    for contact in contacts:
+                        # Get recent messages for each contact
+                        contact_messages_response = requests.get(
+                            f"https://api.wassenger.com/v1/messages",
+                            headers={
+                                "Content-Type": "application/json",
+                                "Token": WASSENGER_API_KEY
+                            },
+                            params={
+                                "devices": device_id,
+                                "phone": contact.get("phone", ""),
+                                "limit": 5
+                            }
+                        )
+                        
+                        messages = []
+                        last_message = ""
+                        if contact_messages_response.status_code == 200:
+                            msg_data = contact_messages_response.json()
+                            for msg in msg_data:
+                                message_body = msg.get("message", {}).get("body", "") or msg.get("body", "")
+                                if message_body:
+                                    messages.append({
+                                        "id": msg.get("id", ""),
+                                        "sender": "ai" if msg.get("fromMe") else "client",
+                                        "text": message_body,
+                                        "time": msg.get("createdAt", ""),
+                                        "phone": contact.get("phone", "")
+                                    })
+                            
+                            if msg_data and msg_data[0].get("message", {}).get("body"):
+                                last_message = msg_data[0].get("message", {}).get("body", "")
+                        
+                        phone = contact.get("phone", "")
+                        if phone.startswith("971") and not phone.startswith("+"):
+                            phone = "+" + phone
+                        
+                        conversation = {
+                            "id": contact.get("id", phone),
+                            "client": contact.get("name", f"Contact {phone}"),
+                            "phone": phone,
+                            "lastMessage": last_message,
+                            "time": contact.get("lastMessageAt", ""),
+                            "status": "replied",
+                            "unread": contact.get("unreadCount", 0),
+                            "tag": "Regular",
+                            "messages": messages
+                        }
+                        conversations.append(conversation)
+                    
+                    return conversations
+                else:
+                    raise Exception(f"Failed to get contacts: {contacts_response.text}")
                 
             # Process messages to create conversations
-            messages = chats_response.json()
+            messages = messages_response.json()
             print(f"Got {len(messages)} messages")
             
-            # Group messages by phone number to create conversations
+            # Group messages by chat/phone to create conversations
             conversations_dict = {}
             for msg in messages:
                 # Extract phone number from different possible fields
