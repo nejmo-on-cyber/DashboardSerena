@@ -214,6 +214,7 @@ export default function ConversationsPage() {
   });
 
   if (loading) {
+    console.log('Still loading...');
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
         <Sidebar darkMode={darkMode} />
@@ -226,6 +227,8 @@ export default function ConversationsPage() {
       </div>
     );
   }
+
+  console.log(`Rendering with ${conversations.length} conversations, activeTab: ${activeTab}`);
 
   return (
     <div
