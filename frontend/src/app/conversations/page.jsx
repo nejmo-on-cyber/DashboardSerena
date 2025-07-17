@@ -443,6 +443,7 @@ export default function ConversationsPage() {
                     </div>
                     );
                   })}
+                  </div>
                 ) : (
                   <div className="p-8 text-center">
                     <div className="w-16 h-16 bg-purple-100 dark:bg-purple-800 rounded-full flex items-center justify-center mx-auto mb-4">
