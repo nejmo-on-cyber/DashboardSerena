@@ -23,6 +23,7 @@ export default function ConversationsPage() {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [activeTab, setActiveTab] = useState("recent"); // "recent" or "groups"
   const messagesEndRef = useRef(null);
 
   // Pusher instance reference
