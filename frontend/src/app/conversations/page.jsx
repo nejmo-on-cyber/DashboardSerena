@@ -198,6 +198,15 @@ export default function ConversationsPage() {
 
   const selectedConv = conversations.find((c) => c.id === selectedConversation);
 
+  // Filter conversations based on active tab
+  const filteredConversations = conversations.filter(conv => {
+    if (activeTab === "recent") {
+      return conv.tag === "Regular" || conv.tag === "VIP";
+    } else {
+      return conv.tag === "Group";
+    }
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
