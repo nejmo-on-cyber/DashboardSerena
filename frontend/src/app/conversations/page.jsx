@@ -139,8 +139,12 @@ export default function ConversationsPage() {
           setSelectedConversation(data[0].id);
           console.log('Selected conversation:', data[0].id);
         }
+        
+        // Force loading to false
+        setLoading(false);
       } else {
         console.error('Failed to fetch conversations:', response.status);
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error fetching conversations:', error);
