@@ -427,8 +427,27 @@ export default function ConversationsPage() {
                   })
                 ) : (
                   <div className="p-8 text-center">
-                    <p className={`text-gray-500 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
-                      No conversations yet. Start a new conversation or wait for incoming messages.
+                    <div className="w-16 h-16 bg-purple-100 dark:bg-purple-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                      {activeTab === "recent" ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-purple-500">
+                          <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-purple-500">
+                          <path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                          <circle cx="9" cy="7" r="4"/>
+                          <path d="M22 11v6"/>
+                          <path d="M19 14h6"/>
+                        </svg>
+                      )}
+                    </div>
+                    <h3 className={`text-lg font-medium mb-2 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                      {activeTab === "recent" ? "No recent messages" : "No group chats"}
+                    </h3>
+                    <p className={`text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
+                      {activeTab === "recent" 
+                        ? "Start a conversation or wait for incoming messages" 
+                        : "No group conversations found"}
                     </p>
                   </div>
                 )}
