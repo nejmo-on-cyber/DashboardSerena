@@ -124,13 +124,14 @@ export default function ConversationsPage() {
 
   const fetchConversations = async () => {
     try {
-      setLoading(true);
       console.log('Fetching conversations from /api/conversations...');
       const response = await fetch(`/api/conversations`);
       
+      console.log('Response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
-        console.log('Conversations fetched:', data);
+        console.log('Conversations fetched successfully:', data.length, 'conversations');
         console.log('Setting conversations state...');
         setConversations(data);
         
@@ -140,7 +141,8 @@ export default function ConversationsPage() {
           console.log('Selected conversation:', data[0].id);
         }
         
-        // Force loading to false
+        // Explicitly set loading to false
+        console.log('Setting loading to false after successful fetch');
         setLoading(false);
       } else {
         console.error('Failed to fetch conversations:', response.status);
@@ -148,8 +150,6 @@ export default function ConversationsPage() {
       }
     } catch (error) {
       console.error('Error fetching conversations:', error);
-    } finally {
-      console.log('Setting loading to false...');
       setLoading(false);
     }
   };
