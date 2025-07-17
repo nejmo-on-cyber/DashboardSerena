@@ -151,12 +151,6 @@ export default function ConversationsPage() {
     } finally {
       console.log('Setting loading to false...');
       setLoading(false);
-      
-      // Force a re-render after a short delay
-      setTimeout(() => {
-        console.log('Force re-render after data fetch');
-        setLoading(false);
-      }, 100);
     }
   };
 
