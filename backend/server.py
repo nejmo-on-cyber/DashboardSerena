@@ -925,9 +925,13 @@ async def get_conversations():
             
             if groups_response.status_code == 200:
                 groups = groups_response.json()
-                print(f"Got {len(groups)} groups")
+                print(f"Got {len(groups)} total groups")
                 
-                for group in groups:
+                # Sort groups by most recent activity and take only top 5
+                sorted_groups = sorted(groups, key=lambda x: x.get('lastMessageAt', ''), reverse=True)
+                recent_groups = sorted_groups[:5]  # Only 5 most recent groups
+                
+                for group in recent_groups:
                     conversation = {
                         "id": group.get("wid", group.get("id", "")),
                         "client": group.get("name", "Group Chat"),
@@ -940,6 +944,8 @@ async def get_conversations():
                         "messages": []
                     }
                     conversations.append(conversation)
+                
+                print(f"Added {len(recent_groups)} most recent groups")
             
             # Get individual conversations from available messages (API limitation: only recent messages)
             messages_response = requests.get(
