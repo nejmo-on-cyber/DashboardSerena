@@ -352,11 +352,12 @@ export default function ConversationsPage() {
               </div>
 
               {/* Conversations List */}
-              <div className="overflow-y-auto h-full" data-oid="4r2l6y0">
+              <div className="flex-1 overflow-y-auto" style={{maxHeight: 'calc(100vh - 300px)'}} data-oid="4r2l6y0">
                 {filteredConversations.length > 0 ? (
-                  filteredConversations.map((conv) => {
-                    console.log('Rendering conversation:', conv);
-                    return (
+                  <div className="space-y-1">
+                    {filteredConversations.map((conv) => {
+                      console.log('Rendering conversation:', conv);
+                      return (
                     <div
                       key={conv.id}
                       onClick={() => setSelectedConversation(conv.id)}
