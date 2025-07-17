@@ -363,10 +363,20 @@ export default function ConversationsPage() {
                         data-oid="d7vdgev"
                       >
                         <div
-                          className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-medium"
+                          className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-medium relative"
                           data-oid="cvce3n8"
                         >
                           {conv.client.charAt(0).toUpperCase()}
+                          {conv.tag === "Group" && (
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M22 11v6"/>
+                                <path d="M19 14h6"/>
+                              </svg>
+                            </div>
+                          )}
                         </div>
                         <div className="flex-1 min-w-0" data-oid="-j7x82o">
                           <div
