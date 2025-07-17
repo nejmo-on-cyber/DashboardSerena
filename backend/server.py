@@ -910,7 +910,65 @@ async def get_conversations():
         print(f"Chats response text: {chats_response.text[:500]}...")  # First 500 chars
         
         if chats_response.status_code != 200:
-            print(f"Failed to get chats - trying alternative endpoint")
+            print(f"Failed to get chats - trying direct chats endpoint")
+            
+            # Try the /chats endpoint mentioned in the documentation
+            chats_direct_response = requests.get(
+                f"https://api.wassenger.com/v1/chats",
+                headers={
+                    "Content-Type": "application/json",
+                    "Token": WASSENGER_API_KEY
+                },
+                params={"devices": device_id, "limit": 20}
+            )
+            
+            if chats_direct_response.status_code == 200:
+                all_chats = chats_direct_response.json()
+                print(f"Got {len(all_chats)} chats from direct endpoint")
+                
+                # Separate individual chats from group chats
+                individual_chats = [chat for chat in all_chats if not ("@g.us" in chat.get("id", ""))]
+                group_chats = [chat for chat in all_chats if "@g.us" in chat.get("id", "")]
+                
+                print(f"Found {len(individual_chats)} individual chats and {len(group_chats)} group chats")
+                
+                # Process individual chats first
+                conversations = []
+                for chat in individual_chats[:10]:  # Take top 10 individual chats
+                    phone = chat.get("phone", "")
+                    if phone.startswith("971") and not phone.startswith("+"):
+                        phone = "+" + phone
+                    
+                    conversation = {
+                        "id": chat.get("id", ""),
+                        "client": chat.get("name", f"Contact {phone}"),
+                        "phone": phone,
+                        "lastMessage": chat.get("lastMessage", {}).get("body", ""),
+                        "time": chat.get("lastMessageAt", ""),
+                        "status": "replied" if chat.get("unreadCount", 0) == 0 else "pending",
+                        "unread": chat.get("unreadCount", 0),
+                        "tag": "Regular",
+                        "messages": []
+                    }
+                    conversations.append(conversation)
+                
+                # Process group chats
+                for chat in group_chats[:5]:  # Take top 5 group chats
+                    conversation = {
+                        "id": chat.get("id", ""),
+                        "client": chat.get("name", "Group Chat"),
+                        "phone": chat.get("id", ""),
+                        "lastMessage": f"Group with {chat.get('totalParticipants', 0)} participants",
+                        "time": chat.get("lastMessageAt", ""),
+                        "status": "replied",
+                        "unread": chat.get("unreadCount", 0),
+                        "tag": "Group",
+                        "messages": []
+                    }
+                    conversations.append(conversation)
+                
+                print(f"Total conversations: {len(conversations)} (Groups: {len(group_chats[:5])}, Individual: {len(individual_chats[:10])})")
+                return conversations
             # Get groups (your 130 group chats)
             groups_response = requests.get(
                 f"{WASSENGER_BASE_URL}/devices/{device_id}/groups",
