@@ -306,9 +306,46 @@ export default function ConversationsPage() {
                 </div>
               </div>
 
+              {/* Tab Navigation */}
+              <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                  <button
+                    onClick={() => setActiveTab("recent")}
+                    className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                      activeTab === "recent"
+                        ? "bg-white dark:bg-gray-700 text-purple-600 dark:text-purple-400 shadow-sm"
+                        : "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                    }`}
+                  >
+                    Recent Messages
+                    {conversations.filter(c => c.tag === "Regular" || c.tag === "VIP").length > 0 && (
+                      <span className="ml-2 bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400 px-2 py-0.5 rounded-full text-xs">
+                        {conversations.filter(c => c.tag === "Regular" || c.tag === "VIP").length}
+                      </span>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("groups")}
+                    className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                      activeTab === "groups"
+                        ? "bg-white dark:bg-gray-700 text-purple-600 dark:text-purple-400 shadow-sm"
+                        : "text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                    }`}
+                  >
+                    Group Chats
+                    {conversations.filter(c => c.tag === "Group").length > 0 && (
+                      <span className="ml-2 bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400 px-2 py-0.5 rounded-full text-xs">
+                        {conversations.filter(c => c.tag === "Group").length}
+                      </span>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Conversations List */}
               <div className="overflow-y-auto h-full" data-oid="4r2l6y0">
-                {conversations.length > 0 ? (
-                  conversations.map((conv) => {
+                {filteredConversations.length > 0 ? (
+                  filteredConversations.map((conv) => {
                     console.log('Rendering conversation:', conv);
                     return (
                     <div
