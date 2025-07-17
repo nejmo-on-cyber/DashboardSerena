@@ -947,8 +947,11 @@ async def get_conversations():
                 
                 print(f"Added {len(recent_groups)} most recent groups")
             
-            # Get individual conversations from available messages (API limitation: only recent messages)
-            messages_response = requests.get(
+            # Try to get more individual conversations by making multiple API calls
+            all_messages = []
+            
+            # Get messages sent by you
+            sent_messages_response = requests.get(
                 f"{WASSENGER_BASE_URL}/messages",
                 headers={
                     "Content-Type": "application/json",
@@ -956,17 +959,42 @@ async def get_conversations():
                 },
                 params={
                     "devices": device_id,
-                    "limit": 1000  # Try to get as many as possible
+                    "limit": 500,
+                    "fromMe": "true"
                 }
             )
             
-            if messages_response.status_code == 200:
-                messages = messages_response.json()
-                print(f"Got {len(messages)} total messages for individual chats")
-                
+            # Get messages received by you
+            received_messages_response = requests.get(
+                f"{WASSENGER_BASE_URL}/messages",
+                headers={
+                    "Content-Type": "application/json",
+                    "Token": WASSENGER_API_KEY
+                },
+                params={
+                    "devices": device_id,
+                    "limit": 500,
+                    "fromMe": "false"
+                }
+            )
+            
+            # Combine all messages
+            if sent_messages_response.status_code == 200:
+                sent_messages = sent_messages_response.json()
+                all_messages.extend(sent_messages)
+                print(f"Got {len(sent_messages)} sent messages")
+            
+            if received_messages_response.status_code == 200:
+                received_messages = received_messages_response.json()
+                all_messages.extend(received_messages)
+                print(f"Got {len(received_messages)} received messages")
+            
+            print(f"Total messages to process: {len(all_messages)}")
+            
+            if all_messages:
                 # Group messages by chatId to find unique individual conversations
                 individual_chats = {}
-                for msg in messages:
+                for msg in all_messages:
                     chat_id = msg.get("wid", "")
                     
                     # Skip if it's a group chat (contains @g.us)
@@ -982,6 +1010,7 @@ async def get_conversations():
                         phone = "+" + phone
                     
                     message_body = msg.get("message", "")
+                    created_at = msg.get("createdAt", "")
                     
                     # Create or update individual chat
                     if chat_id not in individual_chats:
@@ -990,38 +1019,43 @@ async def get_conversations():
                             "client": f"Contact {phone}" if phone else "Unknown Contact",
                             "phone": phone,
                             "lastMessage": message_body,
-                            "time": msg.get("createdAt", ""),
+                            "time": created_at,
                             "status": "replied" if msg.get("fromMe") else "pending",
                             "unread": 0,
                             "tag": "Regular",
-                            "messages": []
+                            "messages": [],
+                            "lastActivity": created_at
                         }
                     
                     # Update with most recent message
-                    if msg.get("createdAt", "") > individual_chats[chat_id]["time"]:
+                    if created_at > individual_chats[chat_id]["lastActivity"]:
                         individual_chats[chat_id]["lastMessage"] = message_body
-                        individual_chats[chat_id]["time"] = msg.get("createdAt", "")
+                        individual_chats[chat_id]["time"] = created_at
+                        individual_chats[chat_id]["lastActivity"] = created_at
                     
-                    # Add message to conversation
-                    if message_body:
+                    # Add message to conversation (limit to avoid performance issues)
+                    if message_body and len(individual_chats[chat_id]["messages"]) < 10:
                         individual_chats[chat_id]["messages"].append({
                             "id": msg.get("id", ""),
                             "sender": "ai" if msg.get("fromMe") else "client",
                             "text": message_body,
-                            "time": msg.get("createdAt", ""),
+                            "time": created_at,
                             "phone": phone
                         })
                 
-                # Add all discovered individual chats to conversations
-                for chat_data in individual_chats.values():
+                # Sort individual chats by most recent activity and take top 10
+                sorted_individual_chats = sorted(
+                    individual_chats.values(), 
+                    key=lambda x: x.get("lastActivity", ""), 
+                    reverse=True
+                )
+                recent_individual_chats = sorted_individual_chats[:10]  # Only 10 most recent
+                
+                # Add individual chats to conversations
+                for chat_data in recent_individual_chats:
                     conversations.append(chat_data)
                 
-                print(f"Found {len(individual_chats)} individual chats from recent messages")
-                
-                # Note: Due to Wassenger API limitations, we can only access recent individual conversations
-                # The API returns recent messages only, not full chat history
-                if len(individual_chats) < 10:  # If we have very few individual chats
-                    print("Note: Limited individual chats due to Wassenger API message history restrictions")
+                print(f"Found {len(individual_chats)} total individual chats, showing {len(recent_individual_chats)} most recent")
             
             print(f"Total conversations: {len(conversations)} (Groups: {len([c for c in conversations if c['tag'] == 'Group'])}, Individual: {len([c for c in conversations if c['tag'] == 'Regular'])})")
             return conversations
