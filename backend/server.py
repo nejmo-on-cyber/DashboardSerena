@@ -943,35 +943,77 @@ async def get_conversations():
             
             # Also get individual conversations from messages
             messages_response = requests.get(
-                f"https://api.wassenger.com/v1/messages",
+                f"{WASSENGER_BASE_URL}/messages",
                 headers={
                     "Content-Type": "application/json",
                     "Token": WASSENGER_API_KEY
                 },
-                params={"devices": device_id, "limit": 100}  # Get recent messages
+                params={
+                    "devices": device_id, 
+                    "limit": 2000,  # Get many more messages to capture all individual chats
+                    "direction": "both"  # Get both sent and received
+                }
             )
             
             if messages_response.status_code == 200:
                 messages = messages_response.json()
-                print(f"Got {len(messages)} messages")
+                print(f"Got {len(messages)} messages for individual chats")
                 
-                # Add a conversation for the main contact (you)
-                if messages:
-                    latest_message = messages[0]
-                    conversation = {
-                        "id": latest_message.get("wid", latest_message.get("phone", "")),
-                        "client": f"Contact {latest_message.get('phone', '')}",
-                        "phone": latest_message.get("phone", ""),
-                        "lastMessage": latest_message.get("message", ""),
-                        "time": latest_message.get("createdAt", ""),
-                        "status": "replied",
-                        "unread": 0,
-                        "tag": "Regular",
-                        "messages": []
-                    }
-                    conversations.append(conversation)
+                # Group messages by chatId to find all unique individual conversations
+                individual_chats = {}
+                for msg in messages:
+                    chat_id = msg.get("wid", "")
+                    
+                    # Skip if it's a group chat (contains @g.us)
+                    if "@g.us" in chat_id:
+                        continue
+                        
+                    # Skip if no valid chat ID
+                    if not chat_id:
+                        continue
+                    
+                    phone = msg.get("phone", "")
+                    if phone.startswith("971") and not phone.startswith("+"):
+                        phone = "+" + phone
+                    
+                    message_body = msg.get("message", "")
+                    
+                    # Create or update individual chat
+                    if chat_id not in individual_chats:
+                        individual_chats[chat_id] = {
+                            "id": chat_id,
+                            "client": f"Contact {phone}" if phone else "Unknown Contact",
+                            "phone": phone,
+                            "lastMessage": message_body,
+                            "time": msg.get("createdAt", ""),
+                            "status": "replied" if msg.get("fromMe") else "pending",
+                            "unread": 0,
+                            "tag": "Regular",
+                            "messages": []
+                        }
+                    
+                    # Update with most recent message
+                    if msg.get("createdAt", "") > individual_chats[chat_id]["time"]:
+                        individual_chats[chat_id]["lastMessage"] = message_body
+                        individual_chats[chat_id]["time"] = msg.get("createdAt", "")
+                    
+                    # Add message to conversation
+                    if message_body:
+                        individual_chats[chat_id]["messages"].append({
+                            "id": msg.get("id", ""),
+                            "sender": "ai" if msg.get("fromMe") else "client",
+                            "text": message_body,
+                            "time": msg.get("createdAt", ""),
+                            "phone": phone
+                        })
+                
+                # Add all individual chats to conversations
+                for chat_data in individual_chats.values():
+                    conversations.append(chat_data)
+                
+                print(f"Found {len(individual_chats)} individual chats")
             
-            print(f"Total conversations: {len(conversations)}")
+            print(f"Total conversations: {len(conversations)} (Groups: {len([c for c in conversations if c['tag'] == 'Group'])}, Individual: {len([c for c in conversations if c['tag'] == 'Regular'])})")
             return conversations
         
         chats = chats_response.json()
