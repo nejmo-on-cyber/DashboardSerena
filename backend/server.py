@@ -911,163 +911,68 @@ async def get_conversations():
         
         if chats_response.status_code != 200:
             print(f"Failed to get chats - trying alternative endpoint")
-            # Try to get all messages from all chats
+            # Get groups (your 130 group chats)
+            groups_response = requests.get(
+                f"{WASSENGER_BASE_URL}/devices/{device_id}/groups",
+                headers={
+                    "Content-Type": "application/json",
+                    "Token": WASSENGER_API_KEY
+                },
+                params={"limit": 50}  # Get first 50 groups
+            )
+            
+            conversations = []
+            
+            if groups_response.status_code == 200:
+                groups = groups_response.json()
+                print(f"Got {len(groups)} groups")
+                
+                for group in groups:
+                    conversation = {
+                        "id": group.get("wid", group.get("id", "")),
+                        "client": group.get("name", "Group Chat"),
+                        "phone": group.get("wid", ""),
+                        "lastMessage": f"Group with {group.get('totalParticipants', 0)} participants",
+                        "time": group.get("lastMessageAt", ""),
+                        "status": "replied",
+                        "unread": group.get("unreadCount", 0),
+                        "tag": "Group",
+                        "messages": []
+                    }
+                    conversations.append(conversation)
+            
+            # Also get individual conversations from messages
             messages_response = requests.get(
                 f"https://api.wassenger.com/v1/messages",
                 headers={
                     "Content-Type": "application/json",
                     "Token": WASSENGER_API_KEY
                 },
-                params={"devices": device_id, "limit": 1000}  # Get more messages
+                params={"devices": device_id, "limit": 100}  # Get recent messages
             )
             
-            if messages_response.status_code != 200:
-                print(f"Messages endpoint failed, trying contacts endpoint")
-                # Try contacts endpoint
-                contacts_response = requests.get(
-                    f"https://api.wassenger.com/v1/contacts",
-                    headers={
-                        "Content-Type": "application/json",
-                        "Token": WASSENGER_API_KEY
-                    },
-                    params={"devices": device_id, "limit": 100}
-                )
+            if messages_response.status_code == 200:
+                messages = messages_response.json()
+                print(f"Got {len(messages)} messages")
                 
-                if contacts_response.status_code == 200:
-                    contacts = contacts_response.json()
-                    print(f"Got {len(contacts)} contacts")
-                    
-                    conversations = []
-                    for contact in contacts:
-                        # Get recent messages for each contact
-                        contact_messages_response = requests.get(
-                            f"https://api.wassenger.com/v1/messages",
-                            headers={
-                                "Content-Type": "application/json",
-                                "Token": WASSENGER_API_KEY
-                            },
-                            params={
-                                "devices": device_id,
-                                "phone": contact.get("phone", ""),
-                                "limit": 5
-                            }
-                        )
-                        
-                        messages = []
-                        last_message = ""
-                        if contact_messages_response.status_code == 200:
-                            msg_data = contact_messages_response.json()
-                            for msg in msg_data:
-                                message_body = msg.get("message", {}).get("body", "") or msg.get("body", "")
-                                if message_body:
-                                    messages.append({
-                                        "id": msg.get("id", ""),
-                                        "sender": "ai" if msg.get("fromMe") else "client",
-                                        "text": message_body,
-                                        "time": msg.get("createdAt", ""),
-                                        "phone": contact.get("phone", "")
-                                    })
-                            
-                            if msg_data and msg_data[0].get("message", {}).get("body"):
-                                last_message = msg_data[0].get("message", {}).get("body", "")
-                        
-                        phone = contact.get("phone", "")
-                        if phone.startswith("971") and not phone.startswith("+"):
-                            phone = "+" + phone
-                        
-                        conversation = {
-                            "id": contact.get("id", phone),
-                            "client": contact.get("name", f"Contact {phone}"),
-                            "phone": phone,
-                            "lastMessage": last_message,
-                            "time": contact.get("lastMessageAt", ""),
-                            "status": "replied",
-                            "unread": contact.get("unreadCount", 0),
-                            "tag": "Regular",
-                            "messages": messages
-                        }
-                        conversations.append(conversation)
-                    
-                    return conversations
-                else:
-                    raise Exception(f"Failed to get contacts: {contacts_response.text}")
-                
-            # Process messages to create conversations
-            messages = messages_response.json()
-            print(f"Got {len(messages)} messages")
-            
-            # Group messages by chat/phone to create conversations
-            conversations_dict = {}
-            for msg in messages:
-                # Extract phone number from different possible fields
-                phone = ""
-                if msg.get("phone"):
-                    phone = msg.get("phone")
-                elif msg.get("chatId"):
-                    phone = msg.get("chatId", "").replace("@c.us", "").replace("@g.us", "")
-                elif msg.get("to"):
-                    phone = msg.get("to", "").replace("@c.us", "").replace("@g.us", "")
-                elif msg.get("chat", {}).get("id"):
-                    phone = msg.get("chat", {}).get("id", "").replace("@c.us", "").replace("@g.us", "")
-                
-                if phone.startswith("971") and not phone.startswith("+"):
-                    phone = "+" + phone
-                
-                # Get message body from different possible fields
-                message_body = ""
-                if msg.get("body"):
-                    message_body = msg.get("body")
-                elif msg.get("text"):
-                    message_body = msg.get("text")
-                elif msg.get("content"):
-                    message_body = msg.get("content")
-                elif msg.get("message"):
-                    message_body = msg.get("message")
-                
-                # Get sender name from different possible fields
-                sender_name = ""
-                if msg.get("senderName"):
-                    sender_name = msg.get("senderName")
-                elif msg.get("sender", {}).get("name"):
-                    sender_name = msg.get("sender", {}).get("name")
-                elif msg.get("contact", {}).get("name"):
-                    sender_name = msg.get("contact", {}).get("name")
-                elif msg.get("from"):
-                    sender_name = f"Contact {msg.get('from')}"
-                
-                if not sender_name:
-                    sender_name = f"Contact {phone}"
-                
-                # Print debug info
-                print(f"Message debug: phone={phone}, body='{message_body}', sender='{sender_name}'")
-                print(f"Full message object keys: {list(msg.keys())}")
-                
-                if phone and phone not in conversations_dict:
-                    conversations_dict[phone] = {
-                        "id": msg.get("chatId", phone),
-                        "client": sender_name,
-                        "phone": phone,
-                        "lastMessage": message_body,
-                        "time": msg.get("createdAt", ""),
-                        "status": "replied" if msg.get("fromMe") else "pending",
+                # Add a conversation for the main contact (you)
+                if messages:
+                    latest_message = messages[0]
+                    conversation = {
+                        "id": latest_message.get("wid", latest_message.get("phone", "")),
+                        "client": f"Contact {latest_message.get('phone', '')}",
+                        "phone": latest_message.get("phone", ""),
+                        "lastMessage": latest_message.get("message", ""),
+                        "time": latest_message.get("createdAt", ""),
+                        "status": "replied",
                         "unread": 0,
-                        "tag": "Group" if "g.us" in msg.get("chatId", "") else "Regular",
+                        "tag": "Regular",
                         "messages": []
                     }
-                
-                if phone and message_body:  # Only add messages with content
-                    conversations_dict[phone]["messages"].append({
-                        "id": msg.get("id", ""),
-                        "sender": "ai" if msg.get("fromMe") else "client",
-                        "text": message_body,
-                        "time": msg.get("createdAt", ""),
-                        "phone": phone
-                    })
-                    
-                    # Update last message
-                    conversations_dict[phone]["lastMessage"] = message_body
-                
-            return list(conversations_dict.values())
+                    conversations.append(conversation)
+            
+            print(f"Total conversations: {len(conversations)}")
+            return conversations
         
         chats = chats_response.json()
         print(f"Got {len(chats)} chats")
